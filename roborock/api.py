@@ -46,12 +46,6 @@ class RoborockClient:
         self.is_available: bool = True
         self.queue_timeout = queue_timeout
 
-    def __del__(self) -> None:
-        self.release()
-
-    def release(self) -> None:
-        self.sync_disconnect()
-
     async def async_release(self) -> None:
         await self.async_disconnect()
 
@@ -71,22 +65,19 @@ class RoborockClient:
     async def async_connect(self):
         raise NotImplementedError
 
-    def sync_disconnect(self) -> Any:
-        raise NotImplementedError
-
     async def async_disconnect(self) -> Any:
         raise NotImplementedError
 
-    def on_message_received(self, messages: list[RoborockMessage]) -> None:
+    def _on_message_received(self, messages: list[RoborockMessage]) -> None:
         raise NotImplementedError
 
-    def on_connection_lost(self, exc: Exception | None) -> None:
+    def _on_connection_lost(self, exc: Exception | None) -> None:
         self._last_disconnection = self.time_func()
         self._logger.info("Roborock client disconnected")
         if exc is not None:
             self._logger.warning(exc)
 
-    def should_keepalive(self) -> bool:
+    def _should_keepalive(self) -> bool:
         now = self.time_func()
         # noinspection PyUnresolvedReferences
         if now - self._last_disconnection > self.keep_alive**2 and now - self._last_device_msg_in > self.keep_alive:
@@ -94,7 +85,7 @@ class RoborockClient:
         return True
 
     async def validate_connection(self) -> None:
-        if not self.should_keepalive():
+        if not self._should_keepalive():
             await self.async_disconnect()
         await self.async_connect()
 

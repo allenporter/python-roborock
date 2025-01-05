@@ -1,7 +1,6 @@
 import asyncio
 import base64
 
-import paho.mqtt.client as mqtt
 from vacuum_map_parser_base.config.color import ColorsPalette
 from vacuum_map_parser_base.config.image_config import ImageConfig
 from vacuum_map_parser_base.config.size import Sizes
@@ -29,11 +28,6 @@ class RoborockMqttClientV1(RoborockMqttClient, RoborockClientV1):
 
         RoborockMqttClient.__init__(self, user_data, device_info, queue_timeout)
         RoborockClientV1.__init__(self, device_info, self._logger, endpoint)
-
-    def _send_msg_raw(self, msg: bytes) -> None:
-        info = self.publish(f"rr/m/i/{self._mqtt_user}/{self._hashed_user}/{self.device_info.device.duid}", msg)
-        if info.rc != mqtt.MQTT_ERR_SUCCESS:
-            raise RoborockException(f"Failed to publish ({mqtt.error_string(info.rc)})")
 
     async def send_message(self, roborock_message: RoborockMessage):
         await self.validate_connection()

@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import patch
 
 import paho.mqtt.client as mqtt
@@ -32,13 +33,19 @@ def test_can_create_mqtt_roborock():
 
 @pytest.mark.asyncio
 async def test_sync_connect(mqtt_client):
-    with patch("paho.mqtt.client.Client.connect", return_value=mqtt.MQTT_ERR_SUCCESS):
-        with patch("paho.mqtt.client.Client.loop_start", return_value=mqtt.MQTT_ERR_SUCCESS):
-            connecting, connected_future = mqtt_client.sync_connect()
-            assert connecting is True
-            assert connected_future is not None
+    with patch("paho.mqtt.client.Client.connect", return_value=mqtt.MQTT_ERR_SUCCESS) as mock_connect, patch(
+        "paho.mqtt.client.Client.loop_start", return_value=mqtt.MQTT_ERR_SUCCESS
+    ) as mock_loop_start:
+        loop = asyncio.get_event_loop()
+        task = loop.create_task(mqtt_client.async_connect())
+        await asyncio.sleep(1e-5)  # yield to ensure the task is started
 
-            connected_future.cancel()
+        mock_connect.assert_called_once()
+        mock_loop_start.assert_called_once()
+
+        task.cancel()
+
+        await mqtt_client.async_disconnect()
 
 
 @pytest.mark.asyncio

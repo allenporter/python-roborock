@@ -36,11 +36,7 @@ class RoborockLocalClient(RoborockClient, asyncio.Protocol):
             message = self.remaining + message
             self.remaining = b""
         parser_msg, self.remaining = MessageParser.parse(message, local_key=self.device_info.device.local_key)
-        self.on_message_received(parser_msg)
-
-    def connection_lost(self, exc: Exception | None):
-        self.sync_disconnect()
-        self.on_connection_lost(exc)
+        self._on_message_received(parser_msg)
 
     def is_connected(self):
         return self.transport and self.transport.is_reading()
@@ -57,7 +53,7 @@ class RoborockLocalClient(RoborockClient, asyncio.Protocol):
         async with self._mutex:
             try:
                 if not self.is_connected():
-                    self.sync_disconnect()
+                    await self.async_disconnect()
                     async with async_timeout.timeout(self.queue_timeout):
                         self._logger.debug(f"Connecting to {self.host}")
                         self.transport, _ = await self.event_loop.create_connection(  # type: ignore
@@ -71,16 +67,13 @@ class RoborockLocalClient(RoborockClient, asyncio.Protocol):
             await self.hello()
             await self.keep_alive_func()
 
-    def sync_disconnect(self) -> None:
-        if self.transport and self.event_loop.is_running():
-            self._logger.debug(f"Disconnecting from {self.host}")
-            self.transport.close()
-        if self.keep_alive_task:
-            self.keep_alive_task.cancel()
-
     async def async_disconnect(self) -> None:
         async with self._mutex:
-            self.sync_disconnect()
+            if self.transport and self.event_loop.is_running():
+                self._logger.debug(f"Disconnecting from {self.host}")
+                self.transport.close()
+            if self.keep_alive_task:
+                self.keep_alive_task.cancel()
 
     async def hello(self):
         request_id = 1

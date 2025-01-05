@@ -155,10 +155,6 @@ class RoborockClientV1(RoborockClient):
             self._listeners[device_info.device.duid] = ListenerModel({}, self.cache)
         self.listener_model = self._listeners[device_info.device.duid]
 
-    def release(self):
-        super().release()
-        [item.stop() for item in self.cache.values()]
-
     async def async_release(self) -> None:
         await super().async_release()
         [item.stop() for item in self.cache.values()]
@@ -359,7 +355,7 @@ class RoborockClientV1(RoborockClient):
         )
         return request_id, timestamp, payload
 
-    def on_message_received(self, messages: list[RoborockMessage]) -> None:
+    def _on_message_received(self, messages: list[RoborockMessage]) -> None:
         try:
             self._last_device_msg_in = self.time_func()
             for data in messages:

@@ -106,7 +106,7 @@ class RoborockClientA01(RoborockClient):
         super().__init__(endpoint, device_info, queue_timeout)
         self.category = category
 
-    def on_message_received(self, messages: list[RoborockMessage]) -> None:
+    def _on_message_received(self, messages: list[RoborockMessage]) -> None:
         for message in messages:
             protocol = message.protocol
             if message.payload and protocol in [
