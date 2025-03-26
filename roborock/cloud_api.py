@@ -76,14 +76,13 @@ class RoborockMqttClient(RoborockClient, ABC):
 
     def _mqtt_on_connect(self, *args, **kwargs):
         _, __, ___, rc, ____ = args
-        connection_queue = self._waiting_queue.safe_pop(RequestKey(CONNECT_REQUEST_ID))
+        if not (connection_queue := self._waiting_queue.safe_pop(RequestKey(CONNECT_REQUEST_ID), "connect")):
+            self._logger.info("Received unexpected connect event")
+            return
         if rc != mqtt.MQTT_ERR_SUCCESS:
             message = f"Failed to connect ({mqtt.error_string(rc)})"
             self._logger.error(message)
-            if connection_queue:
-                connection_queue.set_exception(VacuumError(message))
-            else:
-                self._logger.debug("Failed to notify connect future, not in queue")
+            connection_queue.set_exception(VacuumError(message))
             return
         self._logger.info(f"Connected to mqtt {self._mqtt_host}:{self._mqtt_port}")
         topic = f"rr/m/o/{self._mqtt_user}/{self._hashed_user}/{self.device_info.device.duid}"
@@ -91,14 +90,10 @@ class RoborockMqttClient(RoborockClient, ABC):
         if result != 0:
             message = f"Failed to subscribe ({mqtt.error_string(rc)})"
             self._logger.error(message)
-            if connection_queue:
-                connection_queue.set_exception(VacuumError(message))
+            connection_queue.set_exception(VacuumError(message))
             return
         self._logger.info(f"Subscribed to topic {topic}")
-        if connection_queue:
-            connection_queue.set_result(True)
-        else:
-            self._logger.debug("Connected but no connect future")
+        connection_queue.set_result(True)
 
     def _mqtt_on_message(self, *args, **kwargs):
         client, __, msg = args
@@ -113,11 +108,8 @@ class RoborockMqttClient(RoborockClient, ABC):
         try:
             exc = RoborockException(mqtt.error_string(rc)) if rc != mqtt.MQTT_ERR_SUCCESS else None
             super().on_connection_lost(exc)
-            connection_queue = self._waiting_queue.safe_pop(RequestKey(DISCONNECT_REQUEST_ID))
-            if connection_queue:
+            if connection_queue := self._waiting_queue.safe_pop(RequestKey(DISCONNECT_REQUEST_ID), "disconnect"):
                 connection_queue.set_result(True)
-            else:
-                self._logger.debug("Disconnected but no disconnect future")
         except Exception as ex:
             self._logger.exception(ex)
 

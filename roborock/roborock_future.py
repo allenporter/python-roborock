@@ -12,7 +12,6 @@ from .exceptions import VacuumError
 from .roborock_message import RoborockMessageProtocol
 
 _LOGGER = logging.getLogger(__name__)
-_TRIES = 3
 
 
 @dataclass(frozen=True)
@@ -43,11 +42,17 @@ class WaitingQueue:
                 raise ValueError(f"Request key {request_key} already exists in the queue")
             self._queue[request_key] = future
 
-    def safe_pop(self, request_key: RequestKey) -> RoborockFuture | None:
-        """Get the future from the queue if it has not yet been popped, otherwise ignore."""
-        _LOGGER.debug("Popping request key %s from the queue", request_key)
+    def safe_pop(self, request_key: RequestKey, label: str | None = None) -> RoborockFuture | None:
+        """Get the future from the queue if it has not yet been popped, otherwise ignore.
+
+        The label is used for logging when the request key is not found in the queue.
+        """
+        _LOGGER.debug("Popping request key %s (%s) from the queue", request_key, label)
         with self._lock:
-            return self._queue.pop(request_key, None)
+            future = self._queue.pop(request_key, None)
+            if future is None and label is not None:
+                _LOGGER.warning("Received message for key %s (%s) not found in the queue", request_key, label)
+            return future
 
 
 class RoborockFuture:

@@ -144,11 +144,8 @@ class RoborockClientA01(RoborockClient, ABC):
                         # Auto convert into data struct we want.
                         converted_response = entries[data_point_protocol].post_process_fn(data_point)
                         request_key = RequestKey(int(data_point_number), protocol)
-                        future = self._waiting_queue.safe_pop(request_key)
-                        if future is not None:
+                        if future := self._waiting_queue.safe_pop(request_key, "a01"):
                             future.set_result(converted_response)
-                        else:
-                            self._logger.debug(f"Got response for {request_key} but no future found")
 
     @abstractmethod
     async def update_values(
