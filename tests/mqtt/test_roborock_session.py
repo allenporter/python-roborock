@@ -4,13 +4,14 @@ import asyncio
 from collections.abc import Callable, Generator
 from queue import Queue
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import AsyncMock, Mock, patch
 
+import aiomqtt
 import paho.mqtt.client as mqtt
 import pytest
 
 from roborock.mqtt.roborock_session import create_mqtt_session
-from roborock.mqtt.session import MqttParams
+from roborock.mqtt.session import MqttParams, MqttSessionException
 from tests import mqtt_packet
 from tests.conftest import FakeSocketHandler
 
@@ -79,7 +80,11 @@ def push_response(response_queue: Queue, fake_socket_handler: FakeSocketHandler)
 
 
 class Subscriber:
-    """Mock subscriber class."""
+    """Mock subscriber class.
+
+    This will capture messages published on the session so the tests can verify
+    they were received.
+    """
 
     def __init__(self) -> None:
         """Initialize the subscriber."""
@@ -102,6 +107,7 @@ async def test_session(push_response: Callable[[bytes], None]) -> None:
 
     push_response(mqtt_packet.gen_connack(rc=0, flags=2))
     session = await create_mqtt_session(FAKE_PARAMS)
+    assert session.connected
 
     push_response(mqtt_packet.gen_suback(mid=1))
     subscriber1 = Subscriber()
@@ -130,7 +136,22 @@ async def test_session(push_response: Callable[[bytes], None]) -> None:
     push_response(mqtt_packet.gen_publish("topic-1", payload=b"ignored"))
     assert subscriber1.messages == [b"12345", b"ABC"]
 
+    assert session.connected
     await session.close()
+    assert not session.connected
+
+
+async def test_session_no_subscribers(push_response: Callable[[bytes], None]) -> None:
+    """Test the MQTT session."""
+
+    push_response(mqtt_packet.gen_connack(rc=0, flags=2))
+    push_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
+    push_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
+    session = await create_mqtt_session(FAKE_PARAMS)
+    assert session.connected
+
+    await session.close()
+    assert not session.connected
 
 
 async def test_publish_command(push_response: Callable[[bytes], None]) -> None:
@@ -139,4 +160,69 @@ async def test_publish_command(push_response: Callable[[bytes], None]) -> None:
     push_response(mqtt_packet.gen_connack(rc=0, flags=2))
     session = await create_mqtt_session(FAKE_PARAMS)
 
+    push_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
     await session.publish("topic-1", message=b"payload")
+
+    assert session.connected
+    await session.close()
+    assert not session.connected
+
+
+class FakeAsyncIterator:
+    """Fake async iterator that waits for messages to arrive, but they never do.
+
+    This is used for testing exceptions in other client functions.
+    """
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self) -> None:
+        """Iterator that does not generate any messages."""
+        while True:
+            await asyncio.sleep(1)
+
+
+async def test_publish_failure() -> None:
+    """Test an MQTT error is received when publishing a message."""
+
+    mock_client = AsyncMock()
+    mock_client.messages = FakeAsyncIterator()
+
+    mock_aenter = AsyncMock()
+    mock_aenter.return_value = mock_client
+
+    with patch("roborock.mqtt.roborock_session.aiomqtt.Client.__aenter__", mock_aenter):
+        session = await create_mqtt_session(FAKE_PARAMS)
+        assert session.connected
+
+        mock_client.publish.side_effect = aiomqtt.MqttError
+
+        with pytest.raises(MqttSessionException, match="Error publishing message"):
+            await session.publish("topic-1", message=b"payload")
+
+
+async def test_subscribe_failure() -> None:
+    """Test an MQTT error while subscribing."""
+
+    mock_client = AsyncMock()
+    mock_client.messages = FakeAsyncIterator()
+
+    mock_aenter = AsyncMock()
+    mock_aenter.return_value = mock_client
+
+    mock_shim = Mock()
+    mock_shim.return_value.__aenter__ = mock_aenter
+    mock_shim.return_value.__aexit__ = AsyncMock()
+
+    with patch("roborock.mqtt.roborock_session.aiomqtt.Client", mock_shim):
+        session = await create_mqtt_session(FAKE_PARAMS)
+        assert session.connected
+
+        mock_client.subscribe.side_effect = aiomqtt.MqttError
+
+        subscriber1 = Subscriber()
+        with pytest.raises(MqttSessionException, match="Error subscribing to topic"):
+            await session.subscribe("topic-1", subscriber1.append)
+
+        assert not subscriber1.messages

@@ -17,8 +17,7 @@ from contextlib import asynccontextmanager
 import aiomqtt
 from aiomqtt import MqttError, TLSParameters
 
-from .. import RoborockException
-from .session import MqttParams, MqttSession
+from .session import MqttParams, MqttSession, MqttSessionException
 
 _LOGGER = logging.getLogger(__name__)
 _MQTT_LOGGER = logging.getLogger(f"{__name__}.aiomqtt")
@@ -71,7 +70,14 @@ class RoborockMqttSession(MqttSession):
         start_future: asyncio.Future[None] = asyncio.Future()
         loop = asyncio.get_event_loop()
         self._background_task = loop.create_task(self._run_task(start_future))
-        await start_future
+        try:
+            await start_future
+        except MqttError as err:
+            raise MqttSessionException(f"Error starting MQTT session: {err}") from err
+        except Exception as err:
+            raise MqttSessionException(f"Unexpected error starting session: {err}") from err
+        else:
+            _LOGGER.debug("MQTT session started successfully")
 
     async def close(self) -> None:
         """Cancels the MQTT loop and shutdown the client library."""
@@ -102,14 +108,18 @@ class RoborockMqttSession(MqttSession):
 
                     await self._process_message_loop(client)
 
-            except asyncio.CancelledError:
-                _LOGGER.debug("MQTT loop was cancelled")
-                return
             except MqttError as err:
-                _LOGGER.info("MQTT error: %s", err)
                 if start_future:
+                    _LOGGER.info("MQTT error starting session: %s", err)
                     start_future.set_exception(err)
                     return
+                _LOGGER.info("MQTT error: %s", err)
+            except asyncio.CancelledError as err:
+                if start_future:
+                    _LOGGER.debug("MQTT loop was cancelled")
+                    start_future.set_exception(err)
+                _LOGGER.debug("MQTT loop was cancelled whiel starting")
+                return
             # Catch exceptions to avoid crashing the loop
             # and to allow the loop to retry.
             except Exception as err:
@@ -118,10 +128,11 @@ class RoborockMqttSession(MqttSession):
                 if "generator didn't stop" in str(err):
                     _LOGGER.debug("MQTT loop was cancelled")
                     return
-                _LOGGER.error("Uncaught error in MQTT session: %s", err)
                 if start_future:
+                    _LOGGER.error("Uncaught error starting MQTT session: %s", err)
                     start_future.set_exception(err)
                     return
+                _LOGGER.error("Uncaught error during MQTT session: %s", err)
 
             self._healthy = False
             _LOGGER.info("MQTT session disconnected, retrying in %s seconds", self._backoff.total_seconds())
@@ -150,6 +161,8 @@ class RoborockMqttSession(MqttSession):
                     self._client = client
                     for topic in self._listeners:
                         _LOGGER.debug("Re-establising subscription to topic %s", topic)
+                        # TODO: If this fails it will break the whole connection. Make
+                        # this retry again in the background with backoff.
                         await client.subscribe(topic)
 
                 yield client
@@ -158,10 +171,11 @@ class RoborockMqttSession(MqttSession):
                 self._client = None
 
     async def _process_message_loop(self, client: aiomqtt.Client) -> None:
-        _LOGGER.debug("Processing MQTT messages")
+        _LOGGER.debug("client=%s", client)
+        _LOGGER.debug("Processing MQTT messages: %s", client.messages)
         async for message in client.messages:
             _LOGGER.debug("Received message: %s", message)
-            for listener in self._listeners.get(message.topic.value) or []:
+            for listener in self._listeners.get(message.topic.value, []):
                 try:
                     listener(message.payload)
                 except asyncio.CancelledError:
@@ -185,7 +199,10 @@ class RoborockMqttSession(MqttSession):
         async with self._client_lock:
             if self._client:
                 _LOGGER.debug("Establishing subscription to topic %s", topic)
-                await self._client.subscribe(topic)
+                try:
+                    await self._client.subscribe(topic)
+                except MqttError as err:
+                    raise MqttSessionException(f"Error subscribing to topic: {err}") from err
             else:
                 _LOGGER.debug("Client not connected, will establish subscription later")
 
@@ -194,11 +211,15 @@ class RoborockMqttSession(MqttSession):
     async def publish(self, topic: str, message: bytes) -> None:
         """Publish a message on the topic."""
         _LOGGER.debug("Sending message to topic %s: %s", topic, message)
+        client: aiomqtt.Client
         async with self._client_lock:
-            if not self._client:
-                raise RoborockException("MQTT client not connected")
-            coro = self._client.publish(topic, message)
-        await coro
+            if self._client is None:
+                raise MqttSessionException("Could not publish message, MQTT client not connected")
+            client = self._client
+        try:
+            await client.publish(topic, message)
+        except MqttError as err:
+            raise MqttSessionException(f"Error publishing message: {err}") from err
 
 
 async def create_mqtt_session(params: MqttParams) -> MqttSession:

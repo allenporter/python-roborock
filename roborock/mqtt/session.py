@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from roborock.exceptions import RoborockException
+
 DEFAULT_TIMEOUT = 30.0
 
 
@@ -55,3 +57,7 @@ class MqttSession(ABC):
     @abstractmethod
     async def close(self) -> None:
         """Cancels the mqtt loop"""
+
+
+class MqttSessionException(RoborockException):
+    """ "Raised when there is an error communicating with MQTT."""
