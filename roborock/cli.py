@@ -112,7 +112,8 @@ async def session(ctx, duration: int):
         """Callback function to handle incoming MQTT messages."""
         # Decode the first 20 bytes of the message for display
         bytes = bytes[:20]
-        click.echo(f"Received message: b\"{bytes.decode('utf-8')}...\"")
+
+        click.echo(f"Received message: {bytes}...")
 
     unsubs = []
     for device in all_devices:
