@@ -33,8 +33,8 @@ from Crypto.Util.Padding import pad, unpad
 
 from roborock.containers import BroadcastMessage, RRiot
 from roborock.exceptions import RoborockException
-from roborock.roborock_message import RoborockMessage
 from roborock.mqtt.session import MqttParams
+from roborock.roborock_message import RoborockMessage
 
 _LOGGER = logging.getLogger(__name__)
 SALT = b"TXdfu$jyZ#TZHsg4"
@@ -364,13 +364,14 @@ MessageParser: _Parser = _Parser(_Messages, True)
 BroadcastParser: _Parser = _Parser(_BroadcastMessage, False)
 
 
-
 def create_mqtt_params(rriot: RRiot) -> MqttParams:
     """Return the MQTT parameters for this user."""
     url = urlparse(rriot.r.m)
     if not isinstance(url.hostname, str):
-        raise RoborockException("Url parsing returned an invalid hostname")
-    hashed_user =  md5hex(rriot.u + ":" + rriot.k)[2:10]
+        raise RoborockException(f"Url parsing '{rriot.r.m}' returned an invalid hostname")
+    if not url.port:
+        raise RoborockException(f"Url parsing '{rriot.r.m}' returned an invalid port")
+    hashed_user = md5hex(rriot.u + ":" + rriot.k)[2:10]
     hashed_password = md5hex(rriot.s + ":" + rriot.k)[16:]
     return MqttParams(
         host=str(url.hostname),

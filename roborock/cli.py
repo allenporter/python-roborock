@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from pathlib import Path
 from typing import Any
-import asyncio
 
 import click
 from pyshark import FileCapture  # type: ignore
@@ -13,10 +13,9 @@ from pyshark.packet.packet import Packet  # type: ignore
 
 from roborock import RoborockException
 from roborock.containers import DeviceData, HomeDataProduct, LoginData
+from roborock.mqtt.roborock_session import create_mqtt_session
 from roborock.protocol import MessageParser, create_mqtt_params
 from roborock.util import run_sync
-from roborock.mqtt.session import MqttParams, MqttSession
-from roborock.mqtt.roborock_session import create_mqtt_session
 from roborock.version_1_apis.roborock_local_client_v1 import RoborockLocalClientV1
 from roborock.version_1_apis.roborock_mqtt_client_v1 import RoborockMqttClientV1
 from roborock.web_api import RoborockApiClient
@@ -128,7 +127,6 @@ async def session(ctx, duration: int):
     for unsub in unsubs:
         unsub()
     await mqtt_session.close()
-
 
 
 async def _discover(ctx):
