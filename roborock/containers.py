@@ -9,7 +9,6 @@ from datetime import timezone
 from enum import Enum
 from typing import Any, NamedTuple, get_args, get_origin
 
-from .mqtt.session import MqttParams
 from .code_mappings import (
     RoborockCategory,
     RoborockCleanType,
