@@ -12,7 +12,8 @@ from pyshark.capture.live_capture import LiveCapture, UnknownInterfaceException 
 from pyshark.packet.packet import Packet  # type: ignore
 
 from roborock import RoborockException
-from roborock.containers import DeviceData, HomeDataProduct, LoginData
+from roborock.containers import DeviceData, HomeData, HomeDataProduct, LoginData
+from roborock.devices import device_manager
 from roborock.mqtt.roborock_session import create_mqtt_session
 from roborock.protocol import MessageParser, create_mqtt_params
 from roborock.util import run_sync
@@ -89,15 +90,16 @@ async def login(ctx, email, password):
 async def session(ctx, duration: int):
     context: RoborockContext = ctx.obj
     login_data = context.login_data()
+    home_data_api = device_manager.create_home_data_api(login_data.email, login_data.user_data)
 
-    # Discovery devices if not already available
-    if not login_data.home_data:
-        await _discover(ctx)
-        login_data = context.login_data()
-    if not login_data.home_data or not login_data.home_data.devices:
-        raise RoborockException("Unable to discover devices")
+    async def home_data_cache() -> HomeData:
+        if login_data.home_data is None:
+            login_data.home_data = await home_data_api()
+            context.update(login_data)
+        return login_data.home_data
 
-    all_devices = login_data.home_data.devices + login_data.home_data.received_devices
+    mgr = await device_manager.create_device_manager(login_data.user_data, home_data_cache)
+    all_devices = await mgr.get_devices()
     click.echo(f"Discovered devices: {', '.join([device.name for device in all_devices])}")
 
     rriot = login_data.user_data.rriot
