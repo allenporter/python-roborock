@@ -90,6 +90,39 @@ class RoborockApiClient:
         md5.update(self._device_identifier.encode())
         return base64.b64encode(md5.digest()).decode()
 
+    def _process_extra_hawk_values(self, values: dict | None) -> str:
+        if values is None:
+            return ""
+        else:
+            sorted_keys = sorted(values.keys())
+            result = []
+            for key in sorted_keys:
+                value = values.get(key)
+                result.append(f"{key}={value}")
+            return hashlib.md5("&".join(result).encode()).hexdigest()
+
+    def _get_hawk_authentication(
+        self, rriot: RRiot, url: str, formdata: dict | None = None, params: dict | None = None
+    ) -> str:
+        timestamp = math.floor(time.time())
+        nonce = secrets.token_urlsafe(6)
+        formdata_str = self._process_extra_hawk_values(formdata)
+        params_str = self._process_extra_hawk_values(params)
+
+        prestr = ":".join(
+            [
+                rriot.u,
+                rriot.s,
+                nonce,
+                str(timestamp),
+                hashlib.md5(url.encode()).hexdigest(),
+                params_str,
+                formdata_str,
+            ]
+        )
+        mac = base64.b64encode(hmac.new(rriot.h.encode(), prestr.encode(), hashlib.sha256).digest()).decode()
+        return f'Hawk id="{rriot.u}",s="{rriot.s}",ts="{timestamp}",nonce="{nonce}",mac="{mac}"'
+
     async def nc_prepare(self, user_data: UserData, timezone: str) -> dict:
         """This gets a few critical parameters for adding a device to your account."""
         if (
@@ -111,7 +144,7 @@ class RoborockApiClient:
             "post",
             "/nc/prepare",
             headers={
-                "Authorization": _get_hawk_authentication(
+                "Authorization": self._get_hawk_authentication(
                     user_data.rriot, "/nc/prepare", {"hid": hid, "tzid": timezone}
                 ),
             },
@@ -144,7 +177,7 @@ class RoborockApiClient:
             "GET",
             "/user/devices/newadd",
             headers={
-                "Authorization": _get_hawk_authentication(
+                "Authorization": self._get_hawk_authentication(
                     user_data.rriot, "/user/devices/newadd", params={"s": s, "t": t}
                 ),
             },
@@ -304,7 +337,7 @@ class RoborockApiClient:
             rriot.r.a,
             self.session,
             {
-                "Authorization": _get_hawk_authentication(rriot, f"/user/homes/{str(home_id)}"),
+                "Authorization": self._get_hawk_authentication(rriot, f"/user/homes/{str(home_id)}"),
             },
         )
         home_response = await home_request.request("get", "/user/homes/" + str(home_id))
@@ -333,7 +366,7 @@ class RoborockApiClient:
             rriot.r.a,
             self.session,
             {
-                "Authorization": _get_hawk_authentication(rriot, "/v2/user/homes/" + str(home_id)),
+                "Authorization": self._get_hawk_authentication(rriot, "/v2/user/homes/" + str(home_id)),
             },
         )
         home_response = await home_request.request("get", "/v2/user/homes/" + str(home_id))
@@ -360,7 +393,7 @@ class RoborockApiClient:
             rriot.r.a,
             self.session,
             {
-                "Authorization": _get_hawk_authentication(rriot, "/v3/user/homes/" + str(home_id)),
+                "Authorization": self._get_hawk_authentication(rriot, "/v3/user/homes/" + str(home_id)),
             },
         )
         home_response = await home_request.request("get", "/v3/user/homes/" + str(home_id))
@@ -383,7 +416,7 @@ class RoborockApiClient:
             rriot.r.a,
             self.session,
             {
-                "Authorization": _get_hawk_authentication(rriot, "/v2/user/homes/" + str(home_id)),
+                "Authorization": self._get_hawk_authentication(rriot, "/v2/user/homes/" + str(home_id)),
             },
         )
         room_response = await room_request.request("get", f"/user/homes/{str(home_id)}/rooms" + str(home_id))
@@ -408,7 +441,7 @@ class RoborockApiClient:
             rriot.r.a,
             self.session,
             {
-                "Authorization": _get_hawk_authentication(rriot, f"/user/scene/device/{str(device_id)}"),
+                "Authorization": self._get_hawk_authentication(rriot, f"/user/scene/device/{str(device_id)}"),
             },
         )
         scenes_response = await scenes_request.request("get", f"/user/scene/device/{str(device_id)}")
@@ -430,7 +463,7 @@ class RoborockApiClient:
             rriot.r.a,
             self.session,
             {
-                "Authorization": _get_hawk_authentication(rriot, f"/user/scene/{str(scene_id)}/execute"),
+                "Authorization": self._get_hawk_authentication(rriot, f"/user/scene/{str(scene_id)}/execute"),
             },
         )
         execute_scene_response = await execute_scene_request.request("POST", f"/user/scene/{str(scene_id)}/execute")
@@ -513,36 +546,3 @@ class PreparedRequest:
         finally:
             if close_session:
                 await session.close()
-
-
-def _process_extra_hawk_values(values: dict | None) -> str:
-    if values is None:
-        return ""
-    else:
-        sorted_keys = sorted(values.keys())
-        result = []
-        for key in sorted_keys:
-            value = values.get(key)
-            result.append(f"{key}={value}")
-        return hashlib.md5("&".join(result).encode()).hexdigest()
-
-
-def _get_hawk_authentication(rriot: RRiot, url: str, formdata: dict | None = None, params: dict | None = None) -> str:
-    timestamp = math.floor(time.time())
-    nonce = secrets.token_urlsafe(6)
-    formdata_str = _process_extra_hawk_values(formdata)
-    params_str = _process_extra_hawk_values(params)
-
-    prestr = ":".join(
-        [
-            rriot.u,
-            rriot.s,
-            nonce,
-            str(timestamp),
-            hashlib.md5(url.encode()).hexdigest(),
-            params_str,
-            formdata_str,
-        ]
-    )
-    mac = base64.b64encode(hmac.new(rriot.h.encode(), prestr.encode(), hashlib.sha256).digest()).decode()
-    return f'Hawk id="{rriot.u}",s="{rriot.s}",ts="{timestamp}",nonce="{nonce}",mac="{mac}"'
