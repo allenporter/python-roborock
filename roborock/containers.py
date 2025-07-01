@@ -23,6 +23,7 @@ from .code_mappings import (
     RoborockFanSpeedQ7Max,
     RoborockFanSpeedQRevoCurv,
     RoborockFanSpeedQRevoMaster,
+    RoborockFanSpeedQRevoMaxV,
     RoborockFanSpeedS6Pure,
     RoborockFanSpeedS7,
     RoborockFanSpeedS7MaxV,
@@ -34,6 +35,7 @@ from .code_mappings import (
     RoborockMopIntensityQ7Max,
     RoborockMopIntensityQRevoCurv,
     RoborockMopIntensityQRevoMaster,
+    RoborockMopIntensityQRevoMaxV,
     RoborockMopIntensityS5Max,
     RoborockMopIntensityS6MaxV,
     RoborockMopIntensityS7,
@@ -41,6 +43,7 @@ from .code_mappings import (
     RoborockMopModeCode,
     RoborockMopModeQRevoCurv,
     RoborockMopModeQRevoMaster,
+    RoborockMopModeQRevoMaxV,
     RoborockMopModeS7,
     RoborockMopModeS8MaxVUltra,
     RoborockMopModeS8ProUltra,
@@ -616,6 +619,13 @@ class QRevoCurvStatus(Status):
 
 
 @dataclass
+class QRevoMaxVStatus(Status):
+    fan_power: RoborockFanSpeedQRevoMaxV | None = None
+    water_box_mode: RoborockMopIntensityQRevoMaxV | None = None
+    mop_mode: RoborockMopModeQRevoMaxV | None = None
+
+
+@dataclass
 class S6MaxVStatus(Status):
     fan_power: RoborockFanSpeedS7MaxV | None = None
     water_box_mode: RoborockMopIntensityS6MaxV | None = None
@@ -688,7 +698,7 @@ ModelStatus: dict[str, type[Status]] = {
     # but i am currently unable to do my typical reverse engineering/ get any data from users on this,
     # so this will be here in the mean time.
     ROBOROCK_QREVO_S: P10Status,
-    ROBOROCK_QREVO_MAXV: P10Status,
+    ROBOROCK_QREVO_MAXV: QRevoMaxVStatus,
     ROBOROCK_QREVO_PRO: P10Status,
     ROBOROCK_S8_MAXV_ULTRA: S8MaxvUltraStatus,
 }
