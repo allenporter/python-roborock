@@ -41,9 +41,11 @@ async def test_with_device() -> None:
     """Test the DeviceManager created with devices returned from the API."""
     device_manager = await create_device_manager(USER_DATA, mock_home_data)
     devices = await device_manager.get_devices()
-    assert [(device.duid, device.name, device.device_version) for device in devices] == [
-        ("abc123", "Roborock S7 MaxV", DeviceVersion.V1),
-    ]
+    assert len(devices) == 1
+    device = devices[0]
+    assert device.duid == "abc123"
+    assert device.name == "Roborock S7 MaxV"
+    assert device.device_version == DeviceVersion.V1
 
     device = await device_manager.get_device("abc123")
     assert device is not None

@@ -53,9 +53,9 @@ class RoborockDevice:
         and used as a placeholder for upcoming functionality for devices that will behave
         differently based on the version and capabilities.
         """
-        if self._device_info.pv == "1.0":
+        if self._device_info.pv == DeviceVersion.V1.value:
             return DeviceVersion.V1
-        elif self._device_info.pv in ["A1", "A01"]:
+        elif self._device_info.pv == DeviceVersion.A01.value:
             return DeviceVersion.A01
         _LOGGER.warning(
             "Unknown device version %s for device %s, using default UNKNOWN",
