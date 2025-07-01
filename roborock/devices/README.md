@@ -7,7 +7,9 @@ This page documents the full lifecycle of device discovery across Cloud and Netw
 ### Login
 
 - Login can happen with either email and password or email and sending a code. We
-  currently prefer email with sending a code.
+  currently prefer email with sending a code -- however the roborock no longer
+  supports this method of login. In the future we may want to migrate to password
+  if this login method is no longer supported.
 - The Login API provides a `userData` object with information on connecting to the cloud APIs
 - This `rriot` data contains per-session information, unique each time you login.
   - This contains information used to connect to MQTT
@@ -15,7 +17,9 @@ This page documents the full lifecycle of device discovery across Cloud and Netw
 
 ## Home Data
 
-The `HomeData` includes information about the various devices in the home. We use `v3`.
+The `HomeData` includes information about the various devices in the home. We use `v3`
+and it is notable that if devices don't show up in the `home_data` response it is likely
+that a newer version of the API should be used.
 
 - `products`: This is a list of all of the products you have on your account. These objects are always the same (i.e. a s7 maxv is always the exact same.)
   - It only shows the products for devices available on your account
