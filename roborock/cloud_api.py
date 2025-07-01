@@ -12,7 +12,13 @@ import paho.mqtt.client as mqtt
 from .api import KEEPALIVE, RoborockClient
 from .containers import DeviceData, UserData
 from .exceptions import RoborockException, VacuumError
-from .protocol import Decoder, Encoder, MessageParser, create_mqtt_decoder, create_mqtt_encoder, create_mqtt_params, md5hex
+from .protocol import (
+    Decoder,
+    Encoder,
+    create_mqtt_decoder,
+    create_mqtt_encoder,
+    create_mqtt_params,
+)
 from .roborock_future import RoborockFuture
 
 _LOGGER = logging.getLogger(__name__)
