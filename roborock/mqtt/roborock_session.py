@@ -160,7 +160,7 @@ class RoborockMqttSession(MqttSession):
                 async with self._client_lock:
                     self._client = client
                     for topic in self._listeners:
-                        _LOGGER.debug("Re-establising subscription to topic %s", topic)
+                        _LOGGER.debug("Re-establishing subscription to topic %s", topic)
                         # TODO: If this fails it will break the whole connection. Make
                         # this retry again in the background with backoff.
                         await client.subscribe(topic)
