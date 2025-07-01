@@ -12,9 +12,9 @@ from pyshark.capture.live_capture import LiveCapture, UnknownInterfaceException 
 from pyshark.packet.packet import Packet  # type: ignore
 
 from roborock import RoborockException
-from roborock.containers import DeviceData, HomeDataProduct, LoginData
-from roborock.mqtt.roborock_session import create_mqtt_session
-from roborock.protocol import MessageParser, create_mqtt_params
+from roborock.containers import DeviceData, HomeData, HomeDataProduct, LoginData
+from roborock.devices.device_manager import create_device_manager, create_home_data_api
+from roborock.protocol import MessageParser
 from roborock.util import run_sync
 from roborock.version_1_apis.roborock_local_client_v1 import RoborockLocalClientV1
 from roborock.version_1_apis.roborock_mqtt_client_v1 import RoborockMqttClientV1
@@ -101,44 +101,25 @@ async def session(ctx, duration: int):
     context: RoborockContext = ctx.obj
     login_data = context.login_data()
 
-    # Discovery devices if not already available
-    if not login_data.home_data:
-        await _discover(ctx)
-        login_data = context.login_data()
-    if not login_data.home_data or not login_data.home_data.devices:
-        raise RoborockException("Unable to discover devices")
+    home_data_api = create_home_data_api(login_data.email, login_data.user_data)
 
-    all_devices = login_data.home_data.devices + login_data.home_data.received_devices
-    click.echo(f"Discovered devices: {', '.join([device.name for device in all_devices])}")
+    async def home_data_cache() -> HomeData:
+        if login_data.home_data is None:
+            login_data.home_data = await home_data_api()
+            context.update(login_data)
+        return login_data.home_data
 
-    rriot = login_data.user_data.rriot
-    params = create_mqtt_params(rriot)
+    # Create device manager
+    device_manager = await create_device_manager(login_data.user_data, home_data_cache)
 
-    mqtt_session = await create_mqtt_session(params)
-    click.echo("Starting MQTT session...")
-    if not mqtt_session.connected:
-        raise RoborockException("Failed to connect to MQTT broker")
-
-    def on_message(bytes: bytes):
-        """Callback function to handle incoming MQTT messages."""
-        # Decode the first 20 bytes of the message for display
-        bytes = bytes[:20]
-
-        click.echo(f"Received message: {bytes}...")
-
-    unsubs = []
-    for device in all_devices:
-        device_topic = f"rr/m/o/{rriot.u}/{params.username}/{device.duid}"
-        unsub = await mqtt_session.subscribe(device_topic, on_message)
-        unsubs.append(unsub)
+    devices = await device_manager.get_devices()
+    click.echo(f"Discovered devices: {', '.join([device.name for device in devices])}")
 
     click.echo("MQTT session started. Listening for messages...")
     await asyncio.sleep(duration)
 
-    click.echo("Stopping MQTT session...")
-    for unsub in unsubs:
-        unsub()
-    await mqtt_session.close()
+    # Close the device manager (this will close all devices and MQTT session)
+    await device_manager.close()
 
 
 async def _discover(ctx):

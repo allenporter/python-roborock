@@ -10,7 +10,12 @@ from roborock.containers import (
     UserData,
 )
 from roborock.devices.device import RoborockDevice
+from roborock.mqtt.roborock_session import create_mqtt_session
+from roborock.mqtt.session import MqttSession
+from roborock.protocol import create_mqtt_params
 from roborock.web_api import RoborockApiClient
+
+from .mqtt_channel import MqttChannel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,11 +39,16 @@ class DeviceManager:
         self,
         home_data_api: HomeDataApi,
         device_creator: DeviceCreator,
+        mqtt_session: MqttSession,
     ) -> None:
-        """Initialize the DeviceManager with user data and optional cache storage."""
+        """Initialize the DeviceManager with user data and optional cache storage.
+
+        This takes ownership of the MQTT session and will close it when the manager is closed.
+        """
         self._home_data_api = home_data_api
         self._device_creator = device_creator
         self._devices: dict[str, RoborockDevice] = {}
+        self._mqtt_session = mqtt_session
 
     async def discover_devices(self) -> list[RoborockDevice]:
         """Discover all devices for the logged-in user."""
@@ -46,9 +56,15 @@ class DeviceManager:
         device_products = home_data.device_products
         _LOGGER.debug("Discovered %d devices %s", len(device_products), home_data)
 
-        self._devices = {
-            duid: self._device_creator(device, product) for duid, (device, product) in device_products.items()
-        }
+        new_devices = {}
+        for duid, (device, product) in device_products.items():
+            if duid in self._devices:
+                continue
+            new_device = self._device_creator(device, product)
+            await new_device.connect()
+            new_devices[duid] = new_device
+
+        self._devices.update(new_devices)
         return list(self._devices.values())
 
     async def get_device(self, duid: str) -> RoborockDevice | None:
@@ -59,6 +75,14 @@ class DeviceManager:
         """Get all discovered devices."""
         return list(self._devices.values())
 
+    async def close(self) -> None:
+        """Close all MQTT connections and clean up resources."""
+        for device in self._devices.values():
+            await device.close()
+        self._devices.clear()
+        if self._mqtt_session:
+            await self._mqtt_session.close()
+
 
 def create_home_data_api(email: str, user_data: UserData) -> HomeDataApi:
     """Create a home data API wrapper.
@@ -67,7 +91,9 @@ def create_home_data_api(email: str, user_data: UserData) -> HomeDataApi:
     home data for the user.
     """
 
-    client = RoborockApiClient(email, user_data)
+    # Note: This will auto discover the API base URL. This can be improved
+    # by caching this next to `UserData` if needed to avoid unnecessary API calls.
+    client = RoborockApiClient(email)
 
     async def home_data_api() -> HomeData:
         return await client.get_home_data(user_data)
@@ -83,9 +109,13 @@ async def create_device_manager(user_data: UserData, home_data_api: HomeDataApi)
     include caching or other optimizations.
     """
 
-    def device_creator(device: HomeDataDevice, product: HomeDataProduct) -> RoborockDevice:
-        return RoborockDevice(user_data, device, product)
+    mqtt_params = create_mqtt_params(user_data.rriot)
+    mqtt_session = await create_mqtt_session(mqtt_params)
 
-    manager = DeviceManager(home_data_api, device_creator)
+    def device_creator(device: HomeDataDevice, product: HomeDataProduct) -> RoborockDevice:
+        mqtt_channel = MqttChannel(mqtt_session, device.duid, user_data.rriot, mqtt_params)
+        return RoborockDevice(user_data, device, product, mqtt_channel)
+
+    manager = DeviceManager(home_data_api, device_creator, mqtt_session=mqtt_session)
     await manager.discover_devices()
     return manager
