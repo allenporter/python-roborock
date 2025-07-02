@@ -34,10 +34,7 @@ class MqttChannel:
         """Subscribe to the device's response topic.
 
         The callback will be called with the message payload when a message is received.
-        If already subscribed, raises ValueError.
 
         Returns a callable that can be used to unsubscribe from the topic.
         """
-        if self._unsub:
-            raise ValueError("Already subscribed to the response topic")
         return await self._mqtt_session.subscribe(self._subscribe_topic, callback)
