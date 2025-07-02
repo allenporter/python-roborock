@@ -11,7 +11,7 @@ from roborock.containers import HomeData, UserData
 from roborock.devices.mqtt_channel import MqttChannel
 from roborock.exceptions import RoborockException
 from roborock.mqtt.session import MqttParams
-from roborock.protocol import Decoder, Encoder, create_mqtt_decoder, create_mqtt_encoder
+from roborock.protocol import create_mqtt_decoder, create_mqtt_encoder
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 
 from .. import mock_data
@@ -144,7 +144,9 @@ async def test_send_command_success(
 
 
 async def test_send_command_without_request_id(
-    mqtt_session: Mock, mqtt_channel: MqttChannel, mqtt_message_handler: Callable[[bytes], None],
+    mqtt_session: Mock,
+    mqtt_channel: MqttChannel,
+    mqtt_message_handler: Callable[[bytes], None],
 ) -> None:
     """Test sending command without request ID raises exception."""
     # Create a message without request ID
@@ -155,22 +157,6 @@ async def test_send_command_without_request_id(
 
     with pytest.raises(RoborockException, match="Message must have a request_id"):
         await mqtt_channel.send_command(test_message)
-
-
-async def test_handle_messages_no_waiting_handler(
-    mqtt_session: Mock,
-    mqtt_channel: MqttChannel,
-    mqtt_message_handler: Callable[[bytes], None],
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """Test handling messages when no handler is waiting."""
-    # Simulate receiving the response message via MQTT
-    mqtt_message_handler(ENCODER(TEST_REQUEST))
-    await asyncio.sleep(0.01)  # yield
-
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "WARNING"
-    assert "Received message with no waiting handler: request_id=12345" in caplog.records[0].message
 
 
 async def test_concurrent_commands(
@@ -204,6 +190,31 @@ async def test_concurrent_commands(
     assert not caplog.records
 
 
+async def test_concurrent_commands_same_request_id(
+    mqtt_session: Mock,
+    mqtt_channel: MqttChannel,
+    mqtt_message_handler: Callable[[bytes], None],
+) -> None:
+    """Test that we are not allowed to send two commands with the same request id."""
+
+    # Create multiple test messages with different request IDs
+    # Start both commands concurrently
+    task1 = asyncio.create_task(mqtt_channel.send_command(TEST_REQUEST, timeout=5.0))
+    task2 = asyncio.create_task(mqtt_channel.send_command(TEST_REQUEST, timeout=5.0))
+    await asyncio.sleep(0.01)  # yield
+
+    # Create response
+    mqtt_message_handler(ENCODER(TEST_RESPONSE))
+    await asyncio.sleep(0.01)  # yield
+
+    # Both should complete successfully
+    result1 = await task1
+    assert result1 == TEST_RESPONSE
+
+    with pytest.raises(RoborockException, match="Request ID 12345 already pending, cannot send command"):
+        await task2
+
+
 async def test_handle_completed_future(
     mqtt_session: Mock,
     mqtt_channel: MqttChannel,
@@ -221,13 +232,9 @@ async def test_handle_completed_future(
     mqtt_message_handler(ENCODER(TEST_RESPONSE))
     await asyncio.sleep(0.01)  # yield
 
-    # Task completes and second message is dropped with a warning
+    # Task completes and second message is not associated with a waiting handler
     result = await task
     assert result == TEST_RESPONSE
-
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "WARNING"
-    assert "Received message with no waiting handler: request_id=12345" in caplog.records[0].message
 
 
 async def test_subscribe_callback_with_rpc_response(
@@ -236,24 +243,25 @@ async def test_subscribe_callback_with_rpc_response(
     received_messages: list[RoborockMessage],
     mqtt_message_handler: Callable[[bytes], None],
 ) -> None:
-    """Test that subscribe callback is called along with RPC handling."""
+    """Test that subscribe callback is called independent of RPC handling."""
     # Send request
     task = asyncio.create_task(mqtt_channel.send_command(TEST_REQUEST, timeout=5.0))
     await asyncio.sleep(0.01)  # yield
 
     assert not received_messages
 
-    # Send the response
+    # Send the response for this command and an unrelated command
     mqtt_message_handler(ENCODER(TEST_RESPONSE))
     await asyncio.sleep(0.01)  # yield
+    mqtt_message_handler(ENCODER(TEST_RESPONSE2))
+    await asyncio.sleep(0.01)  # yield
 
-    # Task completes and second message is dropped with a warning
+    # Task completes
     result = await task
     assert result == TEST_RESPONSE
 
     # The subscribe callback should have been called with the same response
-    assert len(received_messages) == 1
-    assert received_messages[0] == TEST_RESPONSE
+    assert received_messages == [TEST_RESPONSE, TEST_RESPONSE2]
 
 
 async def test_message_decode_error(

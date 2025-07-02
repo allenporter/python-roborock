@@ -76,12 +76,9 @@ class MqttChannel:
             return
         async with self._queue_lock:
             if (future := self._waiting_queue.pop(request_id, None)) is not None:
-                if not future.done():
-                    future.set_result(message)
-                else:
-                    _LOGGER.warning("Received message for completed future: request_id=%s", request_id)
+                future.set_result(message)
             else:
-                _LOGGER.warning("Received message with no waiting handler: request_id=%s", request_id)
+                _LOGGER.debug("Received message with no waiting handler: request_id=%s", request_id)
 
     async def send_command(self, message: RoborockMessage, timeout: float = 10.0) -> RoborockMessage:
         """Send a command message and wait for the response message.
@@ -97,6 +94,8 @@ class MqttChannel:
 
         future: asyncio.Future[RoborockMessage] = asyncio.Future()
         async with self._queue_lock:
+            if request_id in self._waiting_queue:
+                raise RoborockException(f"Request ID {request_id} already pending, cannot send command")
             self._waiting_queue[request_id] = future
 
         try:
