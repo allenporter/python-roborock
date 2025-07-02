@@ -19,7 +19,6 @@ class MqttChannel:
         self._duid = duid
         self._rriot = rriot
         self._mqtt_params = mqtt_params
-        self._unsub: Callable[[], None] | None = None
 
     @property
     def _publish_topic(self) -> str:
