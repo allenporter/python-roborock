@@ -60,12 +60,15 @@ async def test_with_device() -> None:
     assert device.name == "Roborock S7 MaxV"
     assert device.device_version == DeviceVersion.V1
 
+    await device_manager.close()
+
 
 async def test_get_non_existent_device() -> None:
     """Test getting a non-existent device."""
     device_manager = await create_device_manager(USER_DATA, mock_home_data)
     device = await device_manager.get_device("non_existent_duid")
     assert device is None
+    await device_manager.close()
 
 
 async def test_home_data_api_exception() -> None:
