@@ -10,6 +10,7 @@ from collections.abc import Callable
 from functools import cached_property
 
 from roborock.containers import HomeDataDevice, HomeDataProduct, UserData
+from roborock.roborock_message import RoborockMessage
 
 from .mqtt_channel import MqttChannel
 
@@ -99,9 +100,9 @@ class RoborockDevice:
             self._unsub()
             self._unsub = None
 
-    def _on_mqtt_message(self, message: bytes) -> None:
+    def _on_mqtt_message(self, message: RoborockMessage) -> None:
         """Handle incoming MQTT messages from the device.
 
         This method should be overridden in subclasses to handle specific device messages.
         """
-        _LOGGER.debug("Received message from device %s: %s", self.duid, message[:50])  # Log first 50 bytes for brevity
+        _LOGGER.debug("Received message from device %s: %s", self.duid, message)

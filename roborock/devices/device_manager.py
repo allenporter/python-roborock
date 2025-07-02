@@ -113,7 +113,7 @@ async def create_device_manager(user_data: UserData, home_data_api: HomeDataApi)
     mqtt_session = await create_mqtt_session(mqtt_params)
 
     def device_creator(device: HomeDataDevice, product: HomeDataProduct) -> RoborockDevice:
-        mqtt_channel = MqttChannel(mqtt_session, device.duid, user_data.rriot, mqtt_params)
+        mqtt_channel = MqttChannel(mqtt_session, device.duid, device.local_key, user_data.rriot, mqtt_params)
         return RoborockDevice(user_data, device, product, mqtt_channel)
 
     manager = DeviceManager(home_data_api, device_creator, mqtt_session=mqtt_session)
