@@ -31,14 +31,14 @@ class MqttChannel:
         """Topic to receive responses from the device."""
         return f"rr/m/o/{self._rriot.u}/{self._mqtt_params.username}/{self._duid}"
 
-    async def subscribe(self, callback: Callable[[bytes], None]) -> None:
-        """Subscribe to the device's response topic."""
+    async def subscribe(self, callback: Callable[[bytes], None]) -> Callable[[], None]:
+        """Subscribe to the device's response topic.
+
+        The callback will be called with the message payload when a message is received.
+        If already subscribed, raises ValueError.
+
+        Returns a callable that can be used to unsubscribe from the topic.
+        """
         if self._unsub:
             raise ValueError("Already subscribed to the response topic")
-        self._unsub = await self._mqtt_session.subscribe(self._subscribe_topic, callback)
-
-    async def close(self) -> None:
-        """Close the MQTT subscription."""
-        if self._unsub:
-            self._unsub()
-            self._unsub = None
+        return await self._mqtt_session.subscribe(self._subscribe_topic, callback)

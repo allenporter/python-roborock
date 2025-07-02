@@ -6,6 +6,7 @@ until the API is stable.
 
 import enum
 import logging
+from collections.abc import Callable
 from functools import cached_property
 
 from roborock.containers import HomeDataDevice, HomeDataProduct, UserData
@@ -40,13 +41,16 @@ class RoborockDevice:
     ) -> None:
         """Initialize the RoborockDevice.
 
-        The device takes ownership of the MQTT channel for communication with the device
-        and will close it when the device is closed.
+        The device takes ownership of the MQTT channel for communication with the device.
+        Use `connect()` to establish the connection, which will set up the MQTT channel
+        for receiving messages from the device. Use `close()` to unsubscribe from the MQTT
+        channel.
         """
         self._user_data = user_data
         self._device_info = device_info
         self._product_info = product_info
         self._mqtt_channel = mqtt_channel
+        self._unsub: Callable[[], None] | None = None
 
     @property
     def duid(self) -> str:
@@ -82,14 +86,18 @@ class RoborockDevice:
 
         This method will set up the MQTT channel for communication with the device.
         """
-        await self._mqtt_channel.subscribe(self._on_mqtt_message)
+        if self._unsub:
+            raise ValueError("Already connected to the device")
+        self._unsub = await self._mqtt_channel.subscribe(self._on_mqtt_message)
 
     async def close(self) -> None:
         """Close the MQTT connection to the device.
 
         This method will unsubscribe from the MQTT channel and clean up resources.
         """
-        await self._mqtt_channel.close()
+        if self._unsub:
+            self._unsub()
+            self._unsub = None
 
     def _on_mqtt_message(self, message: bytes) -> None:
         """Handle incoming MQTT messages from the device.

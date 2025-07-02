@@ -1,5 +1,6 @@
 """Tests for the DeviceManager class."""
 
+from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
@@ -12,6 +13,13 @@ from roborock.exceptions import RoborockException
 from .. import mock_data
 
 USER_DATA = UserData.from_dict(mock_data.USER_DATA)
+
+
+@pytest.fixture(autouse=True)
+def setup_mqtt_session() -> Generator[None, None, None]:
+    """Fixture to set up the MQTT session for the tests."""
+    with patch("roborock.devices.device_manager.create_mqtt_session"):
+        yield
 
 
 async def home_home_data_no_devices() -> HomeData:
