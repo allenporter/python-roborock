@@ -32,7 +32,6 @@ class MqttChannel:
         self._waiting_queue: dict[int, asyncio.Future[RoborockMessage]] = {}
         self._decoder = create_mqtt_decoder(local_key)
         self._encoder = create_mqtt_encoder(local_key)
-        # Use a regular lock since we need to access from sync callback
         self._queue_lock = asyncio.Lock()
 
     @property
@@ -61,6 +60,7 @@ class MqttChannel:
                 _LOGGER.warning("Failed to decode MQTT message: %s", payload)
                 return
             for message in messages:
+                _LOGGER.debug("Received message: %s", message)
                 asyncio.create_task(self._resolve_future_with_lock(message))
                 try:
                     callback(message)
