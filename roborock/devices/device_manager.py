@@ -1,5 +1,6 @@
 """Module for discovering Roborock devices."""
 
+import asyncio
 import logging
 from collections.abc import Awaitable, Callable
 
@@ -56,6 +57,7 @@ class DeviceManager:
         device_products = home_data.device_products
         _LOGGER.debug("Discovered %d devices %s", len(device_products), home_data)
 
+        # These are connected serially to avoid overwhelming the MQTT broker
         new_devices = {}
         for duid, (device, product) in device_products.items():
             if duid in self._devices:
@@ -77,11 +79,10 @@ class DeviceManager:
 
     async def close(self) -> None:
         """Close all MQTT connections and clean up resources."""
-        for device in self._devices.values():
-            await device.close()
+        tasks = [device.close() for device in self._devices.values()]
         self._devices.clear()
-        if self._mqtt_session:
-            await self._mqtt_session.close()
+        tasks.append(self._mqtt_session.close())
+        await asyncio.gather(*tasks)
 
 
 def create_home_data_api(email: str, user_data: UserData) -> HomeDataApi:
