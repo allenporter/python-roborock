@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import logging
 from collections.abc import Callable, Generator
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -80,6 +81,15 @@ async def setup_message_handler(mqtt_session: Mock, mqtt_channel: MqttChannel) -
     subscribe_call_args = mqtt_session.subscribe.call_args
     message_handler = subscribe_call_args[0][1]
     return message_handler
+
+
+@pytest.fixture
+def warning_caplog(
+    caplog: pytest.LogCaptureFixture,
+) -> Generator[pytest.LogCaptureFixture]:
+    """Fixture to capture warning messages."""
+    caplog.set_level(logging.WARNING)
+    yield caplog
 
 
 async def home_home_data_no_devices() -> HomeData:
@@ -163,7 +173,7 @@ async def test_concurrent_commands(
     mqtt_session: Mock,
     mqtt_channel: MqttChannel,
     mqtt_message_handler: Callable[[bytes], None],
-    caplog: pytest.LogCaptureFixture,
+    warning_caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Test handling multiple concurrent RPC commands."""
 
@@ -187,7 +197,7 @@ async def test_concurrent_commands(
     assert result1 == TEST_RESPONSE
     assert result2 == TEST_RESPONSE2
 
-    assert not caplog.records
+    assert not warning_caplog.records
 
 
 async def test_concurrent_commands_same_request_id(
