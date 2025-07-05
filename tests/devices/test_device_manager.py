@@ -1,7 +1,7 @@
 """Tests for the DeviceManager class."""
 
 from collections.abc import Generator
-from unittest.mock import patch, Mock, AsyncMock
+from unittest.mock import Mock, patch
 
 import pytest
 
