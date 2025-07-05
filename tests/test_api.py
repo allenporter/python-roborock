@@ -211,7 +211,7 @@ async def test_disconnect_failure_response(
     # further messages and there is no parsing error, and no failed log messages.
     response_queue.put(mqtt_packet.gen_disconnect(reason_code=1))
     assert connected_mqtt_client.is_connected()
-    with caplog.at_level(logging.ERROR, logger="homeassistant.components.nest"):
+    with caplog.at_level(logging.ERROR):
         await connected_mqtt_client.async_disconnect()
         assert not connected_mqtt_client.is_connected()
         assert not caplog.records
