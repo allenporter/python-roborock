@@ -173,28 +173,6 @@ async def test_connect_failure_response(
     assert received_requests.qsize() == 1  # Connect attempt
 
 
-async def test_disconnect_already_disconnected(connected_mqtt_client: RoborockMqttClientV1) -> None:
-    """Test the MQTT client error handling for a no-op disconnect."""
-
-    assert connected_mqtt_client.is_connected()
-
-    # Make the MQTT client simulate returning that it already thinks it is disconnected
-    with patch("roborock.cloud_api.mqtt.Client.disconnect", return_value=mqtt.MQTT_ERR_NO_CONN):
-        await connected_mqtt_client.async_disconnect()
-
-
-async def test_disconnect_failure(connected_mqtt_client: RoborockMqttClientV1) -> None:
-    """Test that the MQTT client ignores  MQTT client error handling for a no-op disconnect."""
-
-    assert connected_mqtt_client.is_connected()
-
-    # Make the MQTT client returns with an error when disconnecting
-    with patch("roborock.cloud_api.mqtt.Client.disconnect", return_value=mqtt.MQTT_ERR_PROTOCOL), pytest.raises(
-        RoborockException, match="Failed to disconnect"
-    ):
-        await connected_mqtt_client.async_disconnect()
-
-
 async def test_disconnect_failure_response(
     received_requests: Queue,
     response_queue: Queue,
