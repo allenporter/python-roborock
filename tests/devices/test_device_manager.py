@@ -1,7 +1,7 @@
 """Tests for the DeviceManager class."""
 
 from collections.abc import Generator
-from unittest.mock import patch
+from unittest.mock import patch, Mock, AsyncMock
 
 import pytest
 
@@ -16,10 +16,12 @@ USER_DATA = UserData.from_dict(mock_data.USER_DATA)
 
 
 @pytest.fixture(autouse=True)
-def setup_mqtt_session() -> Generator[None, None, None]:
+def setup_mqtt_session() -> Generator[Mock, None, None]:
     """Fixture to set up the MQTT session for the tests."""
-    with patch("roborock.devices.device_manager.create_mqtt_session"):
-        yield
+    with patch("roborock.devices.device_manager.create_mqtt_session") as mock_create_session:
+        mock_unsub = Mock()
+        mock_create_session.return_value.subscribe.return_value = mock_unsub
+        yield mock_create_session
 
 
 async def home_home_data_no_devices() -> HomeData:
