@@ -50,7 +50,7 @@ jobs:
         run: poetry install
         shell: bash
       - name: Test with Pytest
-        run: poetry run pytest --log-level=DEBUG -vv -s
+        run: poetry run pytest --log-cli-level=DEBUG -vv -s
         shell: bash
   release:
     runs-on: ubuntu-latest
