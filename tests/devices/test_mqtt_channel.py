@@ -86,10 +86,10 @@ async def setup_message_handler(mqtt_session: Mock, mqtt_channel: MqttChannel) -
 @pytest.fixture
 def warning_caplog(
     caplog: pytest.LogCaptureFixture,
-) -> Generator[pytest.LogCaptureFixture]:
+) -> pytest.LogCaptureFixture:
     """Fixture to capture warning messages."""
     caplog.set_level(logging.WARNING)
-    yield caplog
+    return caplog
 
 
 async def home_home_data_no_devices() -> HomeData:
