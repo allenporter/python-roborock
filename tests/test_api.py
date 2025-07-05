@@ -134,7 +134,6 @@ async def test_get_prop():
         assert props.dock_summary.dust_collection_mode is not None
 
 
-
 @pytest.fixture(name="connected_mqtt_client")
 async def connected_mqtt_client_fixture(
     response_queue: Queue, mqtt_client: RoborockMqttClientV1
@@ -148,6 +147,7 @@ async def connected_mqtt_client_fixture(
             await mqtt_client.async_disconnect()
         except Exception:
             pass
+
 
 async def test_async_connect(received_requests: Queue, connected_mqtt_client: RoborockMqttClientV1) -> None:
     """Test connecting to the MQTT broker."""
