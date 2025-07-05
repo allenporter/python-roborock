@@ -68,6 +68,9 @@ class LocalChannel:
         """Disconnect from the device."""
         if self._transport:
             self._transport.close()
+        else:
+            _LOGGER.warning("Close called but transport is already None")
+        self._transport = None
         self._is_connected = False
 
     def _data_received(self, data: bytes) -> None:
