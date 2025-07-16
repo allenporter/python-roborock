@@ -4,11 +4,12 @@ import logging
 import typing
 
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
+from Crypto.Util.Padding import unpad
 
 from roborock.cloud_api import RoborockMqttClient
 from roborock.containers import DeviceData, RoborockCategory, UserData
 from roborock.exceptions import RoborockException
+from roborock.protocols.a01_protocol import encode_mqtt_payload
 from roborock.roborock_message import (
     RoborockDyadDataProtocol,
     RoborockMessage,
@@ -46,11 +47,13 @@ class RoborockMqttClientA01(RoborockMqttClient, RoborockClientA01):
         # self._logger.debug(f"id={request_id} Requesting method {method} with {params}")
         payload = json.loads(unpad(roborock_message.payload, AES.block_size))
         futures = []
+        self._logger.debug("Sending message: %s", payload)
         if "10000" in payload["dps"]:
             for dps in json.loads(payload["dps"]["10000"]):
                 futures.append(self._async_response(dps, response_protocol))
         self._send_msg_raw(m)
         responses = await asyncio.gather(*futures, return_exceptions=True)
+        self._logger.debug("Received responses: %s", responses)
         dps_responses: dict[int, typing.Any] = {}
         if "10000" in payload["dps"]:
             for i, dps in enumerate(json.loads(payload["dps"]["10000"])):
@@ -65,24 +68,14 @@ class RoborockMqttClientA01(RoborockMqttClient, RoborockClientA01):
     async def update_values(
         self, dyad_data_protocols: list[RoborockDyadDataProtocol | RoborockZeoProtocol]
     ) -> dict[RoborockDyadDataProtocol | RoborockZeoProtocol, typing.Any]:
-        payload = {"dps": {RoborockDyadDataProtocol.ID_QUERY: str([int(protocol) for protocol in dyad_data_protocols])}}
-        return await self.send_message(
-            RoborockMessage(
-                protocol=RoborockMessageProtocol.RPC_REQUEST,
-                version=b"A01",
-                payload=pad(json.dumps(payload).encode("utf-8"), AES.block_size),
-            )
+        message = encode_mqtt_payload(
+            {RoborockDyadDataProtocol.ID_QUERY: str([int(protocol) for protocol in dyad_data_protocols])}
         )
+        return await self.send_message(message)
 
     async def set_value(
         self, protocol: RoborockDyadDataProtocol | RoborockZeoProtocol, value: typing.Any
     ) -> dict[int, typing.Any]:
         """Set a value for a specific protocol on the A01 device."""
-        payload = {"dps": {int(protocol): value}}
-        return await self.send_message(
-            RoborockMessage(
-                protocol=RoborockMessageProtocol.RPC_REQUEST,
-                version=b"A01",
-                payload=pad(json.dumps(payload).encode("utf-8"), AES.block_size),
-            )
-        )
+        message = encode_mqtt_payload({protocol: value})
+        return await self.send_message(message)
