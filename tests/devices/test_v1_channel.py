@@ -29,6 +29,7 @@ TEST_LOCAL_KEY = "local_key"
 TEST_SECURITY_DATA = SecurityData(endpoint="test_endpoint", nonce=b"test_nonce_16byte")
 TEST_HOST = "1.1.1.1"
 
+
 @dataclass
 class FakeResponse(RoborockBase):
     state: str
@@ -330,22 +331,22 @@ async def test_v1_channel_subscription_receives_mqtt_messages(
 ) -> None:
     """Test that subscribed callback receives MQTT messages."""
     callback = Mock()
-    
+
     # Setup MQTT subscription to capture the internal callback
     mock_mqtt_channel.subscribe.return_value = Mock()
     mock_local_channel.connect.side_effect = RoborockException("Local failed")
-    
+
     # Subscribe
     with patch.object(v1_channel, "_get_networking_info", return_value=TEST_NETWORKING_INFO):
         await v1_channel.subscribe(callback)
-    
+
     # Get the MQTT callback that was registered
     mqtt_callback = mock_mqtt_channel.subscribe.call_args[0][0]
-    
+
     # Simulate MQTT message
     test_message = TEST_RESPONSE
     mqtt_callback(test_message)
-    
+
     # Verify user callback was called
     callback.assert_called_once_with(test_message)
 
@@ -357,22 +358,22 @@ async def test_v1_channel_subscription_receives_local_messages(
 ) -> None:
     """Test that subscribed callback receives local messages."""
     callback = Mock()
-    
+
     # Setup both connections
     mock_mqtt_channel.subscribe.return_value = Mock()
     mock_local_channel.subscribe.return_value = Mock()
-    
+
     # Subscribe
     with patch.object(v1_channel, "_get_networking_info", return_value=TEST_NETWORKING_INFO):
         await v1_channel.subscribe(callback)
-    
+
     # Get the local callback that was registered
     local_callback = mock_local_channel.subscribe.call_args[0][0]
-    
+
     # Simulate local message
     test_message = TEST_RESPONSE
     local_callback(test_message)
-    
+
     # Verify user callback was called
     callback.assert_called_once_with(test_message)
 
@@ -401,10 +402,10 @@ async def test_v1_channel_networking_info_retrieved_during_connection(
     # Verify both connections are established
     assert v1_channel.is_mqtt_connected
     assert v1_channel.is_local_connected
-    
+
     # Verify network info was requested via MQTT
     mock_mqtt_channel.send_command.assert_called_once()
-    
+
     # Verify local session was created with the correct IP
     mock_local_session.assert_called_once_with(mock_data.NETWORK_INFO["ip"])
 
