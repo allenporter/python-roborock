@@ -140,15 +140,16 @@ class RoborockClientA01(RoborockClient, ABC):
                 try:
                     data_points = decode_rpc_response(message)
                 except RoborockException as err:
-                    self._logger.error("Failed to decode message %s: %s", message, err)
+                    self._logger.debug("Failed to decode message: %s", err)
                     continue
                 for data_point_number, data_point in data_points.items():
+                    self._logger.debug("received msg with dps, protocol: %s, %s", data_point_number, protocol)
                     if converted_response := self.value_converter(data_point_number, data_point):
                         queue = self._waiting_queue.get(int(data_point_number))
                         if queue and queue.protocol == protocol:
                             queue.set_result(converted_response)
                     else:
-                        self._logger.warning(
+                        self._logger.debug(
                             "Received unknown data point %s for protocol %s, ignoring", data_point_number, protocol
                         )
 
