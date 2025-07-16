@@ -44,22 +44,18 @@ class RoborockMqttClientA01(RoborockMqttClient, RoborockClientA01):
         response_protocol = RoborockMessageProtocol.RPC_RESPONSE
 
         m = self._encoder(roborock_message)
-        # self._logger.debug(f"id={request_id} Requesting method {method} with {params}")
         payload = json.loads(unpad(roborock_message.payload, AES.block_size))
         futures = []
-        self._logger.debug("Sending message: %s", payload)
         if "10000" in payload["dps"]:
             for dps in json.loads(payload["dps"]["10000"]):
                 futures.append(self._async_response(dps, response_protocol))
         self._send_msg_raw(m)
         responses = await asyncio.gather(*futures, return_exceptions=True)
-        self._logger.debug("Received responses: %s", responses)
         dps_responses: dict[int, typing.Any] = {}
         if "10000" in payload["dps"]:
             for i, dps in enumerate(json.loads(payload["dps"]["10000"])):
                 response = responses[i]
                 if isinstance(response, BaseException):
-                    self._logger.warning("Timed out get req for %s after %s s", dps, self.queue_timeout)
                     dps_responses[dps] = None
                 else:
                     dps_responses[dps] = response
