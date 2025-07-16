@@ -120,7 +120,7 @@ def decode_rpc_response(message: RoborockMessage) -> dict[str, Any]:
         raise RoborockException("Invalid V1 message format: missing payload")
     try:
         payload = json.loads(message.payload.decode())
-    except json.JSONDecodeError as e:
+    except (json.JSONDecodeError, TypeError) as e:
         raise RoborockException(f"Invalid V1 message payload: {e} for {message.payload!r}") from e
 
     _LOGGER.debug("Decoded V1 message payload: %s", payload)
