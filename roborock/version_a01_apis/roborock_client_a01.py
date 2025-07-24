@@ -40,7 +40,6 @@ from roborock.roborock_message import (
 _LOGGER = logging.getLogger(__name__)
 
 
-# Right now this cache is not active, it was too much complexity for the initial addition of dyad.
 DYAD_PROTOCOL_ENTRIES: dict[RoborockDyadDataProtocol, Callable] = {
     RoborockDyadDataProtocol.STATUS: lambda val: RoborockDyadStateCode(val).name,
     RoborockDyadDataProtocol.SELF_CLEAN_MODE: lambda val: DyadSelfCleanMode(val).name,
