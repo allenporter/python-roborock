@@ -80,7 +80,9 @@ class V1Channel:
         """Subscribe to all messages from the device.
 
         This will establish MQTT connection first, and also attempt to set up
-        local connection if possible.
+        local connection if possible. Any failures to subscribe to MQTT will raise
+        a RoborockException. A local connection failure will not raise an exception,
+        since the local connection is optional.
         """
 
         if self._mqtt_unsub:

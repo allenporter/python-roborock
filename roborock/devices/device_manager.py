@@ -118,8 +118,7 @@ async def create_device_manager(user_data: UserData, home_data_api: HomeDataApi)
         if device.pv != DeviceVersion.V1.value:
             raise NotImplementedError(
                 f"Device {device.name} has version {device.pv}, but only V1 devices "
-                f"are supported through the unified interface. Use the legacy "
-                f"RoborockMqttClientV1 or RoborockLocalClientV1 for this device."
+                f"are supported through the unified interface."
             )
         # Create V1 channel that handles both MQTT and local connections
         v1_channel = create_v1_channel(user_data, mqtt_params, mqtt_session, device)
