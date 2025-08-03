@@ -148,16 +148,12 @@ class V1Channel:
     ) -> _T:
         """Send a command using the best available transport.
 
-        Will try local connection first if available and preferred,
-        falling back to MQTT if needed.
+        Will prefer local connection if available, falling back to MQTT.
         """
-        _LOGGER.debug("Sending command: %s, params=%s", method, params)
+        connection = "local" if self.is_local_connected else "mqtt"
+        _LOGGER.debug("Sending command (%s): %s, params=%s", connection, method, params)
         if self._local_channel:
-            try:
-                return await self._send_local_decoded_command(method, response_type=response_type, params=params)
-            except RoborockException as e:
-                _LOGGER.info("Local command failed, falling back to MQTT: %s", e)
-
+            return await self._send_local_decoded_command(method, response_type=response_type, params=params)
         return await self._send_mqtt_decoded_command(method, response_type=response_type, params=params)
 
     async def _send_mqtt_raw_command(self, method: CommandType, params: ParamsType | None = None) -> dict[str, Any]:

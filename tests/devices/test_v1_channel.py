@@ -234,13 +234,13 @@ async def test_v1_channel_send_decoded_command_local_preferred(
     assert result.state == RoborockStateCode.cleaning
 
 
-async def test_v1_channel_send_decoded_command_fallback_to_mqtt(
+async def test_v1_channel_send_decoded_command_local_fails(
     v1_channel: V1Channel,
     mock_mqtt_channel: Mock,
     mock_local_channel: Mock,
     mqtt_responses: list[RoborockMessage],
 ) -> None:
-    """Test command sending falls back to MQTT when local fails."""
+    """Test case where sending with local connection fails."""
 
     # Establish connections
     await v1_channel.subscribe(Mock())
@@ -251,15 +251,15 @@ async def test_v1_channel_send_decoded_command_fallback_to_mqtt(
 
     # Send command
     mqtt_responses.append(TEST_RESPONSE)
-    result = await v1_channel.send_decoded_command(
-        RoborockCommand.CHANGE_SOUND_VOLUME,
-        response_type=S5MaxStatus,
-    )
+    with pytest.raises(RoborockException, match="Local failed"):
+        await v1_channel.send_decoded_command(
+            RoborockCommand.CHANGE_SOUND_VOLUME,
+            response_type=S5MaxStatus,
+        )
 
-    # Verify both were attempted
+    # Verify local was attempted but not mqtt
     mock_local_channel.send_command.assert_called_once()
-    mock_mqtt_channel.send_command.assert_called_once()
-    assert result.state == RoborockStateCode.cleaning
+    mock_mqtt_channel.send_command.assert_not_called()
 
 
 async def test_v1_channel_send_decoded_command_mqtt_only(
@@ -531,38 +531,3 @@ async def test_v1_channel_full_subscribe_and_command_flow(
     unsub()
     mqtt_unsub.assert_called_once()
     local_unsub.assert_called_once()
-
-
-async def test_v1_channel_graceful_degradation_local_to_mqtt(
-    mock_mqtt_channel: Mock,
-    mock_local_session: Mock,
-    mock_local_channel: Mock,
-    mqtt_responses: list[RoborockMessage],
-) -> None:
-    """Test graceful degradation from local to MQTT during operation."""
-    v1_channel = V1Channel(
-        device_uid=TEST_DEVICE_UID,
-        security_data=TEST_SECURITY_DATA,
-        mqtt_channel=mock_mqtt_channel,
-        local_session=mock_local_session,
-    )
-
-    await v1_channel.subscribe(Mock())
-    mock_mqtt_channel.send_command.reset_mock(return_value=False)
-
-    # First command: local works
-    mock_local_channel.send_command.return_value = TEST_RESPONSE
-    result1 = await v1_channel.send_decoded_command(RoborockCommand.GET_STATUS, response_type=S5MaxStatus)
-    assert result1.state == RoborockStateCode.cleaning
-    mock_local_channel.send_command.assert_called_once()
-    mock_mqtt_channel.send_command.assert_not_called()
-
-    # Second command: local fails, falls back to MQTT
-    mock_local_channel.send_command.side_effect = RoborockException("Local failed")
-    mqtt_responses.append(TEST_RESPONSE)
-    result2 = await v1_channel.send_decoded_command(RoborockCommand.GET_STATUS, response_type=S5MaxStatus)
-    assert result2.state == RoborockStateCode.cleaning
-
-    # Verify both were attempted
-    assert mock_local_channel.send_command.call_count == 2
-    mock_mqtt_channel.send_command.assert_called_once()
