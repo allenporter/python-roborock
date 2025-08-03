@@ -36,7 +36,6 @@ from tests.mock_data import (
 from . import mqtt_packet
 from .conftest import QUEUE_TIMEOUT
 
-
 RELEASE_TIMEOUT = 2
 
 
