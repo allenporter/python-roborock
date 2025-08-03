@@ -207,8 +207,8 @@ async def test_set_value(
     """Test sending an arbitrary MQTT message and parsing the response."""
     # Clear existing messages received during setup
     assert received_requests.qsize() == 2
-    assert received_requests.get(block=True)
-    assert received_requests.get(block=True)
+    assert received_requests.get(block=True, timeout=QUEUE_TIMEOUT)
+    assert received_requests.get(block=True, timeout=QUEUE_TIMEOUT)
     assert received_requests.empty()
 
     # Prepare the response message
