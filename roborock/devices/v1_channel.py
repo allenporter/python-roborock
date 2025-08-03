@@ -157,10 +157,9 @@ class V1Channel:
         return await self._send_mqtt_decoded_command(method, response_type=response_type, params=params)
 
     async def _send_mqtt_raw_command(self, method: CommandType, params: ParamsType | None = None) -> dict[str, Any]:
-        """Send a raw command without response handling."""
+        """Send a raw command and return a raw unparsed response."""
         message = self._mqtt_payload_encoder(method, params)
         _LOGGER.debug("Sending MQTT message for device %s: %s", self._device_uid, message)
-        _LOGGER.debug("Channel=%s", self._mqtt_channel)
         response = await self._mqtt_channel.send_command(message)
         return decode_rpc_response(response)
 
