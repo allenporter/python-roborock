@@ -56,11 +56,11 @@ async def test_device_connection(device: RoborockDevice, channel: AsyncMock) -> 
 async def test_device_get_status_command(device: RoborockDevice, channel: AsyncMock) -> None:
     """Test the device get_status command."""
     # Mock response for get_status command
-    channel.send_decoded_command.return_value = STATUS
+    channel.rpc_channel.send_command.return_value = STATUS
 
     # Test get_status and verify the command was sent
     status = await device.get_status()
-    assert channel.send_decoded_command.called
+    assert channel.rpc_channel.send_command.called
 
     # Verify the result
     assert status is not None

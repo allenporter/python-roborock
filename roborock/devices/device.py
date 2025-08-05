@@ -117,4 +117,4 @@ class RoborockDevice:
         This is a placeholder command and will likely be changed/moved in the future.
         """
         status_type: type[Status] = ModelStatus.get(self._product_info.model, S7MaxVStatus)
-        return await self._v1_channel.send_decoded_command(RoborockCommand.GET_STATUS, response_type=status_type)
+        return await self._v1_channel.rpc_channel.send_command(RoborockCommand.GET_STATUS, response_type=status_type)

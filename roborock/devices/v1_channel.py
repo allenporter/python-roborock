@@ -6,25 +6,21 @@ handling both MQTT and local connections with automatic fallback.
 
 import logging
 from collections.abc import Callable
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from roborock.containers import HomeDataDevice, NetworkInfo, RoborockBase, UserData
 from roborock.exceptions import RoborockException
 from roborock.mqtt.session import MqttParams, MqttSession
 from roborock.protocols.v1_protocol import (
-    CommandType,
-    ParamsType,
     SecurityData,
-    create_mqtt_payload_encoder,
     create_security_data,
-    decode_rpc_response,
-    encode_local_payload,
 )
 from roborock.roborock_message import RoborockMessage
 from roborock.roborock_typing import RoborockCommand
 
 from .local_channel import LocalChannel, LocalSession, create_local_session
 from .mqtt_channel import MqttChannel
+from .v1_rpc_channel import V1RpcChannel, create_combined_rpc_channel, create_mqtt_rpc_channel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -58,9 +54,10 @@ class V1Channel:
         """
         self._device_uid = device_uid
         self._mqtt_channel = mqtt_channel
-        self._mqtt_payload_encoder = create_mqtt_payload_encoder(security_data)
+        self._mqtt_rpc_channel = create_mqtt_rpc_channel(mqtt_channel, security_data)
         self._local_session = local_session
         self._local_channel: LocalChannel | None = None
+        self._combined_rpc_channel: V1RpcChannel | None = None
         self._mqtt_unsub: Callable[[], None] | None = None
         self._local_unsub: Callable[[], None] | None = None
         self._callback: Callable[[RoborockMessage], None] | None = None
@@ -75,6 +72,16 @@ class V1Channel:
     def is_mqtt_connected(self) -> bool:
         """Return whether MQTT connection is available."""
         return self._mqtt_unsub is not None
+
+    @property
+    def rpc_channel(self) -> V1RpcChannel:
+        """Return the combined RPC channel prefers local with a fallback to MQTT."""
+        return self._combined_rpc_channel or self._mqtt_rpc_channel
+
+    @property
+    def mqtt_rpc_channel(self) -> V1RpcChannel:
+        """Return the MQTT RPC channel."""
+        return self._mqtt_rpc_channel
 
     async def subscribe(self, callback: Callable[[RoborockMessage], None]) -> Callable[[], None]:
         """Subscribe to all messages from the device.
@@ -119,7 +126,9 @@ class V1Channel:
         This is a cloud only command used to get the local device's IP address.
         """
         try:
-            return await self._send_mqtt_decoded_command(RoborockCommand.GET_NETWORK_INFO, response_type=NetworkInfo)
+            return await self._mqtt_rpc_channel.send_command(
+                RoborockCommand.GET_NETWORK_INFO, response_type=NetworkInfo
+            )
         except RoborockException as e:
             raise RoborockException(f"Network info failed for device {self._device_uid}") from e
 
@@ -136,58 +145,8 @@ class V1Channel:
         except RoborockException as e:
             self._local_channel = None
             raise RoborockException(f"Error connecting to local device {self._device_uid}: {e}") from e
-
+        self._combined_rpc_channel = create_combined_rpc_channel(self._local_channel, self._mqtt_rpc_channel)
         return await self._local_channel.subscribe(self._on_local_message)
-
-    async def send_decoded_command(
-        self,
-        method: CommandType,
-        *,
-        response_type: type[_T],
-        params: ParamsType = None,
-    ) -> _T:
-        """Send a command using the best available transport.
-
-        Will prefer local connection if available, falling back to MQTT.
-        """
-        connection = "local" if self.is_local_connected else "mqtt"
-        _LOGGER.debug("Sending command (%s): %s, params=%s", connection, method, params)
-        if self._local_channel:
-            return await self._send_local_decoded_command(method, response_type=response_type, params=params)
-        return await self._send_mqtt_decoded_command(method, response_type=response_type, params=params)
-
-    async def _send_mqtt_raw_command(self, method: CommandType, params: ParamsType | None = None) -> dict[str, Any]:
-        """Send a raw command and return a raw unparsed response."""
-        message = self._mqtt_payload_encoder(method, params)
-        _LOGGER.debug("Sending MQTT message for device %s: %s", self._device_uid, message)
-        response = await self._mqtt_channel.send_command(message)
-        return decode_rpc_response(response)
-
-    async def _send_mqtt_decoded_command(
-        self, method: CommandType, *, response_type: type[_T], params: ParamsType | None = None
-    ) -> _T:
-        """Send a command over MQTT and decode the response."""
-        decoded_response = await self._send_mqtt_raw_command(method, params)
-        return response_type.from_dict(decoded_response)
-
-    async def _send_local_raw_command(self, method: CommandType, params: ParamsType | None = None) -> dict[str, Any]:
-        """Send a raw command over local connection."""
-        if not self._local_channel:
-            raise RoborockException("Local channel is not connected")
-
-        message = encode_local_payload(method, params)
-        _LOGGER.debug("Sending local message for device %s: %s", self._device_uid, message)
-        response = await self._local_channel.send_command(message)
-        return decode_rpc_response(response)
-
-    async def _send_local_decoded_command(
-        self, method: CommandType, *, response_type: type[_T], params: ParamsType | None = None
-    ) -> _T:
-        """Send a command over local connection and decode the response."""
-        if not self._local_channel:
-            raise RoborockException("Local channel is not connected")
-        decoded_response = await self._send_local_raw_command(method, params)
-        return response_type.from_dict(decoded_response)
 
     def _on_mqtt_message(self, message: RoborockMessage) -> None:
         """Handle incoming MQTT messages."""
