@@ -58,18 +58,8 @@ class V1RpcChannel(Protocol):
         """Send a command and return a parsed response RoborockBase type."""
         ...
 
-    async def send_command(
-        self,
-        method: CommandType,
-        *,
-        response_type: type[_T] | None = None,
-        params: ParamsType = None,
-    ) -> _T | Any:
-        """Send a command and return either a decoded or parsed response."""
-        ...
 
-
-class BaseV1RpcChannel:
+class BaseV1RpcChannel(V1RpcChannel):
     """Base implementation that provides the typed response logic."""
 
     async def send_command(
