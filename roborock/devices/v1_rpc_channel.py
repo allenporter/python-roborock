@@ -86,7 +86,7 @@ class BaseV1RpcChannel(V1RpcChannel):
         raise NotImplementedError
 
 
-class CombinedChannel(BaseV1RpcChannel):
+class CombinedV1RpcChannel(BaseV1RpcChannel):
     """A V1 RPC channel that can use both local and MQTT channels, preferring local when available."""
 
     def __init__(
@@ -109,7 +109,7 @@ class CombinedChannel(BaseV1RpcChannel):
         return await self._mqtt_rpc_channel.send_command(method, params=params)
 
 
-class PayloadEncodedV1Channel(BaseV1RpcChannel):
+class PayloadEncodedV1RpcChannel(BaseV1RpcChannel):
     """Protocol for V1 channels that send encoded commands."""
 
     def __init__(
@@ -139,10 +139,10 @@ class PayloadEncodedV1Channel(BaseV1RpcChannel):
 def create_mqtt_rpc_channel(mqtt_channel: MqttChannel, security_data: SecurityData) -> V1RpcChannel:
     """Create a V1 RPC channel using an MQTT channel."""
     payload_encoder = create_mqtt_payload_encoder(security_data)
-    return PayloadEncodedV1Channel("mqtt", mqtt_channel, payload_encoder)
+    return PayloadEncodedV1RpcChannel("mqtt", mqtt_channel, payload_encoder)
 
 
 def create_combined_rpc_channel(local_channel: LocalChannel, mqtt_rpc_channel: V1RpcChannel) -> V1RpcChannel:
     """Create a V1 RPC channel that combines local and MQTT channels."""
-    local_rpc_channel = PayloadEncodedV1Channel("local", local_channel, encode_local_payload)
-    return CombinedChannel(local_channel, local_rpc_channel, mqtt_rpc_channel)
+    local_rpc_channel = PayloadEncodedV1RpcChannel("local", local_channel, encode_local_payload)
+    return CombinedV1RpcChannel(local_channel, local_rpc_channel, mqtt_rpc_channel)
