@@ -80,7 +80,7 @@ class MqttChannel:
             else:
                 _LOGGER.debug("Received message with no waiting handler: request_id=%s", request_id)
 
-    async def send_command(self, message: RoborockMessage, timeout: float = 10.0) -> RoborockMessage:
+    async def send_message(self, message: RoborockMessage, timeout: float = 10.0) -> RoborockMessage:
         """Send a command message and wait for the response message.
 
         Returns the raw response message - caller is responsible for parsing.

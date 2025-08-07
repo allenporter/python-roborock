@@ -50,6 +50,11 @@ class LocalChannel:
         self._encoder: Encoder = create_local_encoder(local_key)
         self._queue_lock = asyncio.Lock()
 
+    @property
+    def is_connected(self) -> bool:
+        """Check if the channel is currently connected."""
+        return self._is_connected
+
     async def connect(self) -> None:
         """Connect to the device."""
         if self._is_connected:
@@ -113,7 +118,7 @@ class LocalChannel:
             else:
                 _LOGGER.debug("Received message with no waiting handler: request_id=%s", request_id)
 
-    async def send_command(self, message: RoborockMessage, timeout: float = 10.0) -> RoborockMessage:
+    async def send_message(self, message: RoborockMessage, timeout: float = 10.0) -> RoborockMessage:
         """Send a command message and wait for the response message."""
         if not self._transport or not self._is_connected:
             raise RoborockConnectionException("Not connected to device")
