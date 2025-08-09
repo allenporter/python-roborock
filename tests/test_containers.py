@@ -1,4 +1,9 @@
-from roborock import CleanRecord, CleanSummary, Consumable, DnDTimer, HomeData, S7MaxVStatus, UserData
+"""Test cases for the containers module."""
+
+from dataclasses import dataclass
+from typing import Any
+
+from roborock import CleanRecord, CleanSummary, Consumable, DnDTimer, HomeData, S7MaxVStatus, SimpleObject, UserData
 from roborock.code_mappings import (
     RoborockCategory,
     RoborockDockErrorCode,
@@ -9,6 +14,7 @@ from roborock.code_mappings import (
     RoborockMopModeS7,
     RoborockStateCode,
 )
+from roborock.containers import RoborockBase
 
 from .mock_data import (
     CLEAN_RECORD,
@@ -21,6 +27,80 @@ from .mock_data import (
     STATUS,
     USER_DATA,
 )
+
+
+@dataclass
+class HomeDataRoom(RoborockBase):
+    id: int
+    name: str
+
+
+@dataclass
+class ComplexObject(RoborockBase):
+    """Complex object for testing serialization."""
+
+    simple: SimpleObject | None = None
+    items: list[str] | None = None
+    value: int | None = None
+    nested_dict: dict[str, SimpleObject] | None = None
+    nested_list: list[SimpleObject] | None = None
+    any: Any | None = None
+
+
+def test_simple_object() -> None:
+    """Test serialization and deserialization of a simple object."""
+
+    obj = SimpleObject(name="Test", value=42)
+    serialized = obj.as_dict()
+    assert serialized == {"name": "Test", "value": 42}
+    deserialized = SimpleObject.from_dict(serialized)
+    assert deserialized.name == "Test"
+    assert deserialized.value == 42
+
+
+def test_complex_object() -> None:
+    """Test serialization and deserialization of a complex object."""
+    simple = SimpleObject(name="Nested", value=100)
+    obj = ComplexObject(
+        simple=simple,
+        items=["item1", "item2"],
+        value=200,
+        nested_dict={
+            "nested1": SimpleObject(name="Nested1", value=1),
+            "nested2": SimpleObject(name="Nested2", value=2),
+        },
+        nested_list=[SimpleObject(name="Nested3", value=3), SimpleObject(name="Nested4", value=4)],
+        any="This can be anything",
+    )
+    serialized = obj.as_dict()
+    assert serialized == {
+        "simple": {"name": "Nested", "value": 100},
+        "items": ["item1", "item2"],
+        "value": 200,
+        "nestedDict": {
+            "nested1": {"name": "Nested1", "value": 1},
+            "nested2": {"name": "Nested2", "value": 2},
+        },
+        "nestedList": [
+            {"name": "Nested3", "value": 3},
+            {"name": "Nested4", "value": 4},
+        ],
+        "any": "This can be anything",
+    }
+    deserialized = ComplexObject.from_dict(serialized)
+    assert deserialized.simple.name == "Nested"
+    assert deserialized.simple.value == 100
+    assert deserialized.items == ["item1", "item2"]
+    assert deserialized.value == 200
+    assert deserialized.nested_dict == {
+        "nested1": SimpleObject(name="Nested1", value=1),
+        "nested2": SimpleObject(name="Nested2", value=2),
+    }
+    assert deserialized.nested_list == [
+        SimpleObject(name="Nested3", value=3),
+        SimpleObject(name="Nested4", value=4),
+    ]
+    assert deserialized.any == "This can be anything"
 
 
 def test_user_data():
@@ -184,6 +264,7 @@ def test_clean_summary():
     assert cs.square_meter_clean_area == 1159.2
     assert cs.clean_count == 31
     assert cs.dust_collection_count == 25
+    assert cs.records
     assert len(cs.records) == 2
     assert cs.records[1] == 1672458041
 
