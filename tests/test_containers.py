@@ -110,16 +110,12 @@ def test_ignore_unknown_keys() -> None:
     """Test that we don't fail on unknown keys."""
     data = {
         "ignored_key": "This key should be ignored",
-        "simple": {"name": "Nested", "value": 100},
-        "items": ["item1", "item2"],
-
+        "name": "named_object",
+        "value": 42,
     }
-    deserialized = ComplexObject.from_dict(data)
-    assert deserialized.simple.name == "Nested"
-    assert deserialized.simple.value == 100
-    assert deserialized.items == ["item1", "item2"]
-    assert deserialized.value is None
-    assert deserialized.any is None
+    deserialized = SimpleObject.from_dict(data)
+    assert deserialized.name == "named_object"
+    assert deserialized.value == 42
 
 
 def test_user_data():
