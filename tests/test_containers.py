@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from roborock import CleanRecord, CleanSummary, Consumable, DnDTimer, HomeData, S7MaxVStatus, SimpleObject, UserData
+from roborock import CleanRecord, CleanSummary, Consumable, DnDTimer, HomeData, S7MaxVStatus, UserData
 from roborock.code_mappings import (
     RoborockCategory,
     RoborockDockErrorCode,
@@ -27,6 +27,14 @@ from .mock_data import (
     STATUS,
     USER_DATA,
 )
+
+
+@dataclass
+class SimpleObject(RoborockBase):
+    """Simple object for testing serialization."""
+
+    name: str | None = None
+    value: int | None = None
 
 
 @dataclass
@@ -95,6 +103,23 @@ def test_complex_object() -> None:
         SimpleObject(name="Nested4", value=4),
     ]
     assert deserialized.any == "This can be anything"
+
+
+
+def test_ignore_unknown_keys() -> None:
+    """Test that we don't fail on unknown keys."""
+    data = {
+        "ignored_key": "This key should be ignored",
+        "simple": {"name": "Nested", "value": 100},
+        "items": ["item1", "item2"],
+
+    }
+    deserialized = ComplexObject.from_dict(data)
+    assert deserialized.simple.name == "Nested"
+    assert deserialized.simple.value == 100
+    assert deserialized.items == ["item1", "item2"]
+    assert deserialized.value is None
+    assert deserialized.any is None
 
 
 def test_user_data():
