@@ -105,7 +105,6 @@ def test_complex_object() -> None:
     assert deserialized.any == "This can be anything"
 
 
-
 def test_ignore_unknown_keys() -> None:
     """Test that we don't fail on unknown keys."""
     data = {
