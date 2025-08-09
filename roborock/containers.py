@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import timezone
 from enum import Enum
 from functools import cached_property
-from typing import Any, NamedTuple, get_args, get_origin, Self
+from typing import Any, NamedTuple, get_args, get_origin
 
 from .code_mappings import (
     SHORT_MODEL_TO_ENUM,
@@ -130,7 +130,7 @@ class RoborockBase:
         if not isinstance(data, dict):
             return None
         field_types = {field.name: field.type for field in dataclasses.fields(cls)}
-        result: Self = {}
+        result: dict[str, Any] = {}
         for key, value in data.items():
             key = _decamelize(key)
             if (field_type := field_types.get(key)) is None:
