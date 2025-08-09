@@ -859,11 +859,3 @@ class DyadSndState(RoborockBase):
 @dataclass
 class DyadOtaNfo(RoborockBase):
     mqttOtaData: dict
-
-
-@dataclass
-class SimpleObject(RoborockBase):
-    """Simple object for testing serialization."""
-
-    name: str | None = None
-    value: int | None = None
