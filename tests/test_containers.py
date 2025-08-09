@@ -30,12 +30,6 @@ from .mock_data import (
 
 
 @dataclass
-class HomeDataRoom(RoborockBase):
-    id: int
-    name: str
-
-
-@dataclass
 class ComplexObject(RoborockBase):
     """Complex object for testing serialization."""
 
