@@ -148,6 +148,26 @@ class Utils:
         return ciphertext
 
     @staticmethod
+    def encrypt_cbc(plaintext: bytes, token: bytes) -> bytes:
+        """Encrypt plaintext with a given token using cbc mode.
+
+        This is currently used for testing purposes only.
+
+        :param bytes plaintext: Plaintext (json) to encrypt
+        :param bytes token: Token to use
+        :return: Encrypted bytes
+        """
+        if not isinstance(plaintext, bytes):
+            raise TypeError("plaintext requires bytes")
+        Utils.verify_token(token)
+        iv = bytes(AES.block_size)
+        cipher = AES.new(token, AES.MODE_CBC, iv)
+        if plaintext:
+            plaintext = pad(plaintext, AES.block_size)
+            return cipher.encrypt(plaintext)
+        return plaintext
+
+    @staticmethod
     def decrypt_cbc(ciphertext: bytes, token: bytes) -> bytes:
         """Decrypt ciphertext with a given token using cbc mode.
 

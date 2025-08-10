@@ -1,4 +1,3 @@
-import base64
 import logging
 
 from vacuum_map_parser_base.config.color import ColorsPalette
@@ -10,8 +9,7 @@ from roborock.cloud_api import RoborockMqttClient
 
 from ..containers import DeviceData, UserData
 from ..exceptions import CommandVacuumError, RoborockException, VacuumError
-from ..protocol import Utils
-from ..protocols.v1_protocol import SecurityData, create_mqtt_payload_encoder
+from ..protocols.v1_protocol import create_mqtt_payload_encoder, create_security_data
 from ..roborock_message import (
     RoborockMessageProtocol,
 )
@@ -30,15 +28,12 @@ class RoborockMqttClientV1(RoborockMqttClient, RoborockClientV1):
         rriot = user_data.rriot
         if rriot is None:
             raise RoborockException("Got no rriot data from user_data")
-        endpoint = base64.b64encode(Utils.md5(rriot.k.encode())[8:14]).decode()
-
+        security_data = create_security_data(rriot)
         RoborockMqttClient.__init__(self, user_data, device_info)
-        RoborockClientV1.__init__(self, device_info, endpoint)
+        RoborockClientV1.__init__(self, device_info, security_data=security_data)
         self.queue_timeout = queue_timeout
         self._logger = RoborockLoggerAdapter(device_info.device.name, _LOGGER)
-        self._payload_encoder = create_mqtt_payload_encoder(
-            SecurityData(endpoint=self._endpoint, nonce=self._nonce),
-        )
+        self._payload_encoder = create_mqtt_payload_encoder(security_data)
 
     async def _send_command(
         self,
