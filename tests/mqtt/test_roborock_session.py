@@ -1,7 +1,7 @@
 """Tests for the MQTT session module."""
 
 import asyncio
-from collections.abc import Callable, Generator
+from collections.abc import AsyncGenerator, Callable
 from queue import Queue
 from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
@@ -32,7 +32,7 @@ def mqtt_server_fixture(mock_create_connection: None, mock_select: None) -> None
 
 
 @pytest.fixture(autouse=True)
-async def mock_client_fixture() -> Generator[None, None, None]:
+async def mock_client_fixture() -> AsyncGenerator[None, None]:
     """Fixture to patch the MQTT underlying sync client.
 
     The tests use fake sockets, so this ensures that the async mqtt client does not
