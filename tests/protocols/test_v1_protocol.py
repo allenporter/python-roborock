@@ -119,7 +119,6 @@ def test_decode_rpc_response(payload: bytes, expected: RoborockBase) -> None:
         version=b"1.0",
         random=97431,
         timestamp=1652547161,
-        message_retry=None,
     )
     decoded_message = decode_rpc_response(message)
     assert decoded_message == expected

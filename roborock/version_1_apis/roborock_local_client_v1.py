@@ -69,8 +69,5 @@ class RoborockLocalClientV1(RoborockLocalClient, RoborockClientV1):
         if roborock_message.protocol == RoborockMessageProtocol.GENERAL_REQUEST:
             self._logger.debug(f"id={request_id} Response from method {roborock_message.get_method()}: {response}")
         if response == "retry":
-            retry_id = roborock_message.get_retry_id()
-            return self.send_command(
-                RoborockCommand.RETRY_REQUEST, {"retry_id": retry_id, "retry_count": 8, "method": method}
-            )
+            raise RoborockException(f"Command {method} failed with 'retry' message; Device is busy, try again later")
         return response

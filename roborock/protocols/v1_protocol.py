@@ -15,7 +15,7 @@ from typing import Any
 from roborock.containers import RRiot
 from roborock.exceptions import RoborockException
 from roborock.protocol import Utils
-from roborock.roborock_message import MessageRetry, RoborockMessage, RoborockMessageProtocol
+from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 from roborock.roborock_typing import RoborockCommand
 from roborock.util import get_next_int
 
@@ -102,15 +102,10 @@ def encode_local_payload(method: CommandType, params: ParamsType) -> RoborockMes
     request = RequestMessage(method=method, params=params)
     payload = request.as_payload(security_data=None)
 
-    message_retry: MessageRetry | None = None
-    if method == RoborockCommand.RETRY_REQUEST and isinstance(params, dict):
-        message_retry = MessageRetry(method=method, retry_id=params["retry_id"])
-
     return RoborockMessage(
         timestamp=request.timestamp,
         protocol=RoborockMessageProtocol.GENERAL_REQUEST,
         payload=payload,
-        message_retry=message_retry,
     )
 
 
