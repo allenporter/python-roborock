@@ -256,23 +256,3 @@ class RoborockMessage:
                     data_point_response = json.loads(data_point)
                     return data_point_response.get("id")
         return None
-
-    def get_method(self) -> str | None:
-        protocol = self.protocol
-        if self.payload and protocol in [4, 5, 101, 102]:
-            payload = json.loads(self.payload.decode())
-            for data_point_number, data_point in payload.get("dps").items():
-                if data_point_number in ["101", "102"]:
-                    data_point_response = json.loads(data_point)
-                    return data_point_response.get("method")
-        return None
-
-    def get_params(self) -> list | dict | None:
-        protocol = self.protocol
-        if self.payload and protocol in [4, 101, 102]:
-            payload = json.loads(self.payload.decode())
-            for data_point_number, data_point in payload.get("dps").items():
-                if data_point_number in ["101", "102"]:
-                    data_point_response = json.loads(data_point)
-                    return data_point_response.get("params")
-        return None

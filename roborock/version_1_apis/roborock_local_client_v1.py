@@ -18,6 +18,19 @@ from .roborock_client_v1 import CLOUD_REQUIRED, RoborockClientV1
 _LOGGER = logging.getLogger(__name__)
 
 
+_HELLO_REQUEST_MESSAGE = RoborockMessage(
+    protocol=RoborockMessageProtocol.HELLO_REQUEST,
+    seq=1,
+    random=22,
+)
+
+_PING_REQUEST_MESSAGE = RoborockMessage(
+    protocol=RoborockMessageProtocol.PING_REQUEST,
+    seq=2,
+    random=23,
+)
+
+
 @dataclass
 class _LocalProtocol(asyncio.Protocol):
     """Callbacks for the Roborock local client transport."""
@@ -109,29 +122,13 @@ class RoborockLocalClientV1(RoborockClientV1, RoborockClient):
             self._sync_disconnect()
 
     async def hello(self):
-        request_id = 1
-        protocol = RoborockMessageProtocol.HELLO_REQUEST
         try:
-            return await self._send_message(
-                RoborockMessage(
-                    protocol=protocol,
-                    seq=request_id,
-                    random=22,
-                )
-            )
+            return await self._send_message(_HELLO_REQUEST_MESSAGE)
         except Exception as e:
             self._logger.error(e)
 
     async def ping(self) -> None:
-        request_id = 2
-        protocol = RoborockMessageProtocol.PING_REQUEST
-        return await self._send_message(
-            RoborockMessage(
-                protocol=protocol,
-                seq=request_id,
-                random=23,
-            )
-        )
+        await self._send_message(_PING_REQUEST_MESSAGE)
 
     def _send_msg_raw(self, data: bytes):
         try:
@@ -151,12 +148,15 @@ class RoborockLocalClientV1(RoborockClientV1, RoborockClient):
 
         roborock_message = encode_local_payload(method, params)
         self._logger.debug("Building message id %s for method %s", roborock_message.get_request_id(), method)
-        return await self._send_message(roborock_message)
+        return await self._send_message(roborock_message, method, params)
 
-    async def _send_message(self, roborock_message: RoborockMessage):
+    async def _send_message(
+        self,
+        roborock_message: RoborockMessage,
+        method: str | None = None,
+        params: list | dict | int | None = None,
+    ) -> RoborockMessage:
         await self.validate_connection()
-        method = roborock_message.get_method()
-        params = roborock_message.get_params()
         request_id: int | None
         if not method or not method.startswith("get"):
             request_id = roborock_message.seq
@@ -177,16 +177,16 @@ class RoborockLocalClientV1(RoborockClientV1, RoborockClient):
             response = await async_response
         except VacuumError as err:
             self._diagnostic_data[diagnostic_key] = {
-                "params": roborock_message.get_params(),
+                "params": params,
                 "error": err,
             }
             raise CommandVacuumError(method, err) from err
         self._diagnostic_data[diagnostic_key] = {
-            "params": roborock_message.get_params(),
+            "params": params,
             "response": response,
         }
         if roborock_message.protocol == RoborockMessageProtocol.GENERAL_REQUEST:
-            self._logger.debug(f"id={request_id} Response from method {roborock_message.get_method()}: {response}")
+            self._logger.debug(f"id={request_id} Response from method {method}: {response}")
         if response == "retry":
             raise RoborockException(f"Command {method} failed with 'retry' message; Device is busy, try again later")
         return response
