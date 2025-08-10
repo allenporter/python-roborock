@@ -125,7 +125,7 @@ class RoborockMqttSession(MqttSession):
             except Exception as err:
                 # This error is thrown when the MQTT loop is cancelled
                 # and the generator is not stopped.
-                if "generator didn't stop" in str(err):  # or "generator didn't yield" in str(err):
+                if "generator didn't stop" in str(err) or "generator didn't yield" in str(err):
                     _LOGGER.debug("MQTT loop was cancelled")
                     return
                 if start_future:
