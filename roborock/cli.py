@@ -1,9 +1,9 @@
 import asyncio
 import json
 import logging
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass, field
 
 import click
 from pyshark import FileCapture  # type: ignore
@@ -11,7 +11,7 @@ from pyshark.capture.live_capture import LiveCapture, UnknownInterfaceException 
 from pyshark.packet.packet import Packet  # type: ignore
 
 from roborock import RoborockException
-from roborock.containers import DeviceData, HomeData, HomeDataProduct, LoginData, NetworkInfo, UserData, RoborockBase
+from roborock.containers import DeviceData, HomeData, HomeDataProduct, LoginData, NetworkInfo, RoborockBase, UserData
 from roborock.devices.device_manager import create_device_manager, create_home_data_api
 from roborock.protocol import MessageParser
 from roborock.util import run_sync
@@ -172,7 +172,6 @@ async def _load_and_discover(ctx) -> RoborockContext:
     return context
 
 
-
 @click.command()
 @click.pass_context
 @run_sync()
@@ -187,10 +186,7 @@ async def list_devices(ctx):
     context: RoborockContext = await _load_and_discover(ctx)
     cache_data = context.cache_data()
     home_data = cache_data.home_data
-    device_name_id = {
-        device.name: device.duid
-        for device in home_data.devices + home_data.received_devices
-    }
+    device_name_id = {device.name: device.duid for device in home_data.devices + home_data.received_devices}
     click.echo(json.dumps(device_name_id, indent=4))
 
 
