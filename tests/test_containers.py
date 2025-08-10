@@ -275,6 +275,9 @@ def test_current_map() -> None:
     s.map_status = 11
     assert s.current_map == 2
 
+    s.map_status = None
+    assert not s.current_map
+
 
 def test_dnd_timer():
     dnd = DnDTimer.from_dict(DND_TIMER)
