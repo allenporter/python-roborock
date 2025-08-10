@@ -144,7 +144,6 @@ class RoborockMqttSession(MqttSession):
             await asyncio.sleep(self._backoff.total_seconds())
             self._backoff = min(self._backoff * BACKOFF_MULTIPLIER, MAX_BACKOFF_INTERVAL)
 
-
     @asynccontextmanager
     async def _mqtt_client(self, params: MqttParams) -> aiomqtt.Client:
         """Connect to the MQTT broker and listen for messages."""
