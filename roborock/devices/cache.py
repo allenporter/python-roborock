@@ -45,3 +45,13 @@ class InMemoryCache(Cache):
 
     async def set(self, value: CacheData) -> None:
         self._data = value
+
+
+class NoCache(Cache):
+    """No-op cache implementation."""
+
+    async def get(self) -> CacheData:
+        return CacheData()
+
+    async def set(self, value: CacheData) -> None:
+        pass

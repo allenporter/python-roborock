@@ -18,7 +18,7 @@ from roborock.mqtt.session import MqttSession
 from roborock.protocol import create_mqtt_params
 from roborock.web_api import RoborockApiClient
 
-from .cache import Cache, InMemoryCache
+from .cache import Cache, NoCache
 from .channel import Channel
 from .mqtt_channel import create_mqtt_channel
 from .traits.dyad import DyadApi
@@ -137,7 +137,7 @@ async def create_device_manager(
     include caching or other optimizations.
     """
     if cache is None:
-        cache = InMemoryCache()
+        cache = NoCache()
 
     mqtt_params = create_mqtt_params(user_data.rriot)
     mqtt_session = await create_mqtt_session(mqtt_params)
