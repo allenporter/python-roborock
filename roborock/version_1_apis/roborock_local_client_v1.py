@@ -60,7 +60,7 @@ class RoborockLocalClientV1(RoborockClientV1, RoborockClient):
         self.transport: Transport | None = None
         self._mutex = Lock()
         self.keep_alive_task: TimerHandle | None = None
-        RoborockClientV1.__init__(self, device_data, "abc")
+        RoborockClientV1.__init__(self, device_data, security_data=None)
         RoborockClient.__init__(self, device_data)
         self._local_protocol = _LocalProtocol(self._data_received, self._connection_lost)
         self._encoder: Encoder = create_local_encoder(device_data.device.local_key)
