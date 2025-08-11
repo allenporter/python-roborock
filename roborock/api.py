@@ -116,7 +116,3 @@ class RoborockClient(ABC):
             request_id = new_id
         self._waiting_queue[request_id] = queue
         return asyncio.ensure_future(self._wait_response(request_id, queue))
-
-    @abstractmethod
-    async def send_message(self, roborock_message: RoborockMessage):
-        """Send a message to the Roborock device."""
