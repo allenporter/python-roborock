@@ -54,9 +54,9 @@ async def send_decoded_command(
         await mqtt_channel.publish(roborock_message)
         return {}
 
-    # This can be simplified if we can assume a all results are returned in 
-    # single response. Otherwise, this will construct a result by merging in
-    # responses that contain the ids that were queried.
+    # Merge any results together than contain the requested data. This
+    # does not use a future since it needs to merge results across responses.
+    # This could be simplified if we can assume there is a single response.
     finished = asyncio.Event()
     result: dict[int, Any] = {}
 

@@ -10,7 +10,6 @@ from roborock.protocol import create_mqtt_decoder, create_mqtt_encoder
 from roborock.roborock_message import RoborockMessage
 
 from .channel import Channel
-from .pending import PendingRpcs
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,8 +28,6 @@ class MqttChannel(Channel):
         self._rriot = rriot
         self._mqtt_params = mqtt_params
 
-        # RPC support
-        self._pending_rpcs: PendingRpcs[int, RoborockMessage] = PendingRpcs()
         self._decoder = create_mqtt_decoder(local_key)
         self._encoder = create_mqtt_encoder(local_key)
         self._mqtt_unsub: Callable[[], None] | None = None
