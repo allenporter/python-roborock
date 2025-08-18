@@ -6,11 +6,13 @@ a simple interface for sending commands and receiving responses over both MQTT
 and local connections, preferring local when available.
 """
 
+import asyncio
 import logging
 from collections.abc import Callable
 from typing import Any, Protocol, TypeVar, overload
 
 from roborock.containers import RoborockBase
+from roborock.exceptions import RoborockException
 from roborock.protocols.v1_protocol import (
     CommandType,
     ParamsType,
@@ -24,6 +26,7 @@ from .local_channel import LocalChannel
 from .mqtt_channel import MqttChannel
 
 _LOGGER = logging.getLogger(__name__)
+_TIMEOUT = 10.0
 
 
 _T = TypeVar("_T", bound=RoborockBase)
@@ -132,8 +135,26 @@ class PayloadEncodedV1RpcChannel(BaseV1RpcChannel):
         _LOGGER.debug("Sending command (%s): %s, params=%s", self._name, method, params)
         request_message = RequestMessage(method, params=params)
         message = self._payload_encoder(request_message)
-        response = await self._channel.send_message(message)
-        return decode_rpc_response(response)
+
+        future: asyncio.Future[dict[str, Any]] = asyncio.Future()
+
+        def find_response(response_message: RoborockMessage) -> None:
+            try:
+                decoded = decode_rpc_response(response_message)
+            except RoborockException:
+                return
+            if decoded.request_id == request_message.request_id:
+                future.set_result(decoded.data)
+
+        unsub = await self._channel.subscribe(find_response)
+        try:
+            await self._channel.publish(message)
+            return await asyncio.wait_for(future, timeout=_TIMEOUT)
+        except TimeoutError as ex:
+            future.cancel()
+            raise RoborockException(f"Command timed out after {_TIMEOUT}s") from ex
+        finally:
+            unsub()
 
 
 def create_mqtt_rpc_channel(mqtt_channel: MqttChannel, security_data: SecurityData) -> V1RpcChannel:

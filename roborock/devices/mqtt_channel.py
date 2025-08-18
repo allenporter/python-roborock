@@ -1,13 +1,11 @@
 """Modules for communicating with specific Roborock devices over MQTT."""
 
-import asyncio
 import logging
 from collections.abc import Callable
-from json import JSONDecodeError
 
 from roborock.containers import HomeDataDevice, RRiot, UserData
 from roborock.exceptions import RoborockException
-from roborock.mqtt.session import MqttParams, MqttSession
+from roborock.mqtt.session import MqttParams, MqttSession, MqttSessionException
 from roborock.protocol import create_mqtt_decoder, create_mqtt_encoder
 from roborock.roborock_message import RoborockMessage
 
@@ -69,7 +67,6 @@ class MqttChannel(Channel):
                 return
             for message in messages:
                 _LOGGER.debug("Received message: %s", message)
-                asyncio.create_task(self._resolve_future_with_lock(message))
                 try:
                     callback(message)
                 except Exception as e:
@@ -84,40 +81,22 @@ class MqttChannel(Channel):
 
         return unsub_wrapper
 
-    async def _resolve_future_with_lock(self, message: RoborockMessage) -> None:
-        """Resolve waiting future with proper locking."""
-        if (request_id := message.get_request_id()) is None:
-            _LOGGER.debug("Received message with no request_id")
-            return
-        await self._pending_rpcs.resolve(request_id, message)
+    async def publish(self, message: RoborockMessage) -> None:
+        """Publish a command message.
 
-    async def send_message(self, message: RoborockMessage, timeout: float = 10.0) -> RoborockMessage:
-        """Send a command message and wait for the response message.
-
-        Returns the raw response message - caller is responsible for parsing.
+        The caller is responsible for handling any responses and associating them
+        with the incoming request.
         """
         try:
-            if (request_id := message.get_request_id()) is None:
-                raise RoborockException("Message must have a request_id for RPC calls")
-        except (ValueError, JSONDecodeError) as err:
-            _LOGGER.exception("Error getting request_id from message: %s", err)
-            raise RoborockException(f"Invalid message format, Message must have a request_id: {err}") from err
-
-        future: asyncio.Future[RoborockMessage] = await self._pending_rpcs.start(request_id)
-
-        try:
             encoded_msg = self._encoder(message)
-            await self._mqtt_session.publish(self._publish_topic, encoded_msg)
-
-            return await asyncio.wait_for(future, timeout=timeout)
-
-        except asyncio.TimeoutError as ex:
-            await self._pending_rpcs.pop(request_id)
-            raise RoborockException(f"Command timed out after {timeout}s") from ex
-        except Exception:
-            logging.exception("Uncaught error sending command")
-            await self._pending_rpcs.pop(request_id)
-            raise
+        except Exception as e:
+            _LOGGER.exception("Error encoding MQTT message: %s", e)
+            raise RoborockException(f"Failed to encode MQTT message: {e}") from e
+        try:
+            return await self._mqtt_session.publish(self._publish_topic, encoded_msg)
+        except MqttSessionException as e:
+            _LOGGER.exception("Error publishing MQTT message: %s", e)
+            raise RoborockException(f"Failed to publish MQTT message: {e}") from e
 
 
 def create_mqtt_channel(

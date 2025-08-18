@@ -128,7 +128,8 @@ def test_decode_rpc_response(payload: bytes, expected: RoborockBase) -> None:
         timestamp=1652547161,
     )
     decoded_message = decode_rpc_response(message)
-    assert decoded_message == expected
+    assert decoded_message.request_id == 20005
+    assert decoded_message.data == expected
 
 
 def test_create_map_response_decoder():
