@@ -11,6 +11,7 @@ from roborock.protocol import Decoder, Encoder, create_local_decoder, create_loc
 from roborock.roborock_message import RoborockMessage
 
 from .channel import Channel
+from .pending import PendingRpcs
 
 _LOGGER = logging.getLogger(__name__)
 _PORT = 58867
@@ -47,10 +48,9 @@ class LocalChannel(Channel):
         self._is_connected = False
 
         # RPC support
-        self._waiting_queue: dict[int, asyncio.Future[RoborockMessage]] = {}
+        self._pending_rpcs: PendingRpcs[int, RoborockMessage] = PendingRpcs()
         self._decoder: Decoder = create_local_decoder(local_key)
         self._encoder: Encoder = create_local_encoder(local_key)
-        self._queue_lock = asyncio.Lock()
 
     @property
     def is_connected(self) -> bool:
@@ -114,11 +114,7 @@ class LocalChannel(Channel):
         if (request_id := message.get_request_id()) is None:
             _LOGGER.debug("Received message with no request_id")
             return
-        async with self._queue_lock:
-            if (future := self._waiting_queue.pop(request_id, None)) is not None:
-                future.set_result(message)
-            else:
-                _LOGGER.debug("Received message with no waiting handler: request_id=%s", request_id)
+        await self._pending_rpcs.resolve(request_id, message)
 
     async def send_message(self, message: RoborockMessage, timeout: float = 10.0) -> RoborockMessage:
         """Send a command message and wait for the response message."""
@@ -132,24 +128,17 @@ class LocalChannel(Channel):
             _LOGGER.exception("Error getting request_id from message: %s", err)
             raise RoborockException(f"Invalid message format, Message must have a request_id: {err}") from err
 
-        future: asyncio.Future[RoborockMessage] = asyncio.Future()
-        async with self._queue_lock:
-            if request_id in self._waiting_queue:
-                raise RoborockException(f"Request ID {request_id} already pending, cannot send command")
-            self._waiting_queue[request_id] = future
-
+        future: asyncio.Future[RoborockMessage] = await self._pending_rpcs.start(request_id)
         try:
             encoded_msg = self._encoder(message)
             self._transport.write(encoded_msg)
             return await asyncio.wait_for(future, timeout=timeout)
         except asyncio.TimeoutError as ex:
-            async with self._queue_lock:
-                self._waiting_queue.pop(request_id, None)
+            await self._pending_rpcs.pop(request_id)
             raise RoborockException(f"Command timed out after {timeout}s") from ex
         except Exception:
             logging.exception("Uncaught error sending command")
-            async with self._queue_lock:
-                self._waiting_queue.pop(request_id, None)
+            await self._pending_rpcs.pop(request_id)
             raise
 
 
