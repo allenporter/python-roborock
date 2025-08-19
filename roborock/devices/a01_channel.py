@@ -66,7 +66,7 @@ async def send_decoded_command(
         """Handle incoming messages and resolve the future."""
         try:
             decoded = decode_rpc_response(response_message)
-        except RoborockException as ex: 
+        except RoborockException as ex:
             _LOGGER.info("Failed to decode a01 message: %s: %s", response_message, ex)
             return
         for key, value in decoded.items():
