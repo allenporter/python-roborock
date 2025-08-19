@@ -95,7 +95,18 @@ class RequestMessage:
         )
 
 
-def decode_rpc_response(message: RoborockMessage) -> dict[str, Any]:
+@dataclass(kw_only=True, frozen=True)
+class ResponseMessage:
+    """Data structure for v1 RoborockMessage responses."""
+
+    request_id: int | None
+    """The request ID of the response."""
+
+    data: dict[str, Any]
+    """The data of the response."""
+
+
+def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
     """Decode a V1 RPC_RESPONSE message."""
     if not message.payload:
         raise RoborockException("Invalid V1 message format: missing payload")
@@ -109,14 +120,19 @@ def decode_rpc_response(message: RoborockMessage) -> dict[str, Any]:
     if not isinstance(datapoints, dict):
         raise RoborockException(f"Invalid V1 message format: 'dps' should be a dictionary for {message.payload!r}")
 
-    if not (data_point := datapoints.get("102")):
-        raise RoborockException("Invalid V1 message format: missing '102' data point")
+    if not (data_point := datapoints.get(str(RoborockMessageProtocol.RPC_RESPONSE))):
+        raise RoborockException(
+            f"Invalid V1 message format: missing '{RoborockMessageProtocol.RPC_RESPONSE}' data point"
+        )
 
     try:
         data_point_response = json.loads(data_point)
     except (json.JSONDecodeError, TypeError) as e:
-        raise RoborockException(f"Invalid V1 message data point '102': {e} for {message.payload!r}") from e
+        raise RoborockException(
+            f"Invalid V1 message data point '{RoborockMessageProtocol.RPC_RESPONSE}': {e} for {message.payload!r}"
+        ) from e
 
+    request_id: int | None = data_point_response.get("id")
     if error := data_point_response.get("error"):
         raise RoborockException(f"Error in message: {error}")
 
@@ -127,7 +143,7 @@ def decode_rpc_response(message: RoborockMessage) -> dict[str, Any]:
         result = result[0]
     if not isinstance(result, dict):
         raise RoborockException(f"Invalid V1 message format: 'result' should be a dictionary for {message.payload!r}")
-    return result
+    return ResponseMessage(request_id=request_id, data=result)
 
 
 @dataclass

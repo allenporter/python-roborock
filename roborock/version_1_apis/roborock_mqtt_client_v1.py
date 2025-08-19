@@ -49,7 +49,7 @@ class RoborockMqttClientV1(RoborockMqttClient, RoborockClientV1):
             RoborockMessageProtocol.RPC_REQUEST,
             security_data=self._security_data,
         )
-        self._logger.debug("Building message id %s for method %s", roborock_message.get_request_id, method)
+        self._logger.debug("Building message id %s for method %s", request_message.request_id, method)
 
         await self.validate_connection()
         request_id = request_message.request_id
