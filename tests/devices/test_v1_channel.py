@@ -63,13 +63,15 @@ LOCAL_DECODER = create_local_decoder(TEST_LOCAL_KEY)
 
 
 @pytest.fixture(name="mock_mqtt_channel")
-def setup_mock_mqtt_channel() -> FakeChannel:
+async def setup_mock_mqtt_channel() -> FakeChannel:
     """Mock MQTT channel for testing."""
-    return FakeChannel()
+    channel = FakeChannel()
+    await channel.connect()
+    return channel
 
 
 @pytest.fixture(name="mock_local_channel")
-def setup_mock_local_channel() -> FakeChannel:
+async def setup_mock_local_channel() -> FakeChannel:
     """Mock Local channel for testing."""
     return FakeChannel()
 
@@ -143,6 +145,39 @@ async def test_v1_channel_subscribe_mqtt_only_success(
 
     # Verify properties
     assert v1_channel.is_mqtt_connected
+    assert not v1_channel.is_local_connected
+
+    # Test unsubscribe
+    unsub()
+    assert not mock_mqtt_channel.subscribers
+
+
+async def test_v1_channel_mqtt_disconnected(
+    v1_channel: V1Channel,
+    mock_mqtt_channel: FakeChannel,
+    mock_local_session: Mock,
+    mock_local_channel: FakeChannel,
+) -> None:
+    """Test successful subscription with MQTT only (local connection fails)."""
+    # Setup: MQTT succeeds, local fails
+    mock_mqtt_channel.response_queue.append(TEST_NETWORK_INFO_RESPONSE)
+    mock_local_channel.connect.side_effect = RoborockException("Connection failed")
+
+    callback = Mock()
+    unsub = await v1_channel.subscribe(callback)
+
+    # Verify MQTT connection was established
+    assert mock_mqtt_channel.subscribers
+
+    # Verify local connection was attempted but failed
+    mock_local_session.assert_called_once_with(TEST_HOST)
+    mock_local_channel.connect.assert_called_once()
+
+    # Simulate an MQTT disconnection where the channel is not healthy
+    await mock_mqtt_channel.close()
+
+    # Verify properties
+    assert not v1_channel.is_mqtt_connected
     assert not v1_channel.is_local_connected
 
     # Test unsubscribe

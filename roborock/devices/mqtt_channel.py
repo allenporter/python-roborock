@@ -30,12 +30,14 @@ class MqttChannel(Channel):
 
         self._decoder = create_mqtt_decoder(local_key)
         self._encoder = create_mqtt_encoder(local_key)
-        self._mqtt_unsub: Callable[[], None] | None = None
 
     @property
     def is_connected(self) -> bool:
-        """Return true if the channel is connected."""
-        return (self._mqtt_unsub is not None) and self._mqtt_session.connected
+        """Return true if the channel is connected.
+
+        This passes through the underlying MQTT session's connected state.
+        """
+        return self._mqtt_session.connected
 
     @property
     def _publish_topic(self) -> str:
@@ -52,9 +54,6 @@ class MqttChannel(Channel):
 
         The callback will be called with the message payload when a message is received.
 
-        All messages received will be processed through the provided callback, even
-        those sent in response to the `send_command` command.
-
         Returns a callable that can be used to unsubscribe from the topic.
         """
 
@@ -69,14 +68,7 @@ class MqttChannel(Channel):
                 except Exception as e:
                     _LOGGER.exception("Uncaught error in message handler callback: %s", e)
 
-        self._mqtt_unsub = await self._mqtt_session.subscribe(self._subscribe_topic, message_handler)
-
-        def unsub_wrapper() -> None:
-            if self._mqtt_unsub is not None:
-                self._mqtt_unsub()
-                self._mqtt_unsub = None
-
-        return unsub_wrapper
+        return await self._mqtt_session.subscribe(self._subscribe_topic, message_handler)
 
     async def publish(self, message: RoborockMessage) -> None:
         """Publish a command message.
