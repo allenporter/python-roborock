@@ -20,6 +20,10 @@ from .mqtt_channel import MqttChannel
 _LOGGER = logging.getLogger(__name__)
 _TIMEOUT = 10.0
 
+# Both RoborockDyadDataProtocol and RoborockZeoProtocol have the same
+# value for ID_QUERY
+_ID_QUERY = int(RoborockDyadDataProtocol.ID_QUERY)
+
 
 @overload
 async def send_decoded_command(
@@ -45,12 +49,10 @@ async def send_decoded_command(
     _LOGGER.debug("Sending MQTT command: %s", params)
     roborock_message = encode_mqtt_payload(params)
 
-    # We only block on a response for queries
+    # For commands that set values: send the command and do not
+    # block waiting for a response. Queries are handled below.
     param_values = {int(k): v for k, v in params.items()}
-    if not (
-        query_values := param_values.get(int(RoborockDyadDataProtocol.ID_QUERY))
-        or param_values.get(int(RoborockZeoProtocol.ID_QUERY))
-    ):
+    if not (query_values := param_values.get(_ID_QUERY)):
         await mqtt_channel.publish(roborock_message)
         return {}
 
@@ -64,12 +66,14 @@ async def send_decoded_command(
         """Handle incoming messages and resolve the future."""
         try:
             decoded = decode_rpc_response(response_message)
-        except RoborockException:
+        except RoborockException as ex: 
+            _LOGGER.info("Failed to decode a01 message: %s: %s", response_message, ex)
             return
         for key, value in decoded.items():
             if key in query_values:
                 result[key] = value
         if len(result) != len(query_values):
+            _LOGGER.debug("Incomplete query response: %s != %s", result, query_values)
             return
         _LOGGER.debug("Received query response: %s", result)
         if not finished.is_set():
