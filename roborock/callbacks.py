@@ -30,7 +30,11 @@ def safe_callback(callback: Callable[[V], None], logger: logging.Logger | None =
 
 
 class CallbackMap(Generic[K, V]):
-    """A mapping of callbacks for specific keys."""
+    """A mapping of callbacks for specific keys.
+
+    This allows for registering multiple callbacks for different keys and invoking them
+    when a value is received for a specific key.
+    """
 
     def __init__(self, logger: logging.Logger | None = None) -> None:
         self._callbacks: dict[K, list[Callable[[V], None]]] = {}
@@ -69,7 +73,11 @@ class CallbackMap(Generic[K, V]):
 
 
 class CallbackList(Generic[V]):
-    """A list of callbacks for specific keys."""
+    """A list of callbacks that can be invoked.
+
+    This combines a list of callbacks into a single callable. Callers can add
+    additional callbacks to the list at any time.
+    """
 
     def __init__(self, logger: logging.Logger | None = None) -> None:
         self._callbacks: list[Callable[[V], None]] = []
@@ -97,31 +105,10 @@ def decoder_callback(
 ) -> Callable[[K], None]:
     """Create a callback that decodes messages using a decoder and invokes a callback.
 
-    Any failures during decoding will be logged.
-    """
-    if logger is None:
-        logger = _LOGGER
+    The decoder converts a value into a list of values. The callback is then invoked
+    for each value in the list.
 
-    safe_cb = safe_callback(callback, logger)
-
-    def wrapper(data: K) -> None:
-        if not (messages := decoder(data)):
-            logger.warning("Failed to decode message: %s", data)
-            return
-        for message in messages:
-            _LOGGER.debug("Decoded message: %s", message)
-            safe_cb(message)
-
-    return wrapper
-
-
-
-def dipspatch_callback(
-    callback: Callable[[V], None], logger: logging.Logger | None = None
-) -> Callable[[list[V]], None]:
-    """Create a callback that decodes messages using a decoder and invokes a callback.
-
-    Any failures during decoding will be logged.
+    Any failures during decoding or invoking the callbacks will be logged.
     """
     if logger is None:
         logger = _LOGGER
