@@ -5,6 +5,7 @@ import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from roborock.callbacks import CallbackList, decoder_callback
 from roborock.exceptions import RoborockConnectionException, RoborockException
 from roborock.protocol import Decoder, Encoder, create_local_decoder, create_local_encoder
 from roborock.roborock_message import RoborockMessage
@@ -42,11 +43,13 @@ class LocalChannel(Channel):
         self._host = host
         self._transport: asyncio.Transport | None = None
         self._protocol: _LocalProtocol | None = None
-        self._subscribers: list[Callable[[RoborockMessage], None]] = []
+        self._subscribers: CallbackList[RoborockMessage] = CallbackList(_LOGGER)
         self._is_connected = False
 
         self._decoder: Decoder = create_local_decoder(local_key)
         self._encoder: Encoder = create_local_encoder(local_key)
+        # Callback to decode messages and dispatch to subscribers
+        self._data_received: Callable[[bytes], None] = decoder_callback(self._decoder, self._subscribers, _LOGGER)
 
     @property
     def is_connected(self) -> bool:
@@ -76,19 +79,6 @@ class LocalChannel(Channel):
         self._transport = None
         self._is_connected = False
 
-    def _data_received(self, data: bytes) -> None:
-        """Handle incoming data from the transport."""
-        if not (messages := self._decoder(data)):
-            _LOGGER.warning("Failed to decode local message: %s", data)
-            return
-        for message in messages:
-            _LOGGER.debug("Received message: %s", message)
-            for callback in self._subscribers:
-                try:
-                    callback(message)
-                except Exception as e:
-                    _LOGGER.exception("Uncaught error in message handler callback: %s", e)
-
     def _connection_lost(self, exc: Exception | None) -> None:
         """Handle connection loss."""
         _LOGGER.warning("Connection lost to %s", self._host, exc_info=exc)
@@ -97,12 +87,7 @@ class LocalChannel(Channel):
 
     async def subscribe(self, callback: Callable[[RoborockMessage], None]) -> Callable[[], None]:
         """Subscribe to all messages from the device."""
-        self._subscribers.append(callback)
-
-        def unsubscribe() -> None:
-            self._subscribers.remove(callback)
-
-        return unsubscribe
+        return self._subscribers.add_callback(callback)
 
     async def publish(self, message: RoborockMessage) -> None:
         """Send a command message.

@@ -148,7 +148,7 @@ async def test_message_decode_error(local_channel: LocalChannel, caplog: pytest.
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == "WARNING"
-    assert "Failed to decode local message" in caplog.records[0].message
+    assert "Failed to decode message" in caplog.records[0].message
 
 
 async def test_subscribe_callback(
@@ -181,7 +181,7 @@ async def test_subscribe_callback_exception_handling(
     await asyncio.sleep(0.01)  # yield
 
     # Should log the exception but not crash
-    assert any("Uncaught error in message handler callback" in record.message for record in caplog.records)
+    assert any("Uncaught error in callback 'failing_callback'" in record.message for record in caplog.records)
 
 
 async def test_unsubscribe(local_channel: LocalChannel, mock_loop: Mock) -> None:
