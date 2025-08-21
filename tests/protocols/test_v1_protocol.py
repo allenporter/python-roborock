@@ -2,9 +2,12 @@
 
 from collections.abc import Generator
 from unittest.mock import patch
+import pathlib
+import json
 
 import pytest
 from freezegun import freeze_time
+from syrupy import SnapshotAssertion
 
 from roborock.containers import RoborockBase, UserData
 from roborock.exceptions import RoborockException
@@ -28,6 +31,12 @@ SECURITY_DATA = SecurityData(
     endpoint=TEST_ENDPOINT,
     nonce=b"\x91\xbe\x10\xc9b+\x9d\x8a\xcdH*\x19\xf6\xfe\x81h",
 )
+
+
+TESTDATA_PATH = pathlib.Path("tests/protocols/testdata/v1_protocol/")
+TESTDATA_FILES = list(TESTDATA_PATH.glob("*.json"))
+TESTDATA_IDS = [x.stem for x in TESTDATA_FILES]
+
 
 
 @pytest.fixture(autouse=True)
@@ -130,6 +139,25 @@ def test_decode_rpc_response(payload: bytes, expected: RoborockBase) -> None:
     decoded_message = decode_rpc_response(message)
     assert decoded_message.request_id == 20005
     assert decoded_message.data == expected
+
+
+@pytest.mark.parametrize("filename", TESTDATA_FILES, ids=TESTDATA_IDS)
+def test_decode_rpc_payload(filename: str, snapshot: SnapshotAssertion) -> None:
+    """Test decoding a v1 RPC response protocol message."""
+    with open(filename, "rb") as f:
+        payload = f.read()
+    # The values other than the payload are arbitrary
+    message = RoborockMessage(
+        protocol=RoborockMessageProtocol.GENERAL_RESPONSE,
+        payload=payload,
+        seq=12750,
+        version=b"1.0",
+        random=97431,
+        timestamp=1652547161,
+    )
+    decoded_message = decode_rpc_response(message)
+    assert decoded_message.request_id == snapshot
+    assert json.dumps(decoded_message.data, indent=2) == snapshot
 
 
 def test_create_map_response_decoder():
