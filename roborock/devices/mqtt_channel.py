@@ -3,6 +3,7 @@
 import logging
 from collections.abc import Callable
 
+from roborock.callbacks import decoder_callback
 from roborock.containers import HomeDataDevice, RRiot, UserData
 from roborock.exceptions import RoborockException
 from roborock.mqtt.session import MqttParams, MqttSession, MqttSessionException
@@ -56,19 +57,8 @@ class MqttChannel(Channel):
 
         Returns a callable that can be used to unsubscribe from the topic.
         """
-
-        def message_handler(payload: bytes) -> None:
-            if not (messages := self._decoder(payload)):
-                _LOGGER.warning("Failed to decode MQTT message: %s", payload)
-                return
-            for message in messages:
-                _LOGGER.debug("Received message: %s", message)
-                try:
-                    callback(message)
-                except Exception as e:
-                    _LOGGER.exception("Uncaught error in message handler callback: %s", e)
-
-        return await self._mqtt_session.subscribe(self._subscribe_topic, message_handler)
+        dispatch = decoder_callback(self._decoder, callback, _LOGGER)
+        return await self._mqtt_session.subscribe(self._subscribe_topic, dispatch)
 
     async def publish(self, message: RoborockMessage) -> None:
         """Publish a command message.

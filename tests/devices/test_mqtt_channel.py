@@ -150,7 +150,7 @@ async def test_message_decode_error(
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == "WARNING"
-    assert "Failed to decode MQTT message" in caplog.records[0].message
+    assert "Failed to decode message" in caplog.records[0].message
     unsub()
 
 
@@ -255,7 +255,7 @@ async def test_concurrent_subscribers_with_callback_exception(
     # Check that exception was logged
     error_records = [record for record in caplog.records if record.levelname == "ERROR"]
     assert len(error_records) == 1
-    assert "Uncaught error in message handler callback" in error_records[0].message
+    assert "Uncaught error in callback 'failing_callback'" in error_records[0].message
 
     # Unsubscribe all remaining subscribers
     unsub1()
