@@ -1,9 +1,9 @@
 """Tests for the v1 protocol message encoding and decoding."""
 
+import json
+import pathlib
 from collections.abc import Generator
 from unittest.mock import patch
-import pathlib
-import json
 
 import pytest
 from freezegun import freeze_time
@@ -36,7 +36,6 @@ SECURITY_DATA = SecurityData(
 TESTDATA_PATH = pathlib.Path("tests/protocols/testdata/v1_protocol/")
 TESTDATA_FILES = list(TESTDATA_PATH.glob("*.json"))
 TESTDATA_IDS = [x.stem for x in TESTDATA_FILES]
-
 
 
 @pytest.fixture(autouse=True)
