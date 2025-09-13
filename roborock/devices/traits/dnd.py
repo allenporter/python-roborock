@@ -27,16 +27,16 @@ class DoNotDisturbTrait(Trait):
 
     def __init__(self, rpc_channel: Callable[[], V1RpcChannel]) -> None:
         """Initialize the DoNotDisturbTrait."""
-        self._rpc_channel = rpc_channel
+        self._send_command = lambda *args, **kwargs: rpc_channel().send_command(*args, **kwargs)
 
     async def get_dnd_timer(self) -> DnDTimer:
         """Get the current Do Not Disturb (DND) timer settings of the device."""
-        return await self._rpc_channel().send_command(RoborockCommand.GET_DND_TIMER, response_type=DnDTimer)
+        return await self._send_command(RoborockCommand.GET_DND_TIMER, response_type=DnDTimer)
 
     async def set_dnd_timer(self, dnd_timer: DnDTimer) -> None:
         """Set the Do Not Disturb (DND) timer settings of the device."""
-        await self._rpc_channel().send_command(RoborockCommand.SET_DND_TIMER, params=dnd_timer.as_dict())
+        await self._send_command(RoborockCommand.SET_DND_TIMER, params=dnd_timer.as_dict())
 
     async def clear_dnd_timer(self) -> None:
         """Clear the Do Not Disturb (DND) timer settings of the device."""
-        await self._rpc_channel().send_command(RoborockCommand.CLOSE_DND_TIMER)
+        await self._send_command(RoborockCommand.CLOSE_DND_TIMER)
