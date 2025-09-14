@@ -5,7 +5,6 @@ until the API is stable.
 """
 
 import logging
-from collections.abc import Callable
 
 from roborock.containers import (
     HomeDataProduct,
@@ -30,10 +29,10 @@ class StatusTrait(Trait):
 
     name = "status"
 
-    def __init__(self, product_info: HomeDataProduct, rpc_channel: Callable[[], V1RpcChannel]) -> None:
+    def __init__(self, product_info: HomeDataProduct, rpc_channel: V1RpcChannel) -> None:
         """Initialize the StatusTrait."""
         self._product_info = product_info
-        self._send_command = lambda *args, **kwargs: rpc_channel().send_command(*args, **kwargs)
+        self._rpc_channel = rpc_channel
 
     async def get_status(self) -> Status:
         """Get the current status of the device.
@@ -41,4 +40,4 @@ class StatusTrait(Trait):
         This is a placeholder command and will likely be changed/moved in the future.
         """
         status_type: type[Status] = ModelStatus.get(self._product_info.model, S7MaxVStatus)
-        return await self._send_command(RoborockCommand.GET_STATUS, response_type=status_type)
+        return await self._rpc_channel.send_command(RoborockCommand.GET_STATUS, response_type=status_type)

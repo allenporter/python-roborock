@@ -1,6 +1,6 @@
 """Tests for the DoNotDisturbTrait class."""
 
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -20,15 +20,9 @@ def mock_rpc_channel() -> AsyncMock:
 
 
 @pytest.fixture
-def mock_rpc_channel_callable(mock_rpc_channel: AsyncMock) -> Mock:
-    """Create a callable that returns the mock RPC channel."""
-    return Mock(return_value=mock_rpc_channel)
-
-
-@pytest.fixture
-def dnd_trait(mock_rpc_channel_callable: Mock) -> DoNotDisturbTrait:
+def dnd_trait(mock_rpc_channel: AsyncMock) -> DoNotDisturbTrait:
     """Create a DoNotDisturbTrait instance with mocked dependencies."""
-    return DoNotDisturbTrait(mock_rpc_channel_callable)
+    return DoNotDisturbTrait(mock_rpc_channel)
 
 
 @pytest.fixture
