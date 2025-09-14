@@ -12,20 +12,20 @@ from roborock.containers import (
     S7MaxVStatus,
     Status,
 )
+from roborock.devices.v1_rpc_channel import V1RpcChannel
 from roborock.roborock_typing import RoborockCommand
 
-from ..v1_rpc_channel import V1RpcChannel
 from .trait import Trait
 
 _LOGGER = logging.getLogger(__name__)
 
 __all__ = [
-    "Status",
+    "StatusTrait",
 ]
 
 
 class StatusTrait(Trait):
-    """Unified Roborock device class with automatic connection setup."""
+    """Trait for managing the status of Roborock devices."""
 
     name = "status"
 
