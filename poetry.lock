@@ -239,6 +239,25 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "click-shell"
+version = "2.1"
+description = "An extension to click that easily turns your click app into a shell utility"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "click-shell-2.1.tar.gz", hash = "sha256:ce0c91faae284c41a39bec966f928791ad4a45763755445f1fe2041fd091aa37"},
+    {file = "click_shell-2.1-py2.py3-none-any.whl", hash = "sha256:2d971a2e50eb7ad387cf0ce79ba4b844e66e0580784e2efe2df58b50a2f047f0"},
+]
+
+[package.dependencies]
+click = ">=6.0"
+
+[package.extras]
+readline = ["gnureadline"]
+windows = ["pyreadline"]
+
+[[package]]
 name = "codespell"
 version = "2.4.1"
 description = "Fix common misspellings in text files"
@@ -1623,4 +1642,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "c5594d018cffe1e085cf1eddf1884d8acbf99c283fad97edb2e8762790fc56ea"
+content-hash = "592d0befc63c27485c5bcea0853acfba35f97a0d72d33040b6aadd13d3bf95f1"
