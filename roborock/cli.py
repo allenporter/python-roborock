@@ -420,7 +420,6 @@ async def clean_summary(ctx, device_id: str):
 @async_command
 async def volume(ctx, device_id: str):
     """Get device volume."""
-
     context: RoborockContext = ctx.obj
 
     device_manager = await context.get_device_manager()

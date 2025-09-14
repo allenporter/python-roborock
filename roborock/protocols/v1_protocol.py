@@ -111,6 +111,9 @@ class ResponseMessage:
     api_error: RoborockException | None = None
     """The API error message of the response if any."""
 
+    api_error: RoborockException | None = None
+    """The API error message of the response if any."""
+
 
 def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
     """Decode a V1 RPC_RESPONSE message.
@@ -151,7 +154,6 @@ def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
     if not (result := data_point_response.get("result")):
         exc = RoborockException(f"Invalid V1 message format: missing 'result' in data point for {message.payload!r}")
     else:
-        _LOGGER.debug("Decoded V1 message result: %s", result)
         _LOGGER.debug("Decoded V1 message result: %s", result)
         if isinstance(result, str):
             if result == "unknown_method":
