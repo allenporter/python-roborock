@@ -88,16 +88,15 @@ class BaseV1RpcChannel(V1RpcChannel):
         raise NotImplementedError
 
 
-class CombinedV1RpcChannel(BaseV1RpcChannel):
-    """A V1 RPC channel that can use both local and MQTT channels, preferring local when available."""
+class PickFirstAvailable(BaseV1RpcChannel):
+    """A V1 RPC channel that tries multiple channels and picks the first that works."""
 
     def __init__(
-        self, local_channel: LocalChannel, local_rpc_channel: V1RpcChannel, mqtt_channel: V1RpcChannel
+        self,
+        channel_cbs: list[Callable[[], V1RpcChannel | None]],
     ) -> None:
-        """Initialize the combined channel with local and MQTT channels."""
-        self._local_channel = local_channel
-        self._local_rpc_channel = local_rpc_channel
-        self._mqtt_rpc_channel = mqtt_channel
+        """Initialize the pick-first-available channel."""
+        self._channel_cbs = channel_cbs
 
     async def _send_raw_command(
         self,
@@ -106,9 +105,10 @@ class CombinedV1RpcChannel(BaseV1RpcChannel):
         params: ParamsType = None,
     ) -> Any:
         """Send a command and return a parsed response RoborockBase type."""
-        if self._local_channel.is_connected:
-            return await self._local_rpc_channel.send_command(method, params=params)
-        return await self._mqtt_rpc_channel.send_command(method, params=params)
+        for channel_cb in self._channel_cbs:
+            if channel := channel_cb():
+                return await channel.send_command(method, params=params)
+        raise RoborockException("No available connection to send command")
 
 
 class PayloadEncodedV1RpcChannel(BaseV1RpcChannel):
@@ -166,11 +166,10 @@ def create_mqtt_rpc_channel(mqtt_channel: MqttChannel, security_data: SecurityDa
     )
 
 
-def create_combined_rpc_channel(local_channel: LocalChannel, mqtt_rpc_channel: V1RpcChannel) -> V1RpcChannel:
-    """Create a V1 RPC channel that combines local and MQTT channels."""
-    local_rpc_channel = PayloadEncodedV1RpcChannel(
+def create_local_rpc_channel(local_channel: LocalChannel) -> V1RpcChannel:
+    """Create a V1 RPC channel using a local channel."""
+    return PayloadEncodedV1RpcChannel(
         "local",
         local_channel,
         lambda x: x.encode_message(RoborockMessageProtocol.GENERAL_REQUEST),
     )
-    return CombinedV1RpcChannel(local_channel, local_rpc_channel, mqtt_rpc_channel)
