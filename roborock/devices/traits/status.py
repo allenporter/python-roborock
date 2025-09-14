@@ -5,6 +5,7 @@ until the API is stable.
 """
 
 import logging
+from typing import Any
 
 from roborock.containers import (
     HomeDataProduct,
@@ -40,4 +41,9 @@ class StatusTrait(Trait):
         This is a placeholder command and will likely be changed/moved in the future.
         """
         status_type: type[Status] = ModelStatus.get(self._product_info.model, S7MaxVStatus)
-        return await self._rpc_channel.send_command(RoborockCommand.GET_STATUS, response_type=status_type)
+        status: dict[str, Any] | list = await self._rpc_channel.send_command(RoborockCommand.GET_STATUS)
+        if isinstance(status, list):
+            status = status[0]
+        if not isinstance(status, dict):
+            raise ValueError(f"Unexpected status format: {status!r}")
+        return status_type.from_dict(status)

@@ -17,6 +17,7 @@ from roborock.protocols.v1_protocol import (
     CommandType,
     ParamsType,
     RequestMessage,
+    ResponseData,
     SecurityData,
     decode_rpc_response,
 )
@@ -130,7 +131,7 @@ class PayloadEncodedV1RpcChannel(BaseV1RpcChannel):
         method: CommandType,
         *,
         params: ParamsType = None,
-    ) -> Any:
+    ) -> ResponseData:
         """Send a command and return a parsed response RoborockBase type."""
         request_message = RequestMessage(method, params=params)
         _LOGGER.debug(
@@ -138,7 +139,7 @@ class PayloadEncodedV1RpcChannel(BaseV1RpcChannel):
         )
         message = self._payload_encoder(request_message)
 
-        future: asyncio.Future[dict[str, Any]] = asyncio.Future()
+        future: asyncio.Future[ResponseData] = asyncio.Future()
 
         def find_response(response_message: RoborockMessage) -> None:
             try:

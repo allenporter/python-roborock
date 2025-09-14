@@ -95,6 +95,9 @@ class RequestMessage:
         )
 
 
+ResponseData = dict[str, Any] | list | int
+
+
 @dataclass(kw_only=True, frozen=True)
 class ResponseMessage:
     """Data structure for v1 RoborockMessage responses."""
@@ -102,8 +105,8 @@ class ResponseMessage:
     request_id: int | None
     """The request ID of the response."""
 
-    data: dict[str, Any]
-    """The data of the response."""
+    data: ResponseData
+    """The data of the response, where the type depends on the command."""
 
 
 def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
@@ -139,12 +142,12 @@ def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
     if not (result := data_point_response.get("result")):
         raise RoborockException(f"Invalid V1 message format: missing 'result' in data point for {message.payload!r}")
     _LOGGER.debug("Decoded V1 message result: %s", result)
-    if isinstance(result, list) and result:
-        result = result[0]
     if isinstance(result, str) and result == "ok":
         result = {}
-    if not isinstance(result, dict):
-        raise RoborockException(f"Invalid V1 message format: 'result' should be a dictionary for {message.payload!r}")
+    if not isinstance(result, (dict, list, int)):
+        raise RoborockException(
+            f"Invalid V1 message format: 'result' was unexpected type {type(result)}. {message.payload!r}"
+        )
     return ResponseMessage(request_id=request_id, data=result)
 
 
