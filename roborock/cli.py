@@ -382,7 +382,7 @@ async def execute_scene(ctx, scene_id):
 @click.pass_context
 @async_command
 async def status(ctx, device_id: str):
-    """Get device status - unified implementation for both modes."""
+    """Get device status."""
     context: RoborockContext = ctx.obj
 
     device_manager = await context.get_device_manager()
@@ -412,6 +412,47 @@ async def clean_summary(ctx, device_id: str):
 
     clean_summary_result = await clean_summary_trait.get_clean_summary()
     click.echo(dump_json(clean_summary_result.as_dict()))
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.pass_context
+@async_command
+async def volume(ctx, device_id: str):
+    """Get device volume."""
+
+    context: RoborockContext = ctx.obj
+
+    device_manager = await context.get_device_manager()
+    device = await device_manager.get_device(device_id)
+
+    if not (volume_trait := device.traits.get("sound_volume")):
+        click.echo(f"Device {device.name} does not have a volume trait")
+        return
+
+    volume_result = await volume_trait.get_volume()
+    click.echo(f"Device {device_id} volume:")
+    click.echo(volume_result)
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.option("--volume", required=True, type=int)
+@click.pass_context
+@async_command
+async def set_volume(ctx, device_id: str, volume: int):
+    """Set the devicevolume."""
+    context: RoborockContext = ctx.obj
+
+    device_manager = await context.get_device_manager()
+    device = await device_manager.get_device(device_id)
+
+    if not (volume_trait := device.traits.get("sound_volume")):
+        click.echo(f"Device {device.name} does not have a volume trait")
+        return
+
+    await volume_trait.set_volume(volume)
+    click.echo(f"Set Device {device_id} volume to {volume}")
 
 
 @click.command()
@@ -653,6 +694,8 @@ cli.add_command(session)
 cli.add_command(get_device_info)
 cli.add_command(update_docs)
 cli.add_command(clean_summary)
+cli.add_command(volume)
+cli.add_command(set_volume)
 
 
 def main():

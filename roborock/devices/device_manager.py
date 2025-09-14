@@ -25,6 +25,7 @@ from .traits.b01.props import B01PropsApi
 from .traits.clean_summary import CleanSummaryTrait
 from .traits.dnd import DoNotDisturbTrait
 from .traits.dyad import DyadApi
+from .traits.sound_volume import SoundVolumeTrait
 from .traits.status import StatusTrait
 from .traits.trait import Trait
 from .traits.zeo import ZeoApi
@@ -156,6 +157,7 @@ async def create_device_manager(
                 traits.append(StatusTrait(product, channel.rpc_channel))
                 traits.append(DoNotDisturbTrait(channel.rpc_channel))
                 traits.append(CleanSummaryTrait(channel.rpc_channel))
+                traits.append(SoundVolumeTrait(channel.rpc_channel))
             case DeviceVersion.A01:
                 mqtt_channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
                 match product.category:

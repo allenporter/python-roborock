@@ -149,7 +149,10 @@ class PayloadEncodedV1RpcChannel(BaseV1RpcChannel):
                 return
             _LOGGER.debug("Received response (request_id=%s): %s", self._name, decoded.request_id)
             if decoded.request_id == request_message.request_id:
-                future.set_result(decoded.data)
+                if decoded.api_error:
+                    future.set_exception(decoded.api_error)
+                else:
+                    future.set_result(decoded.data)
 
         unsub = await self._channel.subscribe(find_response)
         try:
