@@ -111,9 +111,6 @@ class ResponseMessage:
     api_error: RoborockException | None = None
     """The API error message of the response if any."""
 
-    api_error: RoborockException | None = None
-    """The API error message of the response if any."""
-
 
 def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
     """Decode a V1 RPC_RESPONSE message.
