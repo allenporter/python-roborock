@@ -227,3 +227,50 @@ def test_create_map_response_decoder_invalid_payload():
 
     with pytest.raises(RoborockException, match="Invalid V1 map response format: missing payload"):
         decoder(message)
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected_data", "expected_error"),
+    [
+        (
+            b'{"t":1757883536,"dps":{"102":"{\\"id\\":20001,\\"result\\":\\"unknown_method\\"}"}}',
+            {},
+            "The method called is not recognized by the device.",
+        ),
+        (
+            b'{"t":1757883536,"dps":{"102":"{\\"id\\":20001,\\"result\\":\\"other\\"}"}}',
+            {},
+            "Unexpected API Result",
+        ),
+    ],
+)
+def test_decode_result_with_error(payload: bytes, expected_data: dict[str, str], expected_error: str) -> None:
+    """Test decoding a v1 RPC response protocol message."""
+    # The values other than the payload are arbitrary
+    message = RoborockMessage(
+        protocol=RoborockMessageProtocol.GENERAL_RESPONSE,
+        payload=payload,
+        seq=12750,
+        version=b"1.0",
+        random=97431,
+        timestamp=1652547161,
+    )
+    decoded_message = decode_rpc_response(message)
+    assert decoded_message.request_id == 20001
+    assert decoded_message.data == expected_data
+    assert decoded_message.api_error
+    assert expected_error in str(decoded_message.api_error)
+
+
+def test_decode_no_request_id():
+    """Test map response decoder without a request id is raised as an exception."""
+    message = RoborockMessage(
+        protocol=RoborockMessageProtocol.GENERAL_RESPONSE,
+        payload=b'{"t":1757883536,"dps":{"102":"{\\"result\\":\\"unknown_method\\"}"}}',
+        seq=12750,
+        version=b"1.0",
+        random=97431,
+        timestamp=1652547161,
+    )
+    with pytest.raises(RoborockException, match="The method called is not recognized by the device"):
+        decode_rpc_response(message)

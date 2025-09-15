@@ -108,9 +108,18 @@ class ResponseMessage:
     data: ResponseData
     """The data of the response, where the type depends on the command."""
 
+    api_error: RoborockException | None = None
+    """The API error message of the response if any."""
+
 
 def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
-    """Decode a V1 RPC_RESPONSE message."""
+    """Decode a V1 RPC_RESPONSE message.
+
+    This will raise a RoborockException if the message cannot be parsed. A
+    response object will be returned even if there is an error in the
+    response, as long as we can extract the request ID. This is so we can
+    associate an API response with a request even if there was an error.
+    """
     if not message.payload:
         return ResponseMessage(request_id=message.seq, data={})
     try:
@@ -136,19 +145,26 @@ def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
         ) from e
 
     request_id: int | None = data_point_response.get("id")
+    exc: RoborockException | None = None
     if error := data_point_response.get("error"):
-        raise RoborockException(f"Error in message: {error}")
-
+        exc = RoborockException(error)
     if not (result := data_point_response.get("result")):
-        raise RoborockException(f"Invalid V1 message format: missing 'result' in data point for {message.payload!r}")
-    _LOGGER.debug("Decoded V1 message result: %s", result)
-    if isinstance(result, str) and result == "ok":
-        result = {}
-    if not isinstance(result, (dict, list, int)):
-        raise RoborockException(
-            f"Invalid V1 message format: 'result' was unexpected type {type(result)}. {message.payload!r}"
-        )
-    return ResponseMessage(request_id=request_id, data=result)
+        exc = RoborockException(f"Invalid V1 message format: missing 'result' in data point for {message.payload!r}")
+    else:
+        _LOGGER.debug("Decoded V1 message result: %s", result)
+        if isinstance(result, str):
+            if result == "unknown_method":
+                exc = RoborockException("The method called is not recognized by the device.")
+            elif result != "ok":
+                exc = RoborockException(f"Unexpected API Result: {result}")
+            result = {}
+        if not isinstance(result, (dict, list, int)):
+            raise RoborockException(
+                f"Invalid V1 message format: 'result' was unexpected type {type(result)}. {message.payload!r}"
+            )
+    if not request_id and exc:
+        raise exc
+    return ResponseMessage(request_id=request_id, data=result, api_error=exc)
 
 
 @dataclass

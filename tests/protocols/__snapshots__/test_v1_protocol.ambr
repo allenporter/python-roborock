@@ -84,3 +84,13 @@
   ]
   '''
 # ---
+# name: test_decode_rpc_payload[get_volume]
+  20001
+# ---
+# name: test_decode_rpc_payload[get_volume].1
+  '''
+  [
+    90
+  ]
+  '''
+# ---
