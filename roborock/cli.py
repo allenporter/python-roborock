@@ -388,14 +388,30 @@ async def status(ctx, device_id: str):
     device_manager = await context.get_device_manager()
     device = await device_manager.get_device(device_id)
 
-    click.echo(f"Getting status for device {device_id}")
     if not (status_trait := device.traits.get("status")):
         click.echo(f"Device {device.name} does not have a status trait")
         return
 
     status_result = await status_trait.get_status()
-    click.echo(f"Device {device_id} status:")
     click.echo(dump_json(status_result.as_dict()))
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.pass_context
+@async_command
+async def clean_summary(ctx, device_id: str):
+    """Get device clean summary."""
+    context: RoborockContext = ctx.obj
+
+    device_manager = await context.get_device_manager()
+    device = await device_manager.get_device(device_id)
+    if not (clean_summary_trait := device.traits.get("clean_summary")):
+        click.echo(f"Device {device.name} does not have a clean summary trait")
+        return
+
+    clean_summary_result = await clean_summary_trait.get_clean_summary()
+    click.echo(dump_json(clean_summary_result.as_dict()))
 
 
 @click.command()
@@ -636,6 +652,7 @@ cli.add_command(parser)
 cli.add_command(session)
 cli.add_command(get_device_info)
 cli.add_command(update_docs)
+cli.add_command(clean_summary)
 
 
 def main():
