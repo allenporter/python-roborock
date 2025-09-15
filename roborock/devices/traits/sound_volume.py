@@ -2,8 +2,8 @@
 
 from roborock.devices.traits.trait import Trait
 from roborock.devices.v1_rpc_channel import V1RpcChannel
-from roborock.roborock_typing import RoborockCommand
 from roborock.exceptions import RoborockException
+from roborock.roborock_typing import RoborockCommand
 
 __all__ = [
     "SoundVolumeTrait",
