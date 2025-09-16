@@ -117,7 +117,7 @@ async def test_device_trait_command_parsing(
     trait_type: type[Trait],
     trait_method: Callable[..., Awaitable[object]],
 ) -> None:
-    """Test the device get_status command."""
+    """Test the device trait command."""
     trait = device.traits[trait_name]
     assert trait
     assert isinstance(trait, trait_type)
