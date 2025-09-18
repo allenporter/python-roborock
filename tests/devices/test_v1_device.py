@@ -1,8 +1,8 @@
 """Tests for the Device class."""
 
 import pathlib
-from unittest.mock import AsyncMock, Mock
 from collections.abc import Awaitable, Callable
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 from syrupy import SnapshotAssertion
@@ -107,7 +107,7 @@ def setup_rpc_channel_fixture(rpc_channel: AsyncMock, payload: pathlib.Path) -> 
         (TESTDATA / "get_dnd.json", "do_not_disturb", DoNotDisturbTrait, DoNotDisturbTrait.get_dnd_timer),
         (TESTDATA / "get_clean_summary.json", "clean_summary", CleanSummaryTrait, CleanSummaryTrait.get_clean_summary),
         (TESTDATA / "get_volume.json", "sound_volume", SoundVolumeTrait, SoundVolumeTrait.get_volume),
-    ]
+    ],
 )
 async def test_device_trait_command_parsing(
     device: RoborockDevice,
