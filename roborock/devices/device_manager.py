@@ -7,7 +7,6 @@ from collections.abc import Awaitable, Callable
 
 import aiohttp
 
-from roborock.code_mappings import RoborockCategory
 from roborock.containers import (
     HomeData,
     HomeDataDevice,
@@ -23,14 +22,7 @@ from roborock.web_api import RoborockApiClient
 from .cache import Cache, NoCache
 from .channel import Channel
 from .mqtt_channel import create_mqtt_channel
-from .traits.b01.props import B01PropsApi
-from .traits.clean_summary import CleanSummaryTrait
-from .traits.dnd import DoNotDisturbTrait
-from .traits.dyad import DyadApi
-from .traits.sound_volume import SoundVolumeTrait
-from .traits.status import StatusTrait
-from .traits.trait import Trait
-from .traits.zeo import ZeoApi
+from .traits import Trait, a01, b01, v1
 from .v1_channel import create_v1_channel
 
 _LOGGER = logging.getLogger(__name__)
@@ -154,26 +146,19 @@ async def create_device_manager(
     def device_creator(device: HomeDataDevice, product: HomeDataProduct) -> RoborockDevice:
         channel: Channel
         traits: list[Trait] = []
-        # TODO: Define a registration mechanism/factory for v1 traits
         match device.pv:
             case DeviceVersion.V1:
-                channel = create_v1_channel(user_data, mqtt_params, mqtt_session, device, cache)
-                traits.append(StatusTrait(product, channel.rpc_channel))
-                traits.append(DoNotDisturbTrait(channel.rpc_channel))
-                traits.append(CleanSummaryTrait(channel.rpc_channel))
-                traits.append(SoundVolumeTrait(channel.rpc_channel))
+                v1_channel = create_v1_channel(user_data, mqtt_params, mqtt_session, device, cache)
+                channel = v1_channel
+                traits.extend(v1.create_v1_traits(product, v1_channel.rpc_channel))
             case DeviceVersion.A01:
                 mqtt_channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
-                match product.category:
-                    case RoborockCategory.WET_DRY_VAC:
-                        traits.append(DyadApi(mqtt_channel))
-                    case RoborockCategory.WASHING_MACHINE:
-                        traits.append(ZeoApi(mqtt_channel))
-                    case _:
-                        raise NotImplementedError(f"Device {device.name} has unsupported category {product.category}")
+                channel = mqtt_channel
+                traits.extend(a01.create_a01_traits(product, mqtt_channel))
             case DeviceVersion.B01:
-                channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
-                traits.append(B01PropsApi(channel))
+                mqtt_channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
+                channel = mqtt_channel
+                traits.extend(b01.create_b01_traits(mqtt_channel))
             case _:
                 raise NotImplementedError(f"Device {device.name} has unsupported version {device.pv}")
         return RoborockDevice(device, channel, traits)

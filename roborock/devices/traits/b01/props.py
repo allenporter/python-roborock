@@ -7,7 +7,7 @@ from roborock.roborock_message import RoborockB01Props
 
 from ...b01_channel import send_decoded_command
 from ...mqtt_channel import MqttChannel
-from ..trait import Trait
+from .. import Trait
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,8 +18,6 @@ __all__ = [
 
 class B01PropsApi(Trait):
     """API for interacting with B01 devices."""
-
-    name = "B01_props"
 
     def __init__(self, channel: MqttChannel) -> None:
         """Initialize the B01Props API."""
