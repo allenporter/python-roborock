@@ -45,6 +45,7 @@ from roborock.devices.cache import Cache, CacheData
 from roborock.devices.device import RoborockDevice
 from roborock.devices.device_manager import DeviceManager, create_device_manager, create_home_data_api
 from roborock.devices.traits import Trait
+from roborock.devices.traits.v1 import V1TraitMixin
 from roborock.protocol import MessageParser
 from roborock.version_1_apis.roborock_mqtt_client_v1 import RoborockMqttClientV1
 from roborock.web_api import RoborockApiClient
@@ -379,7 +380,7 @@ async def execute_scene(ctx, scene_id):
     await client.execute_scene(cache_data.user_data, scene_id)
 
 
-async def _v1_trait(context: RoborockContext, device_id: str, display_func: Callable[[], Trait]) -> Trait:
+async def _v1_trait(context: RoborockContext, device_id: str, display_func: Callable[[], V1TraitMixin]) -> Trait:
     device_manager = await context.get_device_manager()
     device = await device_manager.get_device(device_id)
     if device.v1_properties is None:

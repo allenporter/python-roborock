@@ -6,12 +6,14 @@ from roborock.containers import HomeDataProduct
 from roborock.devices.traits import Trait
 from roborock.devices.v1_rpc_channel import V1RpcChannel
 
+from .common import V1TraitMixin
 from .properties import CleanSummaryTrait, DoNotDisturbTrait, SoundVolumeTrait, StatusTrait
 
 __all__ = [
     "create",
     "PropertiesApi",
     "properties",
+    "V1TraitMixin",
 ]
 
 
