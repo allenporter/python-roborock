@@ -145,23 +145,23 @@ async def create_device_manager(
 
     def device_creator(device: HomeDataDevice, product: HomeDataProduct) -> RoborockDevice:
         channel: Channel
-        traits: list[Trait] = []
+        trait: Trait
         match device.pv:
             case DeviceVersion.V1:
                 v1_channel = create_v1_channel(user_data, mqtt_params, mqtt_session, device, cache)
                 channel = v1_channel
-                traits.extend(v1.create_v1_traits(product, v1_channel.rpc_channel))
+                trait = v1.create(product, v1_channel.rpc_channel)
             case DeviceVersion.A01:
                 mqtt_channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
                 channel = mqtt_channel
-                traits.extend(a01.create_a01_traits(product, mqtt_channel))
+                trait = a01.create(product, mqtt_channel)
             case DeviceVersion.B01:
                 mqtt_channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
                 channel = mqtt_channel
-                traits.extend(b01.create_b01_traits(mqtt_channel))
+                trait = b01.create(mqtt_channel)
             case _:
                 raise NotImplementedError(f"Device {device.name} has unsupported version {device.pv}")
-        return RoborockDevice(device, channel, traits)
+        return RoborockDevice(device, channel, trait)
 
     manager = DeviceManager(home_data_api, device_creator, mqtt_session=mqtt_session, cache=cache)
     await manager.discover_devices()

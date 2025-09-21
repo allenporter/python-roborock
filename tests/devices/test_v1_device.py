@@ -9,8 +9,7 @@ from syrupy import SnapshotAssertion
 
 from roborock.containers import HomeData, S7MaxVStatus, UserData
 from roborock.devices.device import RoborockDevice
-from roborock.devices.traits import Trait
-from roborock.devices.traits.v1 import create_v1_traits
+from roborock.devices.traits import v1
 from roborock.devices.traits.v1.common import V1TraitMixin
 from roborock.devices.v1_rpc_channel import decode_rpc_response
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
@@ -37,19 +36,13 @@ def rpc_channel_fixture() -> AsyncMock:
 
 
 @pytest.fixture(autouse=True, name="device")
-def device_fixture(channel: AsyncMock, traits: list[Trait]) -> RoborockDevice:
+def device_fixture(channel: AsyncMock, rpc_channel: AsyncMock) -> RoborockDevice:
     """Fixture to set up the device for tests."""
     return RoborockDevice(
         device_info=HOME_DATA.devices[0],
         channel=channel,
-        traits=traits,
+        trait=v1.create(HOME_DATA.products[0], rpc_channel),
     )
-
-
-@pytest.fixture(autouse=True, name="traits")
-def traits_fixture(rpc_channel: AsyncMock) -> list[Trait]:
-    """Fixture to set up the V1 API for tests."""
-    return create_v1_traits(HOME_DATA.products[0], rpc_channel)
 
 
 async def test_device_connection(device: RoborockDevice, channel: AsyncMock) -> None:
@@ -91,7 +84,7 @@ def setup_rpc_channel_fixture(rpc_channel: AsyncMock, payload: pathlib.Path) -> 
 
 
 @pytest.mark.parametrize(
-    ("payload", "trait_method"),
+    ("payload", "property_method"),
     [
         (TESTDATA / "get_status.json", lambda x: x.status),
         (TESTDATA / "get_dnd.json", lambda x: x.dnd),
@@ -103,11 +96,11 @@ async def test_device_trait_command_parsing(
     device: RoborockDevice,
     setup_rpc_channel: AsyncMock,
     snapshot: SnapshotAssertion,
-    trait_method: Callable[..., V1TraitMixin],
+    property_method: Callable[..., V1TraitMixin],
     payload: str,
 ) -> None:
     """Test the device trait command."""
-    trait = trait_method(device.v1_properties)
+    trait = property_method(device.v1_properties)
     assert trait
     assert isinstance(trait, V1TraitMixin)
     await trait.refresh()

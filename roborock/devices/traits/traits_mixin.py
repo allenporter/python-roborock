@@ -22,7 +22,7 @@ __all__ = [
 class TraitsMixin:
     """Mixin to provide trait accessors."""
 
-    v1_properties: v1.Properties | None = None
+    v1_properties: v1.PropertiesApi | None = None
     """V1 properties trait, if supported."""
 
     dyad: a01.DyadApi | None = None
@@ -31,20 +31,21 @@ class TraitsMixin:
     zeo: a01.ZeoApi | None = None
     """Zeo API, if supported."""
 
-    b01_properties: b01.B01PropsApi | None = None
+    b01_props_api: b01.B01PropsApi | None = None
     """B01 properties trait, if supported."""
 
-    def __init__(self, traits: list[Trait]) -> None:
-        """Initialize the TraitsMixin with the given traits list.
+    def __init__(self, trait: Trait) -> None:
+        """Initialize the TraitsMixin with the given trait.
 
         This will populate the appropriate trait attributes based on the types
         of the traits provided.
         """
-        trait_map: dict[type[Trait], Trait] = {type(item): item for item in traits}
+        # trait_map: dict[type[Trait], Trait] = {type(item): item for item in traits}
         for item in fields(self):
             trait_type = _get_trait_type(item)
-            if (trait := trait_map.get(trait_type, None)) is not None:
+            if trait_type == type(trait):
                 setattr(self, item.name, trait)
+                break
 
 
 def _get_trait_type(item) -> type[Trait]:

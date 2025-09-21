@@ -6,8 +6,7 @@ import pytest
 
 from roborock.containers import HomeData, S7MaxVStatus, UserData
 from roborock.devices.device import RoborockDevice
-from roborock.devices.traits import Trait
-from roborock.devices.traits.v1 import create_v1_traits
+from roborock.devices.traits import v1
 
 from .... import mock_data
 
@@ -29,16 +28,10 @@ def rpc_channel_fixture() -> AsyncMock:
 
 
 @pytest.fixture(autouse=True, name="device")
-def device_fixture(channel: AsyncMock, traits: list[Trait]) -> RoborockDevice:
+def device_fixture(channel: AsyncMock, mock_rpc_channel: AsyncMock) -> RoborockDevice:
     """Fixture to set up the device for tests."""
     return RoborockDevice(
         device_info=HOME_DATA.devices[0],
         channel=channel,
-        traits=traits,
+        trait=v1.create(HOME_DATA.products[0], mock_rpc_channel),
     )
-
-
-@pytest.fixture(autouse=True, name="traits")
-def traits_fixture(mock_rpc_channel: AsyncMock) -> list[Trait]:
-    """Fixture to set up the V1 API for tests."""
-    return create_v1_traits(HOME_DATA.products[0], mock_rpc_channel)

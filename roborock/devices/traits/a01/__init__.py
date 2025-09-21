@@ -50,12 +50,12 @@ class ZeoApi(Trait):
         return await send_decoded_command(self._channel, params)
 
 
-def create_a01_traits(product: HomeDataProduct, mqtt_channel: MqttChannel) -> list[Trait]:
+def create(product: HomeDataProduct, mqtt_channel: MqttChannel) -> DyadApi | ZeoApi:
     """Create traits for A01 devices."""
     match product.category:
         case RoborockCategory.WET_DRY_VAC:
-            return [DyadApi(mqtt_channel)]
+            return DyadApi(mqtt_channel)
         case RoborockCategory.WASHING_MACHINE:
-            return [ZeoApi(mqtt_channel)]
+            return ZeoApi(mqtt_channel)
         case _:
             raise NotImplementedError(f"Unsupported category {product.category}")

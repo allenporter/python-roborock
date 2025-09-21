@@ -38,7 +38,7 @@ class RoborockDevice(ABC, TraitsMixin):
         self,
         device_info: HomeDataDevice,
         channel: Channel,
-        traits: list[Trait],
+        trait: Trait,
     ) -> None:
         """Initialize the RoborockDevice.
 
@@ -46,7 +46,7 @@ class RoborockDevice(ABC, TraitsMixin):
         Use `connect()` to establish the connection, which will set up the appropriate
         protocol channel. Use `close()` to clean up all connections.
         """
-        TraitsMixin.__init__(self, traits)
+        TraitsMixin.__init__(self, trait)
         self._duid = device_info.duid
         self._name = device_info.name
         self._channel = channel
