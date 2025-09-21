@@ -15,15 +15,15 @@ class CleanSummaryTrait(CleanSummary, common.V1TraitMixin):
     def _parse_type_response(cls, response: common.V1ResponseData) -> Self:
         """Parse the response from the device into a CleanSummary."""
         if isinstance(response, dict):
-            return CleanSummaryTrait.from_dict(response)  # type: ignore[return-value]
+            return cls.from_dict(response)
         elif isinstance(response, list):
             clean_time, clean_area, clean_count, records = unpack_list(response, 4)
-            return CleanSummaryTrait(  # type: ignore[return-value]
+            return cls(
                 clean_time=clean_time,
                 clean_area=clean_area,
                 clean_count=clean_count,
                 records=records,
             )
         elif isinstance(response, int):
-            return CleanSummaryTrait(clean_time=response)  # type: ignore[return-value]
+            return cls(clean_time=response)
         raise ValueError(f"Unexpected clean summary format: {response!r}")
