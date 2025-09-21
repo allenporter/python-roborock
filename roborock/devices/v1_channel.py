@@ -123,24 +123,24 @@ class V1Channel(Channel):
         if self._callback is not None:
             raise ValueError("Only one subscription allowed at a time")
 
-        # Make an initial, optimistic attempt to connect to local with the cache
+        # Make an initial, optimistic attempt to connect to local with the
+        # cache. The cache information will be refreshed by the background task.
         try:
             await self._local_connect(use_cache=True)
         except RoborockException as err:
             _LOGGER.warning("Could not establish local connection for device %s: %s", self._device_uid, err)
 
-        # Start a background task to manage the local connection health
+        # Start a background task to manage the local connection health. This
+        # happens independent of whether we were able to connect locally now.
         _LOGGER.info("self._reconnect_task=%s", self._reconnect_task)
         if self._reconnect_task is None:
             loop = asyncio.get_running_loop()
             self._reconnect_task = loop.create_task(self._background_reconnect())
 
-        # We were not able to connect locally, so fallback to MQTT. If this fails
-        # then we'll fail to subscribe.
         if not self.is_local_connected:
-            if self._mqtt_unsub is not None:
-                self._mqtt_unsub()
-                self._mqtt_unsub = None
+            # We were not able to connect locally, so fallback to MQTT and at least
+            # establish that connection explicitly. If this fails then raise an
+            # error and let the caller know we failed to subscribe.
             self._mqtt_unsub = await self._mqtt_channel.subscribe(self._on_mqtt_message)
             _LOGGER.debug("V1Channel connected to device %s via MQTT", self._device_uid)
 
@@ -183,8 +183,6 @@ class V1Channel(Channel):
 
     async def _local_connect(self, *, use_cache: bool = True) -> None:
         """Set up local connection if possible."""
-        if self.is_local_connected:
-            return
         _LOGGER.debug(
             "Attempting to connect to local channel for device %s (use_cache=%s)", self._device_uid, use_cache
         )
