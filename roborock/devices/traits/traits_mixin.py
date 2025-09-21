@@ -40,7 +40,6 @@ class TraitsMixin:
         This will populate the appropriate trait attributes based on the types
         of the traits provided.
         """
-        # trait_map: dict[type[Trait], Trait] = {type(item): item for item in traits}
         for item in fields(self):
             trait_type = _get_trait_type(item)
             if trait_type == type(trait):

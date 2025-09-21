@@ -6,7 +6,7 @@ import pytest
 
 from roborock.containers import CleanSummary
 from roborock.devices.device import RoborockDevice
-from roborock.devices.traits.v1.properties import CleanSummaryTrait
+from roborock.devices.traits.v1.clean_summary import CleanSummaryTrait
 from roborock.exceptions import RoborockException
 from roborock.roborock_typing import RoborockCommand
 

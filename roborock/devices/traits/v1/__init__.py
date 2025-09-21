@@ -6,14 +6,19 @@ from roborock.containers import HomeDataProduct
 from roborock.devices.traits import Trait
 from roborock.devices.v1_rpc_channel import V1RpcChannel
 
+from .clean_summary import CleanSummaryTrait
 from .common import V1TraitMixin
-from .properties import CleanSummaryTrait, DoNotDisturbTrait, SoundVolumeTrait, StatusTrait
+from .do_not_disturb import DoNotDisturbTrait
+from .status import StatusTrait
+from .volume import SoundVolumeTrait
 
 __all__ = [
     "create",
     "PropertiesApi",
-    "properties",
-    "V1TraitMixin",
+    "StatusTrait",
+    "DoNotDisturbTrait",
+    "CleanSummaryTrait",
+    "SoundVolumeTrait",
 ]
 
 
@@ -36,7 +41,10 @@ class PropertiesApi(Trait):
         """Initialize the V1TraitProps with None values."""
         self.status = StatusTrait(product)
 
-        # Create traits and set the RPC channel
+        # This is a hack to allow setting the rpc_channel on all traits. This is
+        # used so we can preserve the dataclass behavior when the values in the
+        # traits are updated, but still want to allow them to have a reference
+        # to the rpc channel for sending commands.
         for item in fields(self):
             if (trait := getattr(self, item.name, None)) is None:
                 trait = item.type()
