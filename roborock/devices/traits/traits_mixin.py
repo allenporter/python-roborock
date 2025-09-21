@@ -31,7 +31,7 @@ class TraitsMixin:
     zeo: a01.ZeoApi | None = None
     """Zeo API, if supported."""
 
-    b01_props_api: b01.B01PropsApi | None = None
+    b01_properties: b01.PropertiesApi | None = None
     """B01 properties trait, if supported."""
 
     def __init__(self, trait: Trait) -> None:

@@ -8,11 +8,11 @@ from roborock.roborock_message import RoborockB01Props
 
 __init__ = [
     "create_b01_traits",
-    "B01PropsApi",
+    "PropertiesApi",
 ]
 
 
-class B01PropsApi(Trait):
+class PropertiesApi(Trait):
     """API for interacting with B01 devices."""
 
     def __init__(self, channel: MqttChannel) -> None:
@@ -26,6 +26,6 @@ class B01PropsApi(Trait):
         )
 
 
-def create(channel: MqttChannel) -> B01PropsApi:
+def create(channel: MqttChannel) -> PropertiesApi:
     """Create traits for B01 devices."""
-    return B01PropsApi(channel)
+    return PropertiesApi(channel)
