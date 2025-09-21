@@ -127,9 +127,7 @@ class V1Channel(Channel):
         try:
             await self._local_connect(use_cache=True)
         except RoborockException as err:
-            _LOGGER.info("Hello1")
             _LOGGER.warning("Could not establish local connection for device %s: %s", self._device_uid, err)
-            _LOGGER.info("Hello2")
 
         # Start a background task to manage the local connection health
         _LOGGER.info("self._reconnect_task=%s", self._reconnect_task)
