@@ -148,17 +148,14 @@ async def create_device_manager(
         trait: Trait
         match device.pv:
             case DeviceVersion.V1:
-                v1_channel = create_v1_channel(user_data, mqtt_params, mqtt_session, device, cache)
-                channel = v1_channel
-                trait = v1.create(product, v1_channel.rpc_channel)
+                channel = create_v1_channel(user_data, mqtt_params, mqtt_session, device, cache)
+                trait = v1.create(product, channel.rpc_channel)
             case DeviceVersion.A01:
-                mqtt_channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
-                channel = mqtt_channel
-                trait = a01.create(product, mqtt_channel)
+                channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
+                trait = a01.create(product, channel)
             case DeviceVersion.B01:
-                mqtt_channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
-                channel = mqtt_channel
-                trait = b01.create(mqtt_channel)
+                channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
+                trait = b01.create(channel)
             case _:
                 raise NotImplementedError(f"Device {device.name} has unsupported version {device.pv}")
         return RoborockDevice(device, channel, trait)
