@@ -220,17 +220,7 @@ class V1Channel(Channel):
                     await asyncio.sleep(reconnect_backoff.total_seconds())
                     reconnect_backoff = min(reconnect_backoff * RECONNECT_MULTIPLIER, MAX_RECONNECT_INTERVAL)
 
-                # First failure refreshes cache. Subsequent failures use the cache
-                # until the refresh interval expires.
-                use_cache = True
-                if local_connect_failures == 1:
-                    use_cache = False
-                elif self._last_network_info_refresh and (
-                    datetime.datetime.now(datetime.timezone.utc) - self._last_network_info_refresh
-                    > NETWORK_INFO_REFRESH_INTERVAL
-                ):
-                    use_cache = False
-
+                use_cache = self._should_use_cache(local_connect_failures)
                 await self._local_connect(use_cache=use_cache)
                 # Reset backoff and failures on success
                 reconnect_backoff = MIN_RECONNECT_INTERVAL
@@ -245,6 +235,23 @@ class V1Channel(Channel):
                 _LOGGER.debug("Background reconnect failed: %s", err)
             except Exception:
                 _LOGGER.exception("Unhandled exception in background reconnect task")
+
+    def _should_use_cache(self, local_connect_failures: int) -> bool:
+        """Determine whether to use cached network info on retries.
+
+        On the first retry we'll avoid the cache to handle the case where
+        the network ip may have recently changed. Otherwise, use the cache
+        if available then expire at some point.
+        """
+        if local_connect_failures == 1:
+            return False
+        elif self._last_network_info_refresh and (
+            datetime.datetime.now(datetime.timezone.utc) - self._last_network_info_refresh
+            > NETWORK_INFO_REFRESH_INTERVAL
+        ):
+            return False
+        return True
+
 
     def _on_mqtt_message(self, message: RoborockMessage) -> None:
         """Handle incoming MQTT messages."""
