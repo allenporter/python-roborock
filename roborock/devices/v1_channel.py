@@ -252,7 +252,6 @@ class V1Channel(Channel):
             return False
         return True
 
-
     def _on_mqtt_message(self, message: RoborockMessage) -> None:
         """Handle incoming MQTT messages."""
         _LOGGER.debug("V1Channel received MQTT message from device %s: %s", self._device_uid, message)
