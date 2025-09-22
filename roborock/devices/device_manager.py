@@ -14,7 +14,7 @@ from roborock.containers import (
     UserData,
 )
 from roborock.devices.device import RoborockDevice
-from roborock.mqtt.roborock_session import create_mqtt_session
+from roborock.mqtt.roborock_session import create_lazy_mqtt_session
 from roborock.mqtt.session import MqttSession
 from roborock.protocol import create_mqtt_params
 from roborock.web_api import RoborockApiClient
@@ -141,7 +141,7 @@ async def create_device_manager(
         cache = NoCache()
 
     mqtt_params = create_mqtt_params(user_data.rriot)
-    mqtt_session = await create_mqtt_session(mqtt_params)
+    mqtt_session = await create_lazy_mqtt_session(mqtt_params)
 
     def device_creator(device: HomeDataDevice, product: HomeDataProduct) -> RoborockDevice:
         channel: Channel
