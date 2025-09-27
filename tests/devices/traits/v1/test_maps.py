@@ -106,6 +106,11 @@ async def test_refresh_maps_trait(
     assert mock_mqtt_rpc_channel.send_command.call_count == 1
     mock_mqtt_rpc_channel.send_command.assert_any_call(RoborockCommand.GET_MULTI_MAPS_LIST)
 
+    # Verify the RPC call was made correctly
+    assert mock_rpc_channel.send_command.call_count == 2
+    mock_rpc_channel.send_command.assert_any_call(RoborockCommand.GET_STATUS)
+    mock_rpc_channel.send_command.assert_any_call(RoborockCommand.GET_MULTI_MAPS_LIST)
+    
 
 async def test_set_current_map(
     status_trait: StatusTrait,
