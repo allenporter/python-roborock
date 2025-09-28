@@ -3,7 +3,6 @@
 from pathlib import Path
 
 import pytest
-
 from roborock.exceptions import RoborockException
 from roborock.map.map_parser import MapParser, MapParserConfig
 
