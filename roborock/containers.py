@@ -625,7 +625,7 @@ class CleanRecord(RoborockBase):
     map_flag: int | None = None
 
     @property
-    def sqaure_meter_area(self) -> float | None:
+    def square_meter_area(self) -> float | None:
         return round(self.area / 1000000, 1) if self.area is not None else None
 
     @property
