@@ -107,6 +107,20 @@ def _decamelize(s: str):
     return re.sub("([A-Z]+)", "_\\1", s).lower()
 
 
+def _attr_repr(obj: Any, attrs: list[str]) -> str:
+    """Return a string representation of the object including specified attributes."""
+    # Reproduce default repr behavior
+    items = (f"{k}={v!r}" for k, v in obj.__dict__.items() if not k.startswith("_"))
+    default_repr = "{}({})".format(type(obj).__name__, ", ".join(items))
+    # Append additional attributes
+    parts = [default_repr[:-1]]
+    for attr in attrs:
+        value = getattr(obj, attr, None)
+        parts.append(f", {attr}={repr(value)}")
+    parts.append(")")
+    return "".join(parts)
+
+
 @dataclass
 class RoborockBase:
     @staticmethod
@@ -192,6 +206,9 @@ class RoborockBaseTimer(RoborockBase):
             if self.end_hour is not None and self.end_minute is not None
             else None
         )
+
+    def __repr__(self) -> str:
+        return _attr_repr(self, ["start_time", "end_time"])
 
 
 @dataclass
@@ -444,6 +461,20 @@ class Status(RoborockBase):
             return (self.map_status - 3) // 4
         return None
 
+    def __repr__(self) -> str:
+        return _attr_repr(
+            self,
+            [
+                "square_meter_clean_area",
+                "error_code_name",
+                "state_name",
+                "water_box_mode_name",
+                "fan_power_name",
+                "mop_mode_name",
+                "current_map",
+            ],
+        )
+
 
 @dataclass
 class S4MaxStatus(Status):
@@ -607,6 +638,9 @@ class CleanSummary(RoborockBase):
             return None
         return round(self.clean_area / 1000000, 1) if self.clean_area is not None else None
 
+    def __repr__(self):
+        return _attr_repr(self, ["square_meter_clean_area"])
+
 
 @dataclass
 class CleanRecord(RoborockBase):
@@ -635,6 +669,9 @@ class CleanRecord(RoborockBase):
     @property
     def end_datetime(self) -> datetime.datetime | None:
         return datetime.datetime.fromtimestamp(self.end).astimezone(timezone.utc) if self.end else None
+
+    def __repr__(self) -> str:
+        return _attr_repr(self, ["square_meter_area", "begin_datetime", "end_datetime"])
 
 
 @dataclass
@@ -688,6 +725,21 @@ class Consumable(RoborockBase):
     @property
     def mop_roller_time_left(self) -> int | None:
         return MOP_ROLLER_REPLACE_TIME - self.moproller_work_time if self.moproller_work_time is not None else None
+
+    def __repr__(self) -> str:
+        return _attr_repr(
+            self,
+            [
+                "main_brush_time_left",
+                "side_brush_time_left",
+                "filter_time_left",
+                "sensor_time_left",
+                "strainer_time_left",
+                "dust_collection_time_left",
+                "cleaning_brush_time_left",
+                "mop_roller_time_left",
+            ],
+        )
 
 
 @dataclass
@@ -776,6 +828,9 @@ class DeviceData(RoborockBase):
     @property
     def product_nickname(self) -> RoborockProductNickname:
         return SHORT_MODEL_TO_ENUM.get(self.model.split(".")[-1], RoborockProductNickname.PEARLPLUS)
+
+    def __repr__(self) -> str:
+        return _attr_repr(self, ["product_nickname"])
 
 
 @dataclass
@@ -866,6 +921,9 @@ class RoborockProduct(RoborockBase):
         if self.cardspec:
             return RoborockProductSpec.from_dict(json.loads(self.cardspec).get("data"))
         return None
+
+    def __repr__(self) -> str:
+        return _attr_repr(self, ["product_nickname"])
 
 
 @dataclass
