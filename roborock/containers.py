@@ -109,7 +109,7 @@ def _decamelize(s: str):
 
 def _attr_repr(obj: Any) -> str:
     """Return a string representation of the object including specified attributes.
-    
+
     This reproduces the default repr behavior of dataclasses, but also includes
     properties. This must be called by the child class's __repr__ method since
     the parent RoborockBase class does not know about the child class's attributes.
@@ -728,6 +728,7 @@ class Consumable(RoborockBase):
 
     def __repr__(self) -> str:
         return _attr_repr(self)
+
 
 @dataclass
 class MultiMapsListMapInfoBakMaps(RoborockBase):
