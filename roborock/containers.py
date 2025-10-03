@@ -107,22 +107,32 @@ def _decamelize(s: str):
     return re.sub("([A-Z]+)", "_\\1", s).lower()
 
 
-def _attr_repr(obj: Any, attrs: list[str]) -> str:
-    """Return a string representation of the object including specified attributes."""
+def _attr_repr(obj: Any) -> str:
+    """Return a string representation of the object including specified attributes.
+    
+    This reproduces the default repr behavior of dataclasses, but also includes
+    properties. This must be called by the child class's __repr__ method since
+    the parent RoborockBase class does not know about the child class's attributes.
+    """
     # Reproduce default repr behavior
-    items = (f"{k}={v!r}" for k, v in obj.__dict__.items() if not k.startswith("_"))
-    default_repr = "{}({})".format(type(obj).__name__, ", ".join(items))
-    # Append additional attributes
-    parts = [default_repr[:-1]]
-    for attr in attrs:
-        value = getattr(obj, attr, None)
-        parts.append(f", {attr}={repr(value)}")
-    parts.append(")")
-    return "".join(parts)
+    parts = []
+    for k in dir(obj):
+        if k.startswith("_"):
+            continue
+        try:
+            v = getattr(obj, k)
+        except (RuntimeError, Exception):
+            continue
+        if callable(v):
+            continue
+        parts.append(f"{k}={v!r}")
+    return f"{type(obj).__name__}({', '.join(parts)})"
 
 
-@dataclass
+@dataclass(repr=False)
 class RoborockBase:
+    """Base class for all Roborock data classes."""
+
     @staticmethod
     def _convert_to_class_obj(class_type: type, value):
         if get_origin(class_type) is list:
@@ -208,7 +218,7 @@ class RoborockBaseTimer(RoborockBase):
         )
 
     def __repr__(self) -> str:
-        return _attr_repr(self, ["start_time", "end_time"])
+        return _attr_repr(self)
 
 
 @dataclass
@@ -462,18 +472,7 @@ class Status(RoborockBase):
         return None
 
     def __repr__(self) -> str:
-        return _attr_repr(
-            self,
-            [
-                "square_meter_clean_area",
-                "error_code_name",
-                "state_name",
-                "water_box_mode_name",
-                "fan_power_name",
-                "mop_mode_name",
-                "current_map",
-            ],
-        )
+        return _attr_repr(self)
 
 
 @dataclass
@@ -638,8 +637,9 @@ class CleanSummary(RoborockBase):
             return None
         return round(self.clean_area / 1000000, 1) if self.clean_area is not None else None
 
-    def __repr__(self):
-        return _attr_repr(self, ["square_meter_clean_area"])
+    def __repr__(self) -> str:
+        """Return a string representation of the object including all attributes."""
+        return _attr_repr(self)
 
 
 @dataclass
@@ -671,7 +671,7 @@ class CleanRecord(RoborockBase):
         return datetime.datetime.fromtimestamp(self.end).astimezone(timezone.utc) if self.end else None
 
     def __repr__(self) -> str:
-        return _attr_repr(self, ["square_meter_area", "begin_datetime", "end_datetime"])
+        return _attr_repr(self)
 
 
 @dataclass
@@ -727,20 +727,7 @@ class Consumable(RoborockBase):
         return MOP_ROLLER_REPLACE_TIME - self.moproller_work_time if self.moproller_work_time is not None else None
 
     def __repr__(self) -> str:
-        return _attr_repr(
-            self,
-            [
-                "main_brush_time_left",
-                "side_brush_time_left",
-                "filter_time_left",
-                "sensor_time_left",
-                "strainer_time_left",
-                "dust_collection_time_left",
-                "cleaning_brush_time_left",
-                "mop_roller_time_left",
-            ],
-        )
-
+        return _attr_repr(self)
 
 @dataclass
 class MultiMapsListMapInfoBakMaps(RoborockBase):
@@ -830,7 +817,7 @@ class DeviceData(RoborockBase):
         return SHORT_MODEL_TO_ENUM.get(self.model.split(".")[-1], RoborockProductNickname.PEARLPLUS)
 
     def __repr__(self) -> str:
-        return _attr_repr(self, ["product_nickname"])
+        return _attr_repr(self)
 
 
 @dataclass
@@ -923,7 +910,7 @@ class RoborockProduct(RoborockBase):
         return None
 
     def __repr__(self) -> str:
-        return _attr_repr(self, ["product_nickname"])
+        return _attr_repr(self)
 
 
 @dataclass
