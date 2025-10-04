@@ -35,7 +35,7 @@ class ConsumableAttribute(StrEnum):
 
 class ConsumableTrait(Consumable, common.V1TraitMixin):
     """Trait for managing consumable attributes on Roborock devices.
-    
+
     After the first refresh, you can tell what consumables are supported by
     checking which attributes are not None.
     """
