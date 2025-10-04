@@ -24,6 +24,7 @@ __all__ = [
     "CleanSummaryTrait",
     "SoundVolumeTrait",
     "MapsTrait",
+    "MapsContentTrait",
 ]
 
 
@@ -40,6 +41,7 @@ class PropertiesApi(Trait):
     clean_summary: CleanSummaryTrait
     sound_volume: SoundVolumeTrait
     maps: MapsTrait
+    maps_content: MapsContentTrait
 
     # In the future optional fields can be added below based on supported features
 
