@@ -75,9 +75,9 @@ def _extract_segment_pairs(response: list) -> list[tuple[int, str]]:
     list of lists, where each inner list is a pair of [segment_id, iot_id]. This
     function normalizes the response into a list of (segment_id, iot_id) tuples
 
-    NOTE: We currently only have samples of the list of lists format in
-    tests/protocols/testdata so improving test coverage with samples from a real
-    device with this format would be helpful.
+    NOTE: We currently only partial samples of the room mapping formats, so
+    improving test coverage with samples from a real device with this format
+    would be helpful.
     """
     if len(response) == 2 and not isinstance(response[0], list):
         segment_id, iot_id = response[0], response[1]
@@ -85,7 +85,7 @@ def _extract_segment_pairs(response: list) -> list[tuple[int, str]]:
 
     segment_pairs: list[tuple[int, str]] = []
     for part in response:
-        if not isinstance(part, list) or len(part) != 2:
+        if not isinstance(part, list) or len(part) < 2:
             _LOGGER.warning("Unexpected room mapping entry format: %r", part)
             continue
         segment_id, iot_id = part[0], part[1]
