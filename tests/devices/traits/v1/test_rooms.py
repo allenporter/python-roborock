@@ -1,10 +1,9 @@
 """Tests for the RoomMapping related functionality."""
 
+from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
-
-from typing import Any
 
 from roborock.devices.device import RoborockDevice
 from roborock.devices.traits.v1.rooms import RoomsTrait
@@ -35,7 +34,7 @@ def rooms_trait(device: RoborockDevice) -> RoomsTrait:
     [
         ([[16, "2362048"], [17, "2362044"], [18, "2362041"]]),
         ([[16, "2362048", 6], [17, "2362044", 14], [18, "2362041", 13]]),
-    ]
+    ],
 )
 async def test_refresh_rooms_trait(
     rooms_trait: RoomsTrait,
