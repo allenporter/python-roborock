@@ -20,7 +20,7 @@ class NamedRoomMapping(RoomMapping):
     from the HomeData based on the iot_id from the room.
     """
 
-    name: str | None = None
+    name: str
     """The human-readable name of the room, if available."""
 
 
