@@ -86,7 +86,7 @@ class PropertiesApi(Trait):
 
 def create(
     product: HomeDataProduct,
-    home_data: HomeData, 
+    home_data: HomeData,
     rpc_channel: V1RpcChannel,
     mqtt_rpc_channel: V1RpcChannel,
     map_rpc_channel: V1RpcChannel,
