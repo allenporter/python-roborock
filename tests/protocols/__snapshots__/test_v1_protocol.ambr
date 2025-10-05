@@ -93,6 +93,71 @@
   ]
   '''
 # ---
+# name: test_decode_rpc_payload[get_room_mapping2]
+  20001
+# ---
+# name: test_decode_rpc_payload[get_room_mapping2].1
+  '''
+  [
+    [
+      16,
+      "2537178",
+      6
+    ],
+    [
+      17,
+      "2537175",
+      14
+    ],
+    [
+      18,
+      "2537174",
+      13
+    ],
+    [
+      19,
+      "2537176",
+      14
+    ],
+    [
+      20,
+      "10655627",
+      12
+    ],
+    [
+      21,
+      "2537145",
+      2
+    ],
+    [
+      22,
+      "2537147",
+      12
+    ]
+  ]
+  '''
+# ---
+# name: test_decode_rpc_payload[get_room_mapping]
+  20001
+# ---
+# name: test_decode_rpc_payload[get_room_mapping].1
+  '''
+  [
+    [
+      16,
+      "3031886"
+    ],
+    [
+      17,
+      "3031880"
+    ],
+    [
+      18,
+      "3031883"
+    ]
+  ]
+  '''
+# ---
 # name: test_decode_rpc_payload[get_status]
   20001
 # ---

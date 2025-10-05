@@ -475,6 +475,16 @@ async def reset_consumable(ctx, device_id: str, consumable: str):
     click.echo(f"Reset {consumable} for device {device_id}")
 
 
+@session.command()
+@click.option("--device_id", required=True)
+@click.pass_context
+@async_command
+async def rooms(ctx, device_id: str):
+    """Get device room mapping info."""
+    context: RoborockContext = ctx.obj
+    await _display_v1_trait(context, device_id, lambda v1: v1.rooms)
+
+
 @click.command()
 @click.option("--device_id", required=True)
 @click.option("--cmd", required=True)
@@ -719,6 +729,7 @@ cli.add_command(set_volume)
 cli.add_command(maps)
 cli.add_command(consumables)
 cli.add_command(reset_consumable)
+cli.add_command(rooms)
 
 
 def main():
