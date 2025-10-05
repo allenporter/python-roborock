@@ -47,5 +47,11 @@ def device_fixture(
     return RoborockDevice(
         device_info=HOME_DATA.devices[0],
         channel=channel,
-        trait=v1.create(HOME_DATA.products[0], HOME_DATA, mock_rpc_channel, mock_mqtt_rpc_channel, mock_map_rpc_channel),
+        trait=v1.create(
+            HOME_DATA.products[0],
+            HOME_DATA,
+            mock_rpc_channel,
+            mock_mqtt_rpc_channel,
+            mock_map_rpc_channel,
+        ),
     )
