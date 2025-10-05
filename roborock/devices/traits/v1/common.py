@@ -133,3 +133,13 @@ def mqtt_rpc_channel(cls):
 
     cls.mqtt_rpc_channel = True  # type: ignore[attr-defined]
     return wrapper
+
+
+def map_rpc_channel(cls):
+    """Decorator to mark a function as cloud only using the map rpc format."""
+
+    def wrapper(*args, **kwargs):
+        return cls(*args, **kwargs)
+
+    cls.map_rpc_channel = True  # type: ignore[attr-defined]
+    return wrapper
