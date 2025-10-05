@@ -3,6 +3,7 @@
 from unittest.mock import AsyncMock
 
 import pytest
+
 from typing import Any
 
 from roborock.devices.device import RoborockDevice
