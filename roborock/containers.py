@@ -12,6 +12,9 @@ from typing import Any, NamedTuple, get_args, get_origin
 
 from .code_mappings import (
     SHORT_MODEL_TO_ENUM,
+    ClearWaterBoxStatus,
+    DirtyWaterBoxStatus,
+    DustBagStatus,
     RoborockCategory,
     RoborockCleanType,
     RoborockDockDustCollectionModeCode,
@@ -419,6 +422,11 @@ class Status(RoborockBase):
     dss: int | None = None
     common_status: int | None = None
     corner_clean_mode: int | None = None
+    last_clean_t: int | None = None
+    replenish_mode: int | None = None
+    repeat: int | None = None
+    kct: int | None = None
+    subdivision_sets: int | None = None
 
     @property
     def square_meter_clean_area(self) -> float | None:
@@ -472,6 +480,48 @@ class Status(RoborockBase):
             map_flag = self.map_status >> 2
             if map_flag != NO_MAP:
                 return map_flag
+        return None
+
+    @property
+    def clear_water_box_status(self) -> ClearWaterBoxStatus | None:
+        if self.dss:
+            return ClearWaterBoxStatus((self.dss >> 2) & 3)
+        return None
+
+    @property
+    def dirty_water_box_status(self) -> DirtyWaterBoxStatus | None:
+        if self.dss:
+            return DirtyWaterBoxStatus((self.dss >> 4) & 3)
+        return None
+
+    @property
+    def dust_bag_status(self) -> DustBagStatus | None:
+        if self.dss:
+            return DustBagStatus((self.dss >> 6) & 3)
+        return None
+
+    @property
+    def water_box_filter_status(self) -> int | None:
+        if self.dss:
+            return (self.dss >> 8) & 3
+        return None
+
+    @property
+    def clean_fluid_status(self) -> int | None:
+        if self.dss:
+            return (self.dss >> 10) & 3
+        return None
+
+    @property
+    def hatch_door_status(self) -> int | None:
+        if self.dss:
+            return (self.dss >> 12) & 7
+        return None
+
+    @property
+    def dock_cool_fan_status(self) -> int | None:
+        if self.dss:
+            return (self.dss >> 15) & 3
         return None
 
     def __repr__(self) -> str:
