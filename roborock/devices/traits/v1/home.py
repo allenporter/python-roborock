@@ -70,6 +70,7 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
             raise RoborockException("Cannot perform home discovery without current map info")
 
         home_cache = await self._build_home_cache()
+        _LOGGER.debug("Home discovery complete, caching data for %d maps", len(home_cache))
         cache_data = await self._cache.get()
         cache_data.home_cache = home_cache
         await self._cache.set(cache_data)
