@@ -71,9 +71,7 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
 
         home_cache = await self._build_home_cache()
         _LOGGER.debug("Home discovery complete, caching data for %d maps", len(home_cache))
-        cache_data = await self._cache.get()
-        cache_data.home_cache = home_cache
-        await self._cache.set(cache_data)
+        await self._update_home_cache(home_cache)
         self._home_cache = home_cache
 
     async def _refresh_map_data(self, map_info) -> CombinedMapInfo:
@@ -132,10 +130,7 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
             map_data = await self._refresh_map_data(current_map_info)
             if map_data != current_map_data:
                 self._home_cache[map_flag] = map_data
-                # Persist to cache
-                cache_data = await self._cache.get()
-                cache_data.home_cache = self._home_cache
-                await self._cache.set(cache_data)
+                await self._update_home_cache(self._home_cache)
 
         return self
 
@@ -155,3 +150,8 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
     def _parse_response(self, response: common.V1ResponseData) -> Self:
         """This trait does not parse responses directly."""
         raise NotImplementedError("HomeTrait does not support direct command responses")
+
+    async def _update_home_cache(self, home_cache: dict[int, CombinedMapInfo]) -> None:
+        cache_data = await self._cache.get()
+        cache_data.home_cache = home_cache
+        await self._cache.set(cache_data)
