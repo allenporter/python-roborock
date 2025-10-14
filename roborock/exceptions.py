@@ -81,3 +81,7 @@ class RoborockRateLimit(RoborockException):
 
 class RoborockNoResponseFromBaseURL(RoborockException):
     """We could not find an url that had a record of the given account."""
+
+
+class RoborockDeviceBusy(RoborockException):
+    """Class for Roborock device busy exceptions."""

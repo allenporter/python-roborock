@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+from roborock.code_mappings import RoborockStateCode
 from roborock.containers import CombinedMapInfo
 from roborock.devices.cache import InMemoryCache
 from roborock.devices.device import RoborockDevice
@@ -12,6 +13,7 @@ from roborock.devices.traits.v1.home import HomeTrait
 from roborock.devices.traits.v1.maps import MapsTrait
 from roborock.devices.traits.v1.rooms import RoomsTrait
 from roborock.devices.traits.v1.status import StatusTrait
+from roborock.exceptions import RoborockDeviceBusy
 from roborock.roborock_typing import RoborockCommand
 from tests import mock_data
 
@@ -97,9 +99,9 @@ def rooms_trait(device: RoborockDevice) -> RoomsTrait:
 
 
 @pytest.fixture
-def home_trait(maps_trait: MapsTrait, rooms_trait: RoomsTrait, cache) -> HomeTrait:
+def home_trait(status_trait: StatusTrait, maps_trait: MapsTrait, rooms_trait: RoomsTrait, cache) -> HomeTrait:
     """Create a HomeTrait instance with mocked dependencies."""
-    return HomeTrait(maps_trait, rooms_trait, cache)
+    return HomeTrait(status_trait, maps_trait, rooms_trait, cache)
 
 
 async def test_discover_home_empty_cache(
@@ -277,6 +279,25 @@ async def test_current_map_data_property(
     # Test when no cache exists
     home_trait._home_cache = None
     assert home_trait.current_map_data is None
+
+
+async def test_discover_home_device_busy_cleaning(
+    status_trait: StatusTrait,
+    home_trait: HomeTrait,
+    mock_rpc_channel: AsyncMock,
+    mock_mqtt_rpc_channel: AsyncMock,
+) -> None:
+    """Test that discovery raises RoborockDeviceBusy when device is cleaning."""
+    # Set the status trait state to cleaning
+    status_trait.state = RoborockStateCode.cleaning
+
+    # Attempt to discover home while cleaning
+    with pytest.raises(RoborockDeviceBusy, match="Cannot perform home discovery while the device is cleaning"):
+        await home_trait.discover_home()
+
+    # Verify no RPC calls were made (discovery was prevented)
+    assert mock_rpc_channel.send_command.call_count == 0
+    assert mock_mqtt_rpc_channel.send_command.call_count == 0
 
 
 async def test_single_map_no_switching(

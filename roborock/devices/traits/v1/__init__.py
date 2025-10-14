@@ -71,7 +71,7 @@ class PropertiesApi(Trait):
         self.rooms = RoomsTrait(home_data)
         self.maps = MapsTrait(self.status)
         self.map_content = MapContentTrait(map_parser_config)
-        self.home = HomeTrait(self.maps, self.rooms, cache)
+        self.home = HomeTrait(self.status, self.maps, self.rooms, cache)
         # This is a hack to allow setting the rpc_channel on all traits. This is
         # used so we can preserve the dataclass behavior when the values in the
         # traits are updated, but still want to allow them to have a reference
