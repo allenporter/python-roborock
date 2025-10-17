@@ -4,13 +4,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from roborock.containers import AppInitStatus, DnDTimer, HomeDataProduct
-from roborock.device_features import DeviceFeatures
-from roborock.devices.cache import Cache
+from roborock.containers import DnDTimer
 from roborock.devices.device import RoborockDevice
 from roborock.devices.traits.v1.do_not_disturb import DoNotDisturbTrait
 from roborock.roborock_typing import RoborockCommand
-from tests import mock_data
 
 
 @pytest.fixture
@@ -19,8 +16,6 @@ async def dnd_trait(device: RoborockDevice) -> DoNotDisturbTrait:
     assert device.v1_properties
     assert device.v1_properties.dnd
     return device.v1_properties.dnd
-
-
 
 
 @pytest.fixture
