@@ -5,11 +5,11 @@ from roborock.roborock_typing import RoborockCommand
 _ENABLED_PARAM = "enabled"
 
 
-@common.requires_feature("is_supported_valley_electricity")
 class ValleyElectricityTimerTrait(ValleyElectricityTimer, common.V1TraitMixin):
     """Trait for managing Valley Electricity Timer settings on Roborock devices."""
 
     command = RoborockCommand.GET_VALLEY_ELECTRICITY_TIMER
+    requires_feature = "is_supported_valley_electricity"
 
     async def set_timer(self, timer: ValleyElectricityTimer) -> None:
         """Set the Valley Electricity Timer settings of the device."""

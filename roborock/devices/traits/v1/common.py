@@ -147,29 +147,3 @@ def map_rpc_channel(cls):
 
     cls.map_rpc_channel = True  # type: ignore[attr-defined]
     return wrapper
-
-
-def requires_feature(feature_attribute_name: str):
-    """Decorator to mark a trait as requiring a specific device feature.
-
-    This decorator marks a trait class as requiring a specific device feature
-    to be supported. The feature check should be a direct reference to a
-    DeviceFeatures attribute.
-
-    Args:
-        feature_attribute: Direct reference to the DeviceFeatures attribute
-                          (e.g., DeviceFeatures.is_set_child_supported)
-
-    Example:
-        @requires_feature("is_flow_led_setting_supported")
-        class FlowLedStatusTrait(FlowLedStatus, V1TraitMixin):
-            ...
-    """
-
-    def decorator(cls):
-        class Wrapper(cls):  # type: ignore[valid-type, misc]
-            requires_feature = feature_attribute_name  # type: ignore[attr-defined]
-
-        return Wrapper
-
-    return decorator
