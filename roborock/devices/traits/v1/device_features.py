@@ -21,7 +21,8 @@ class DeviceFeaturesTrait(DeviceFeatures, common.V1TraitMixin):
         """Refresh the contents of this trait.
 
         This will use cached device features if available since they do not
-        change often and this avoids unnecessary RPC calls.
+        change often and this avoids unnecessary RPC calls. This would only
+        ever change with a firmware update, so caching is appropriate.
         """
         cache_data = await self._cache.get()
         if cache_data.device_features is not None:
