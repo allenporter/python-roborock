@@ -9,7 +9,7 @@ class ChildLockTrait(ChildLockStatus, common.V1TraitMixin):
     """Trait for controlling the child lock of a Roborock device."""
 
     command = RoborockCommand.GET_CHILD_LOCK_STATUS
-    requires_feature = "is_set_child_supported"    
+    requires_feature = "is_set_child_supported"
 
     async def enable(self) -> None:
         """Enable the child lock."""

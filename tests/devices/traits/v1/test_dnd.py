@@ -21,6 +21,8 @@ async def dnd_trait(device: RoborockDevice) -> DoNotDisturbTrait:
     return device.v1_properties.dnd
 
 
+
+
 @pytest.fixture
 def sample_dnd_timer() -> DnDTimer:
     """Create a sample DnDTimer for testing."""
