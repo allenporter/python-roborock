@@ -68,7 +68,7 @@ class RoborockDevice(ABC, TraitsMixin):
     @property
     def device_info(self) -> HomeDataDevice:
         """Return the device information.
-        
+
         This includes information specific to the device like its identifier or
         firmware version.
         """
@@ -77,7 +77,7 @@ class RoborockDevice(ABC, TraitsMixin):
     @property
     def product(self) -> HomeDataProduct:
         """Return the device product name.
-        
+
         This returns product level information such as the model name.
         """
         return self._product
