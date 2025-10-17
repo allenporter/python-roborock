@@ -10,8 +10,8 @@ from roborock.devices.v1_rpc_channel import V1RpcChannel
 from roborock.map.map_parser import MapParserConfig
 
 from .clean_summary import CleanSummaryTrait
-from .common import V1TraitMixin
 from .command import CommandTrait
+from .common import V1TraitMixin
 from .consumeable import ConsumableTrait
 from .device_features import DeviceFeaturesTrait
 from .do_not_disturb import DoNotDisturbTrait
@@ -95,8 +95,6 @@ class PropertiesApi(Trait):
                 trait._rpc_channel = map_rpc_channel
             else:
                 trait._rpc_channel = rpc_channel
-
-
 
 
 def create(
