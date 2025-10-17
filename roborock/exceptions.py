@@ -85,3 +85,7 @@ class RoborockNoResponseFromBaseURL(RoborockException):
 
 class RoborockDeviceBusy(RoborockException):
     """Class for Roborock device busy exceptions."""
+
+
+class RoborockUnsupportedFeature(RoborockException):
+    """Class for Roborock unsupported feature exceptions."""
