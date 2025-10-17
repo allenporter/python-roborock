@@ -11,6 +11,7 @@ from roborock.map.map_parser import MapParserConfig
 
 from .clean_summary import CleanSummaryTrait
 from .common import V1TraitMixin
+from .command import CommandTrait
 from .consumeable import ConsumableTrait
 from .device_features import DeviceFeaturesTrait
 from .do_not_disturb import DoNotDisturbTrait
@@ -35,6 +36,7 @@ __all__ = [
     "ConsumableTrait",
     "HomeTrait",
     "DeviceFeaturesTrait",
+    "CommandTrait",
 ]
 
 
@@ -47,6 +49,7 @@ class PropertiesApi(Trait):
 
     # All v1 devices have these traits
     status: StatusTrait
+    command: CommandTrait
     dnd: DoNotDisturbTrait
     clean_summary: CleanSummaryTrait
     sound_volume: SoundVolumeTrait
