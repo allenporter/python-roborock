@@ -11,9 +11,10 @@ from roborock.roborock_typing import RoborockCommand
 
 
 @pytest.fixture
-def dnd_trait(device: RoborockDevice) -> DoNotDisturbTrait:
+async def dnd_trait(device: RoborockDevice) -> DoNotDisturbTrait:
     """Create a DoNotDisturbTrait instance with mocked dependencies."""
     assert device.v1_properties
+    assert device.v1_properties.dnd
     return device.v1_properties.dnd
 
 

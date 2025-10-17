@@ -82,10 +82,14 @@ class V1TraitMixin(ABC):
         new_data = self._parse_response(response)
         if not isinstance(new_data, RoborockBase):
             raise ValueError(f"Internal error, unexpected response type: {new_data!r}")
+        self._update_trait_values(new_data)
+        return self
+
+    def _update_trait_values(self, new_data: RoborockBase) -> None:
+        """Update the values of this trait from another instance."""
         for field in fields(new_data):
             new_value = getattr(new_data, field.name, None)
             setattr(self, field.name, new_value)
-        return self
 
 
 def _get_value_field(clazz: type[V1TraitMixin]) -> str:

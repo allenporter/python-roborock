@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from roborock.containers import HomeData, S7MaxVStatus, UserData
-from roborock.devices.cache import NoCache
+from roborock.devices.cache import Cache, InMemoryCache
 from roborock.devices.device import RoborockDevice
 from roborock.devices.traits import v1
 
@@ -40,9 +40,19 @@ def map_rpc_channel_fixture() -> AsyncMock:
     return AsyncMock()
 
 
+@pytest.fixture(autouse=True, name="roborock_cache")
+def roborock_cache_fixture() -> Cache:
+    """Fixture to provide a NoCache instance for tests."""
+    return InMemoryCache()
+
+
 @pytest.fixture(autouse=True, name="device")
 def device_fixture(
-    channel: AsyncMock, mock_rpc_channel: AsyncMock, mock_mqtt_rpc_channel: AsyncMock, mock_map_rpc_channel: AsyncMock
+    channel: AsyncMock,
+    mock_rpc_channel: AsyncMock,
+    mock_mqtt_rpc_channel: AsyncMock,
+    mock_map_rpc_channel: AsyncMock,
+    roborock_cache: Cache,
 ) -> RoborockDevice:
     """Fixture to set up the device for tests."""
     return RoborockDevice(
@@ -54,6 +64,6 @@ def device_fixture(
             mock_rpc_channel,
             mock_mqtt_rpc_channel,
             mock_map_rpc_channel,
-            NoCache(),
+            roborock_cache,
         ),
     )
