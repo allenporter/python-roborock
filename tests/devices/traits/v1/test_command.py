@@ -44,7 +44,7 @@ async def test_send_command_with_params(command_trait: CommandTrait) -> None:
     result = await command_trait.send(RoborockCommand.APP_SEGMENT_CLEAN, params)
 
     # Verify the result
-    assert result == {'result': 'ok'}
+    assert result == {'result': "ok"}
 
     # Verify the RPC call was made correctly
     mock_rpc_channel.send_command.assert_called_once_with(RoborockCommand.APP_SEGMENT_CLEAN, params=params)
