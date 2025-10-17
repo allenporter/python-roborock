@@ -47,6 +47,7 @@ def device_fixture(
     """Fixture to set up the device for tests."""
     return RoborockDevice(
         device_info=HOME_DATA.devices[0],
+        product=HOME_DATA.products[0],
         channel=channel,
         trait=v1.create(
             HOME_DATA.products[0],
