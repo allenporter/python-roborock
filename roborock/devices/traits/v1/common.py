@@ -82,10 +82,14 @@ class V1TraitMixin(ABC):
         new_data = self._parse_response(response)
         if not isinstance(new_data, RoborockBase):
             raise ValueError(f"Internal error, unexpected response type: {new_data!r}")
+        self._update_trait_values(new_data)
+        return self
+
+    def _update_trait_values(self, new_data: RoborockBase) -> None:
+        """Update the values of this trait from another instance."""
         for field in fields(new_data):
             new_value = getattr(new_data, field.name, None)
             setattr(self, field.name, new_value)
-        return self
 
 
 def _get_value_field(clazz: type[V1TraitMixin]) -> str:
@@ -143,3 +147,29 @@ def map_rpc_channel(cls):
 
     cls.map_rpc_channel = True  # type: ignore[attr-defined]
     return wrapper
+
+
+def requires_feature(feature_attribute_name: str):
+    """Decorator to mark a trait as requiring a specific device feature.
+
+    This decorator marks a trait class as requiring a specific device feature
+    to be supported. The feature check should be a direct reference to a
+    DeviceFeatures attribute.
+
+    Args:
+        feature_attribute: Direct reference to the DeviceFeatures attribute
+                          (e.g., DeviceFeatures.is_set_child_supported)
+
+    Example:
+        @requires_feature("is_flow_led_setting_supported")
+        class FlowLedStatusTrait(FlowLedStatus, V1TraitMixin):
+            ...
+    """
+
+    def decorator(cls):
+        class Wrapper(cls):  # type: ignore[valid-type, misc]
+            requires_feature = feature_attribute_name  # type: ignore[attr-defined]
+
+        return Wrapper
+
+    return decorator

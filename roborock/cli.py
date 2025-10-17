@@ -41,7 +41,7 @@ from pyshark import FileCapture  # type: ignore
 from pyshark.capture.live_capture import LiveCapture, UnknownInterfaceException  # type: ignore
 from pyshark.packet.packet import Packet  # type: ignore
 
-from roborock import SHORT_MODEL_TO_ENUM, RoborockCommand, RoborockException
+from roborock import SHORT_MODEL_TO_ENUM, RoborockCommand
 from roborock.containers import CombinedMapInfo, DeviceData, HomeData, NetworkInfo, RoborockBase, UserData
 from roborock.device_features import DeviceFeatures
 from roborock.devices.cache import Cache, CacheData
@@ -51,6 +51,7 @@ from roborock.devices.traits import Trait
 from roborock.devices.traits.v1 import V1TraitMixin
 from roborock.devices.traits.v1.consumeable import ConsumableAttribute
 from roborock.devices.traits.v1.map_content import MapContentTrait
+from roborock.exceptions import RoborockException, RoborockUnsupportedFeature
 from roborock.protocol import MessageParser
 from roborock.version_1_apis.roborock_mqtt_client_v1 import RoborockMqttClientV1
 from roborock.web_api import RoborockApiClient
@@ -401,14 +402,21 @@ async def _v1_trait(context: RoborockContext, device_id: str, display_func: Call
     device = await device_manager.get_device(device_id)
     if device.v1_properties is None:
         raise RoborockException(f"Device {device.name} does not support V1 protocol")
-
+    await device.v1_properties.discover_features()
     trait = display_func(device.v1_properties)
     await trait.refresh()
     return trait
 
 
 async def _display_v1_trait(context: RoborockContext, device_id: str, display_func: Callable[[], Trait]) -> None:
-    trait = await _v1_trait(context, device_id, display_func)
+    try:
+        trait = await _v1_trait(context, device_id, display_func)
+    except RoborockUnsupportedFeature:
+        click.echo("Feature not supported by device")
+        return
+    except RoborockException as e:
+        click.echo(f"Error: {e}")
+        return
     click.echo(dump_json(trait.as_dict()))
 
 
@@ -530,6 +538,116 @@ async def reset_consumable(ctx, device_id: str, consumable: str):
     attribute = ConsumableAttribute.from_str(consumable)
     await trait.reset_consumable(attribute)
     click.echo(f"Reset {consumable} for device {device_id}")
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.option("--enabled", type=bool, help="Enable (True) or disable (False) the child lock.")
+@click.pass_context
+@async_command
+async def child_lock(ctx, device_id: str, enabled: bool | None):
+    """Get device child lock status."""
+    context: RoborockContext = ctx.obj
+    try:
+        trait = await _v1_trait(context, device_id, lambda v1: v1.child_lock)
+    except RoborockUnsupportedFeature:
+        click.echo("Feature not supported by device")
+        return
+    if enabled is not None:
+        if enabled:
+            await trait.enable()
+        else:
+            await trait.disable()
+        click.echo(f"Set child lock to {enabled} for device {device_id}")
+        await trait.refresh()
+
+    click.echo(dump_json(trait.as_dict()))
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.option("--enabled", type=bool, help="Enable (True) or disable (False) the DND status.")
+@click.pass_context
+@async_command
+async def dnd(ctx, device_id: str, enabled: bool | None):
+    """Get Do Not Disturb Timer status."""
+    context: RoborockContext = ctx.obj
+    try:
+        trait = await _v1_trait(context, device_id, lambda v1: v1.dnd)
+    except RoborockUnsupportedFeature:
+        click.echo("Feature not supported by device")
+        return
+    if enabled is not None:
+        if enabled:
+            await trait.enable()
+        else:
+            await trait.disable()
+        click.echo(f"Set DND to {enabled} for device {device_id}")
+        await trait.refresh()
+
+    click.echo(dump_json(trait.as_dict()))
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.option("--enabled", required=False, type=bool, help="Enable (True) or disable (False) the Flow LED.")
+@click.pass_context
+@async_command
+async def flow_led_status(ctx, device_id: str, enabled: bool | None):
+    """Get device Flow LED status."""
+    context: RoborockContext = ctx.obj
+    try:
+        trait = await _v1_trait(context, device_id, lambda v1: v1.flow_led_status)
+    except RoborockUnsupportedFeature:
+        click.echo("Feature not supported by device")
+        return
+    if enabled is not None:
+        if enabled:
+            await trait.enable()
+        else:
+            await trait.disable()
+        click.echo(f"Set Flow LED to {enabled} for device {device_id}")
+        await trait.refresh()
+
+    click.echo(dump_json(trait.as_dict()))
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.option("--enabled", required=False, type=bool, help="Enable (True) or disable (False) the LED.")
+@click.pass_context
+@async_command
+async def led_status(ctx, device_id: str, enabled: bool | None):
+    """Get device LED status."""
+    context: RoborockContext = ctx.obj
+    try:
+        trait = await _v1_trait(context, device_id, lambda v1: v1.led_status)
+    except RoborockUnsupportedFeature:
+        click.echo("Feature not supported by device")
+        return
+    if enabled is not None:
+        if enabled:
+            await trait.enable()
+        else:
+            await trait.disable()
+        click.echo(f"Set LED Status to {enabled} for device {device_id}")
+        await trait.refresh()
+
+    click.echo(dump_json(trait.as_dict()))
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.option("--enabled", required=True, type=bool, help="Enable (True) or disable (False) the child lock.")
+@click.pass_context
+@async_command
+async def set_child_lock(ctx, device_id: str, enabled: bool):
+    """Set the child lock status."""
+    context: RoborockContext = ctx.obj
+    trait = await _v1_trait(context, device_id, lambda v1: v1.child_lock)
+    await trait.set_child_lock(enabled)
+    status = "enabled" if enabled else "disabled"
+    click.echo(f"Child lock {status} for device {device_id}")
 
 
 @session.command()
@@ -837,6 +955,10 @@ cli.add_command(reset_consumable)
 cli.add_command(rooms)
 cli.add_command(home)
 cli.add_command(features)
+cli.add_command(child_lock)
+cli.add_command(dnd)
+cli.add_command(flow_led_status)
+cli.add_command(led_status)
 
 
 def main():

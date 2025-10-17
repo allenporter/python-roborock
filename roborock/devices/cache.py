@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from typing import Protocol
 
 from roborock.containers import CombinedMapInfo, HomeData, NetworkInfo
+from roborock.device_features import DeviceFeatures
 
 
 @dataclass
@@ -23,6 +24,9 @@ class CacheData:
 
     home_cache: dict[int, CombinedMapInfo] = field(default_factory=dict)
     """Home cache information indexed by map_flag."""
+
+    device_features: DeviceFeatures | None = None
+    """Device features information."""
 
 
 class Cache(Protocol):

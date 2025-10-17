@@ -1,5 +1,8 @@
+from typing import Self
+
 from roborock import AppInitStatus, RoborockProductNickname
 from roborock.device_features import DeviceFeatures
+from roborock.devices.cache import Cache
 from roborock.devices.traits.v1 import common
 from roborock.roborock_typing import RoborockCommand
 
@@ -9,9 +12,26 @@ class DeviceFeaturesTrait(DeviceFeatures, common.V1TraitMixin):
 
     command = RoborockCommand.APP_GET_INIT_STATUS
 
-    def __init__(self, product_nickname: RoborockProductNickname) -> None:
+    def __init__(self, product_nickname: RoborockProductNickname, cache: Cache) -> None:
         """Initialize MapContentTrait."""
         self._nickname = product_nickname
+        self._cache = cache
+
+    async def refresh(self) -> Self:
+        """Refresh the contents of this trait.
+
+        This will use cached device features if available since they do not
+        change often and this avoids unnecessary RPC calls.
+        """
+        cache_data = await self._cache.get()
+        if cache_data.device_features is not None:
+            self._update_trait_values(cache_data.device_features)
+            return cache_data.device_features  # type: ignore[return-value]
+        # Save cached device features
+        device_features = await super().refresh()
+        cache_data.device_features = device_features
+        await self._cache.set(cache_data)
+        return device_features  # type: ignore[return-value]
 
     def _parse_response(self, response: common.V1ResponseData) -> DeviceFeatures:
         """Parse the response from the device into a MapContentTrait instance."""

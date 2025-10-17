@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from roborock.containers import RRiot
-from roborock.exceptions import RoborockException
+from roborock.exceptions import RoborockException, RoborockUnsupportedFeature
 from roborock.protocol import Utils
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 from roborock.roborock_typing import RoborockCommand
@@ -153,7 +153,7 @@ def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
         _LOGGER.debug("Decoded V1 message result: %s", result)
         if isinstance(result, str):
             if result == "unknown_method":
-                exc = RoborockException("The method called is not recognized by the device.")
+                exc = RoborockUnsupportedFeature("The method called is not recognized by the device.")
             elif result != "ok":
                 exc = RoborockException(f"Unexpected API Result: {result}")
             result = {}

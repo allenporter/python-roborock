@@ -913,12 +913,17 @@ class CombinedMapInfo(RoborockBase):
 
 @dataclass
 class ChildLockStatus(RoborockBase):
-    lock_status: int
+    lock_status: int = 0
 
 
 @dataclass
 class FlowLedStatus(RoborockBase):
-    status: int
+    status: int = 0
+
+
+@dataclass
+class LedStatus(RoborockBase):
+    status: int = 0
 
 
 @dataclass
