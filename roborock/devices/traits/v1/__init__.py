@@ -54,6 +54,7 @@ class PropertiesApi(Trait):
 
     # All v1 devices have these traits
     status: StatusTrait
+    dnd: DoNotDisturbTrait
     clean_summary: CleanSummaryTrait
     sound_volume: SoundVolumeTrait
     rooms: RoomsTrait
@@ -64,7 +65,6 @@ class PropertiesApi(Trait):
     device_features: DeviceFeaturesTrait
 
     # Optional features that may not be supported on all devices
-    dnd: DoNotDisturbTrait | None = None
     child_lock: ChildLockTrait | None = None
     led_status: LedStatusTrait | None = None
     flow_led_status: FlowLedStatusTrait | None = None

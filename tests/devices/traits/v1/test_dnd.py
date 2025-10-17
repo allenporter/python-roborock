@@ -13,25 +13,6 @@ from roborock.roborock_typing import RoborockCommand
 from tests import mock_data
 
 
-@pytest.fixture(autouse=True)
-async def supported_features(roborock_cache: Cache, device: RoborockDevice) -> None:
-    """Fixture to set up supported features in cache."""
-    data = await roborock_cache.get()
-    app_status = AppInitStatus.from_dict(mock_data.APP_GET_INIT_STATUS)
-    product = HomeDataProduct.from_dict(mock_data.HOME_DATA_RAW["products"][0])
-    data.device_features = DeviceFeatures.from_feature_flags(
-        new_feature_info=app_status.new_feature_info,
-        new_feature_info_str=app_status.new_feature_info_str,
-        feature_info=app_status.feature_info,
-        product_nickname=product.product_nickname,
-    )
-    await roborock_cache.set(data)
-
-    # Ensure device traits are initialized with the updated cache
-    assert device.v1_properties
-    await device.v1_properties.discover_features()
-
-
 @pytest.fixture
 async def dnd_trait(device: RoborockDevice) -> DoNotDisturbTrait:
     """Create a DoNotDisturbTrait instance with mocked dependencies."""
