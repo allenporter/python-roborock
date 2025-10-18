@@ -14,7 +14,7 @@ class CommandTrait:
         """
         self._rpc_channel = None
 
-    async def send(self, command: RoborockCommand, params: dict[str, Any] | None = None) -> Any:
+    async def send(self, command: RoborockCommand | str, params: dict[str, Any] | None = None) -> Any:
         """Send a command to the device."""
         if not self._rpc_channel:
             raise ValueError("Device trait in invalid state")
