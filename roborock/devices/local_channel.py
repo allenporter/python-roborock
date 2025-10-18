@@ -56,6 +56,11 @@ class LocalChannel(Channel):
         """Check if the channel is currently connected."""
         return self._is_connected
 
+    @property
+    def is_local_connected(self) -> bool:
+        """Check if the channel is currently connected locally."""
+        return self._is_connected
+
     async def connect(self) -> None:
         """Connect to the device."""
         if self._is_connected:

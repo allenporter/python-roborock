@@ -80,6 +80,28 @@ async def test_device_connection(device: RoborockDevice, channel: AsyncMock) -> 
     assert unsub.called
 
 
+@pytest.mark.parametrize(
+    ("connected", "local_connected"),
+    [
+        (True, False),
+        (False, False),
+        (True, True),
+        (False, True),
+    ],
+)
+async def test_connection_status(
+    device: RoborockDevice,
+    channel: AsyncMock,
+    connected: bool,
+    local_connected: bool,
+) -> None:
+    """Test successful RPC command sending and response handling."""
+    channel.is_connected = connected
+    channel.is_local_connected = local_connected
+    assert device.is_connected is connected
+    assert device.is_local_connected is local_connected
+
+
 @pytest.fixture(name="setup_rpc_channel")
 def setup_rpc_channel_fixture(rpc_channel: AsyncMock, payload: pathlib.Path) -> AsyncMock:
     """Fixture to set up the RPC channel for the tests."""
