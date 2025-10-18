@@ -87,6 +87,16 @@ class RoborockDevice(ABC, TraitsMixin):
         """Return whether the device is connected."""
         return self._channel.is_connected
 
+    @property
+    def is_local_connected(self) -> bool:
+        """Return whether the device is connected locally.
+
+        This can be used to determine if the device is reachable over a local
+        network connection, as opposed to a cloud connection. This is useful
+        for adjusting behavior like polling frequency.
+        """
+        return self._channel.is_local_connected
+
     async def connect(self) -> None:
         """Connect to the device using the appropriate protocol channel."""
         if self._unsub:

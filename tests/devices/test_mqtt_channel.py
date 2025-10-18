@@ -134,6 +134,18 @@ async def test_publish_success(
     assert decoded_message.protocol == RoborockMessageProtocol.RPC_REQUEST
 
 
+@pytest.mark.parametrize(("connected"), [(True), (False)])
+async def test_connection_status(
+    mqtt_session: Mock,
+    mqtt_channel: MqttChannel,
+    connected: bool,
+) -> None:
+    """Test successful RPC command sending and response handling."""
+    mqtt_session.connected = connected
+    assert mqtt_channel.is_connected is connected
+    assert mqtt_channel.is_local_connected is False
+
+
 async def test_message_decode_error(
     mqtt_channel: MqttChannel,
     mqtt_message_handler: Callable[[bytes], None],

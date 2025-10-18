@@ -22,6 +22,11 @@ class Channel(Protocol):
         """Return true if the channel is connected."""
         ...
 
+    @property
+    def is_local_connected(self) -> bool:
+        """Return true if the channel is connected locally."""
+        ...
+
     async def subscribe(self, callback: Callable[[RoborockMessage], None]) -> Callable[[], None]:
         """Subscribe to messages from the device."""
         ...

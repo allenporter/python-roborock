@@ -41,6 +41,11 @@ class MqttChannel(Channel):
         return self._mqtt_session.connected
 
     @property
+    def is_local_connected(self) -> bool:
+        """Return true if the channel is connected locally."""
+        return False
+
+    @property
     def _publish_topic(self) -> str:
         """Topic to send commands to the device."""
         return f"rr/m/i/{self._rriot.u}/{self._mqtt_params.username}/{self._duid}"
