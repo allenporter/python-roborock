@@ -53,6 +53,7 @@ def device_fixture(channel: AsyncMock, rpc_channel: AsyncMock, mqtt_rpc_channel:
     """Fixture to set up the device for tests."""
     return RoborockDevice(
         device_info=HOME_DATA.devices[0],
+        product=HOME_DATA.products[0],
         channel=channel,
         trait=v1.create(HOME_DATA.products[0], HOME_DATA, rpc_channel, mqtt_rpc_channel, AsyncMock(), NoCache()),
     )

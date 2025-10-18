@@ -8,7 +8,7 @@ import logging
 from abc import ABC
 from collections.abc import Callable
 
-from roborock.containers import HomeDataDevice
+from roborock.containers import HomeDataDevice, HomeDataProduct
 from roborock.roborock_message import RoborockMessage
 
 from .channel import Channel
@@ -37,6 +37,7 @@ class RoborockDevice(ABC, TraitsMixin):
     def __init__(
         self,
         device_info: HomeDataDevice,
+        product: HomeDataProduct,
         channel: Channel,
         trait: Trait,
     ) -> None:
@@ -49,6 +50,8 @@ class RoborockDevice(ABC, TraitsMixin):
         TraitsMixin.__init__(self, trait)
         self._duid = device_info.duid
         self._name = device_info.name
+        self._device_info = device_info
+        self._product = product
         self._channel = channel
         self._unsub: Callable[[], None] | None = None
 
@@ -61,6 +64,23 @@ class RoborockDevice(ABC, TraitsMixin):
     def name(self) -> str:
         """Return the device name."""
         return self._name
+
+    @property
+    def device_info(self) -> HomeDataDevice:
+        """Return the device information.
+
+        This includes information specific to the device like its identifier or
+        firmware version.
+        """
+        return self._device_info
+
+    @property
+    def product(self) -> HomeDataProduct:
+        """Return the device product name.
+
+        This returns product level information such as the model name.
+        """
+        return self._product
 
     @property
     def is_connected(self) -> bool:
