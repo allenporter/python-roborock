@@ -116,10 +116,15 @@ def create_home_data_api(
     This function creates a wrapper around the Roborock API client to fetch
     home data for the user.
     """
-
     # Note: This will auto discover the API base URL. This can be improved
     # by caching this next to `UserData` if needed to avoid unnecessary API calls.
     client = RoborockApiClient(username=email, base_url=base_url, session=session)
+
+    return create_home_data_from_api_client(client, user_data)
+
+
+def create_home_data_from_api_client(client: RoborockApiClient, user_data: UserData) -> HomeDataApi:
+    """Create a home data API wrapper from an existing API client."""
 
     async def home_data_api() -> HomeData:
         return await client.get_home_data_v3(user_data)
