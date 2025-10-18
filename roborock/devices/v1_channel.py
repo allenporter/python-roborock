@@ -129,7 +129,7 @@ class V1Channel(Channel):
 
         A background task will be started to monitor and maintain the local
         connection, attempting to reconnect as needed.
-         
+
         Args:
             callback: Callback to invoke for each received message.
 
