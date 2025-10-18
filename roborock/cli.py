@@ -714,21 +714,14 @@ async def home(ctx, device_id: str, refresh: bool):
 @async_command
 async def command(ctx, cmd, device_id, params):
     context: RoborockContext = ctx.obj
-    cache_data = await context.get_devices()
-
-    home_data = cache_data.home_data
-    devices = home_data.get_all_devices()
-    device = next(device for device in devices if device.duid == device_id)
-    model = next(
-        (product.model for product in home_data.products if device is not None and product.id == device.product_id),
-        None,
-    )
-    if model is None:
-        raise RoborockException(f"Could not find model for device {device.name}")
-    device_info = DeviceData(device=device, model=model)
-    mqtt_client = RoborockMqttClientV1(cache_data.user_data, device_info)
-    await mqtt_client.send_command(cmd, json.loads(params) if params is not None else None)
-    await mqtt_client.async_release()
+    device_manager = await context.get_device_manager()
+    device = await device_manager.get_device(device_id)
+    if device.v1_properties is None:
+        raise RoborockException(f"Device {device.name} does not support V1 protocol")
+    command_trait: Trait = device.v1_properties.command
+    result = await command_trait.send(cmd, json.loads(params) if params is not None else None)
+    if result:
+        click.echo(dump_json(result))
 
 
 @click.command()
