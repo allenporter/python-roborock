@@ -82,6 +82,7 @@ class V1TraitMixin(ABC):
         new_data = self._parse_response(response)
         if not isinstance(new_data, RoborockBase):
             raise ValueError(f"Internal error, unexpected response type: {new_data!r}")
+        _LOGGER.debug("Refreshed %s: %s", self.__class__.__name__, new_data)
         self._update_trait_values(new_data)
         return self
 

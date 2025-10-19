@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from roborock.code_mappings import RoborockDockTypeCode
 from roborock.containers import HomeData, S7MaxVStatus, UserData
 from roborock.devices.cache import Cache, InMemoryCache
 from roborock.devices.device import RoborockDevice
@@ -68,3 +69,33 @@ def device_fixture(
             roborock_cache,
         ),
     )
+
+
+@pytest.fixture(name="dock_type_code", autouse=True)
+def dock_type_code_fixture(request: pytest.FixtureRequest) -> RoborockDockTypeCode | None:
+    """Fixture to provide the dock type code for parameterized tests."""
+    return RoborockDockTypeCode.s7_max_ultra_dock
+
+
+@pytest.fixture(autouse=True)
+async def discover_features_fixture(
+    device: RoborockDevice,
+    mock_rpc_channel: AsyncMock,
+    dock_type_code: RoborockDockTypeCode | None,
+) -> None:
+    """Fixture to set up the clean summary for tests.
+
+    The CleanRecordTrait depends on the CleanSummaryTrait, so we need to
+    prepare that first.
+    """
+    assert device.v1_properties
+    mock_rpc_channel.send_command.side_effect = [
+        [mock_data.APP_GET_INIT_STATUS],
+        {
+            **mock_data.STATUS,
+            "dock_type": dock_type_code,
+        },
+    ]
+    await device.v1_properties.discover_features()
+    assert device.v1_properties.status.dock_type == dock_type_code
+    mock_rpc_channel.send_command.reset_mock()

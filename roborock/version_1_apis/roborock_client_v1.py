@@ -45,6 +45,7 @@ from roborock.containers import (
     ValleyElectricityTimer,
     WashTowelMode,
 )
+from roborock.device_features import WASH_N_FILL_DOCK_TYPES
 from roborock.protocols.v1_protocol import MapResponse, SecurityData, create_map_response_decoder
 from roborock.roborock_message import (
     ROBOROCK_DATA_CONSUMABLE_PROTOCOL,
@@ -64,16 +65,6 @@ COMMANDS_SECURED = {
 
 CLOUD_REQUIRED = COMMANDS_SECURED.union(CUSTOM_COMMANDS)
 
-WASH_N_FILL_DOCK = [
-    RoborockDockTypeCode.empty_wash_fill_dock,
-    RoborockDockTypeCode.s8_dock,
-    RoborockDockTypeCode.p10_dock,
-    RoborockDockTypeCode.p10_pro_dock,
-    RoborockDockTypeCode.s8_maxv_ultra_dock,
-    RoborockDockTypeCode.qrevo_s_dock,
-    RoborockDockTypeCode.saros_r10_dock,
-    RoborockDockTypeCode.qrevo_curv_dock,
-]
 RT = TypeVar("RT", bound=RoborockBase)
 EVICT_TIME = 60
 
@@ -264,7 +255,7 @@ class RoborockClientV1(RoborockClient, ABC):
                 DustCollectionMode | WashTowelMode | SmartWashParams | None,
             ]
         ] = [self.get_dust_collection_mode()]
-        if dock_type in WASH_N_FILL_DOCK:
+        if dock_type in WASH_N_FILL_DOCK_TYPES:
             commands += [
                 self.get_wash_towel_mode(),
                 self.get_smart_wash_params(),

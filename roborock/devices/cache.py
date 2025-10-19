@@ -6,7 +6,7 @@ this interface to provide their own caching mechanism.
 """
 
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import Any, Protocol
 
 from roborock.containers import CombinedMapInfo, HomeData, NetworkInfo
 from roborock.device_features import DeviceFeatures
@@ -27,6 +27,9 @@ class CacheData:
 
     device_features: DeviceFeatures | None = None
     """Device features information."""
+
+    trait_data: dict[str, Any] | None = None
+    """Trait-specific cached data used internally for caching device features."""
 
 
 class Cache(Protocol):
