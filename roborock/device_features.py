@@ -4,7 +4,7 @@ from dataclasses import dataclass, field, fields
 from enum import IntEnum, StrEnum
 from typing import Any
 
-from .code_mappings import RoborockProductNickname
+from .code_mappings import RoborockDockTypeCode, RoborockProductNickname
 from .containers import RoborockBase
 
 
@@ -630,3 +630,15 @@ class DeviceFeatures(RoborockBase):
     def get_supported_features(self) -> list[str]:
         """Returns a list of supported features (Primarily used for logging purposes)."""
         return [k for k, v in vars(self).items() if v]
+
+
+WASH_N_FILL_DOCK_TYPES = [
+    RoborockDockTypeCode.empty_wash_fill_dock,
+    RoborockDockTypeCode.s8_dock,
+    RoborockDockTypeCode.p10_dock,
+    RoborockDockTypeCode.p10_pro_dock,
+    RoborockDockTypeCode.s8_maxv_ultra_dock,
+    RoborockDockTypeCode.qrevo_s_dock,
+    RoborockDockTypeCode.saros_r10_dock,
+    RoborockDockTypeCode.qrevo_curv_dock,
+]

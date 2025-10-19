@@ -1,9 +1,41 @@
-"""Create traits for V1 devices."""
+"""Create traits for V1 devices.
+
+Traits are modular components that encapsulate specific features of a Roborock
+device. This module provides a factory function to create and initialize the
+appropriate traits for V1 devices based on their capabilities. They can also
+be considered groups of commands and parsing logic for that command.
+
+Traits have a `refresh()` method that can be called to update their state
+from the device. Some traits may also provide additional methods for modifying
+the device state.
+
+The most common pattern for a trait is to subclass `V1TraitMixin` and a `RoborockBase`
+dataclass, and define a `command` class variable that specifies the `RoborockCommand`
+used to fetch the trait data from the device. See `common.py` for more details
+on common patterns used across traits.
+
+There are some additional decorators in `common.py` that can be used to specify which
+RPC channel to use for the trait (standard, MQTT/cloud, or map-specific).
+
+  - `@common.mqtt_rpc_channel` - Use the MQTT RPC channel for this trait.
+  - `@common.map_rpc_channel` - Use the map RPC channel for this trait.
+
+There are also some attributes that specify device feature dependencies for
+optional traits:
+
+    - `requires_feature` - The string name of the device feature that must be supported
+        for this trait to be enabled. See `DeviceFeaturesTrait` for a list of
+        available features.
+    - `requires_dock_type` - If set, this trait requires the
+        device to have any of the specified dock types to be enabled. See
+        `RoborockDockTypeCode` for a list of available dock types.
+"""
 
 import logging
 from dataclasses import dataclass, field, fields
-from typing import get_args
+from typing import Any, get_args
 
+from roborock.code_mappings import RoborockDockTypeCode
 from roborock.containers import HomeData, HomeDataProduct
 from roborock.devices.cache import Cache
 from roborock.devices.traits import Trait
@@ -11,21 +43,26 @@ from roborock.devices.v1_rpc_channel import V1RpcChannel
 from roborock.map.map_parser import MapParserConfig
 
 from .child_lock import ChildLockTrait
+from .clean_record import CleanRecordTrait
 from .clean_summary import CleanSummaryTrait
 from .command import CommandTrait
 from .common import V1TraitMixin
 from .consumeable import ConsumableTrait
 from .device_features import DeviceFeaturesTrait
 from .do_not_disturb import DoNotDisturbTrait
+from .dock_summary import DockSummaryTrait
+from .dust_collection_mode import DustCollectionModeTrait
 from .flow_led_status import FlowLedStatusTrait
 from .home import HomeTrait
 from .led_status import LedStatusTrait
 from .map_content import MapContentTrait
 from .maps import MapsTrait
 from .rooms import RoomsTrait
+from .smart_wash_params import SmartWashParamsTrait
 from .status import StatusTrait
 from .valley_electricity_timer import ValleyElectricityTimerTrait
 from .volume import SoundVolumeTrait
+from .wash_towel_mode import WashTowelModeTrait
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,6 +72,7 @@ __all__ = [
     "StatusTrait",
     "DoNotDisturbTrait",
     "CleanSummaryTrait",
+    "CleanRecordTrait",
     "SoundVolumeTrait",
     "MapsTrait",
     "MapContentTrait",
@@ -46,6 +84,10 @@ __all__ = [
     "FlowLedStatusTrait",
     "LedStatusTrait",
     "ValleyElectricityTimerTrait",
+    "DockSummaryTrait",
+    "DustCollectionModeTrait",
+    "WashTowelModeTrait",
+    "SmartWashParamsTrait",
 ]
 
 
@@ -61,6 +103,7 @@ class PropertiesApi(Trait):
     command: CommandTrait
     dnd: DoNotDisturbTrait
     clean_summary: CleanSummaryTrait
+    clean_record: CleanRecordTrait
     sound_volume: SoundVolumeTrait
     rooms: RoomsTrait
     maps: MapsTrait
@@ -68,12 +111,16 @@ class PropertiesApi(Trait):
     consumables: ConsumableTrait
     home: HomeTrait
     device_features: DeviceFeaturesTrait
+    dust_collection_mode: DustCollectionModeTrait
 
     # Optional features that may not be supported on all devices
     child_lock: ChildLockTrait | None = None
     led_status: LedStatusTrait | None = None
     flow_led_status: FlowLedStatusTrait | None = None
     valley_electricity_timer: ValleyElectricityTimerTrait | None = None
+    wash_towel_mode: WashTowelModeTrait | None = None
+    smart_wash_params: SmartWashParamsTrait | None = None
+    dock_summary: DockSummaryTrait | None = None
 
     def __init__(
         self,
@@ -89,8 +136,12 @@ class PropertiesApi(Trait):
         self._rpc_channel = rpc_channel
         self._mqtt_rpc_channel = mqtt_rpc_channel
         self._map_rpc_channel = map_rpc_channel
+        self._cache = cache
 
         self.status = StatusTrait(product)
+        self.clean_summary = CleanSummaryTrait()
+        self.clean_record = CleanRecordTrait(self.clean_summary)
+        self.consumables = ConsumableTrait()
         self.rooms = RoomsTrait(home_data)
         self.maps = MapsTrait(self.status)
         self.map_content = MapContentTrait(map_parser_config)
@@ -103,7 +154,7 @@ class PropertiesApi(Trait):
                 # We exclude optional features and them via discover_features
                 if (union_args := get_args(item.type)) is None or len(union_args) > 0:
                     continue
-                _LOGGER.debug("Initializing trait %s", item.name)
+                _LOGGER.debug("Trait '%s' is supported, initializing", item.name)
                 trait = item.type()
                 setattr(self, item.name, trait)
             # This is a hack to allow setting the rpc_channel on all traits. This is
@@ -124,8 +175,12 @@ class PropertiesApi(Trait):
 
     async def discover_features(self) -> None:
         """Populate any supported traits that were not initialized in __init__."""
+        _LOGGER.debug("Starting optional trait discovery")
         await self.device_features.refresh()
+        # Dock type also acts like a device feature for some traits.
+        dock_type = await self._dock_type()
 
+        # Dynamically create any traits that need to be populated
         for item in fields(self):
             if (trait := getattr(self, item.name, None)) is not None:
                 continue
@@ -136,21 +191,78 @@ class PropertiesApi(Trait):
 
             # Union args may not be in declared order
             item_type = union_args[0] if union_args[1] is type(None) else union_args[1]
+            if item_type is DockSummaryTrait:
+                # DockSummaryTrait is created manually below
+                continue
             trait = item_type()
-            if not hasattr(trait, "requires_feature"):
-                _LOGGER.debug("Trait missing required feature %s", item.name)
+            if not self._is_supported(trait, item.name, dock_type):
+                _LOGGER.debug("Trait '%s' not supported, skipping", item.name)
                 continue
-            _LOGGER.debug("Checking for feature %s", trait.requires_feature)
-            is_supported = getattr(self.device_features, trait.requires_feature)
-            # _LOGGER.debug("Device features: %s", self.device_features)
-            if is_supported is None:
-                raise ValueError(f"Device feature '{trait.requires_feature}' on trait '{item.name}' is unknown")
-            if not is_supported:
-                _LOGGER.debug("Disabling optional feature trait %s", item.name)
-                continue
-            _LOGGER.debug("Enabling optional feature trait %s", item.name)
+
+            _LOGGER.debug("Trait '%s' is supported, initializing", item.name)
             setattr(self, item.name, trait)
             trait._rpc_channel = self._get_rpc_channel(trait)
+
+        if dock_type is None or dock_type == RoborockDockTypeCode.no_dock:
+            _LOGGER.debug("Trait 'dock_summary' not supported, skipping")
+        else:
+            _LOGGER.debug("Trait 'dock_summary' is supported, initializing")
+            self.dock_summary = DockSummaryTrait(
+                self.dust_collection_mode,
+                self.wash_towel_mode,
+                self.smart_wash_params,
+            )
+
+    def _is_supported(self, trait: V1TraitMixin, name: str, dock_type: RoborockDockTypeCode) -> bool:
+        """Check if a trait is supported by the device."""
+
+        if (requires_dock_type := getattr(trait, "requires_dock_type", None)) is not None:
+            return dock_type in requires_dock_type
+
+        if (feature_name := getattr(trait, "requires_feature", None)) is None:
+            _LOGGER.debug("Optional trait missing 'requires_feature' attribute %s, skipping", name)
+            return False
+        if (is_supported := getattr(self.device_features, feature_name)) is None:
+            raise ValueError(f"Device feature '{feature_name}' on trait '{name}' is unknown")
+        return is_supported
+
+    async def _dock_type(self) -> RoborockDockTypeCode:
+        """Get the dock type from the status trait or cache."""
+        dock_type = await self._get_cached_trait_data("dock_type")
+        if dock_type is not None:
+            _LOGGER.debug("Using cached dock type: %s", dock_type)
+            try:
+                return RoborockDockTypeCode(dock_type)
+            except ValueError:
+                _LOGGER.debug("Cached dock type %s is invalid, refreshing", dock_type)
+
+        _LOGGER.debug("Starting dock type discovery")
+        await self.status.refresh()
+        _LOGGER.debug("Fetched dock type: %s", self.status.dock_type)
+        if self.status.dock_type is None:
+            # Explicitly set so we reuse cached value next type
+            dock_type = RoborockDockTypeCode.no_dock
+        else:
+            dock_type = self.status.dock_type
+        await self._set_cached_trait_data("dock_type", dock_type)
+        return dock_type
+
+    async def _get_cached_trait_data(self, name: str) -> Any:
+        """Get the dock type from the status trait or cache."""
+        cache_data = await self._cache.get()
+        if cache_data.trait_data is None:
+            cache_data.trait_data = {}
+        _LOGGER.debug("Cached trait data: %s", cache_data.trait_data)
+        return cache_data.trait_data.get(name)
+
+    async def _set_cached_trait_data(self, name: str, value: Any) -> None:
+        """Set trait-specific cached data."""
+        cache_data = await self._cache.get()
+        if cache_data.trait_data is None:
+            cache_data.trait_data = {}
+        cache_data.trait_data[name] = value
+        _LOGGER.debug("Updating cached trait data: %s", cache_data.trait_data)
+        await self._cache.set(cache_data)
 
 
 def create(

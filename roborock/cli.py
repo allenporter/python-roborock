@@ -119,6 +119,7 @@ class ConnectionCache(RoborockBase):
     home_data: HomeData | None = None
     network_info: dict[str, NetworkInfo] | None = None
     home_cache: dict[int, CombinedMapInfo] | None = None
+    trait_data: dict[str, Any] | None = None
 
 
 class DeviceConnectionManager:
@@ -267,6 +268,7 @@ class RoborockContext(Cache):
             home_data=connection_cache.home_data,
             network_info=connection_cache.network_info or {},
             home_cache=connection_cache.home_cache,
+            trait_data=connection_cache.trait_data or {},
         )
 
     async def set(self, value: CacheData) -> None:
@@ -276,6 +278,7 @@ class RoborockContext(Cache):
         connection_cache.home_data = value.home_data
         connection_cache.network_info = value.network_info
         connection_cache.home_cache = value.home_cache
+        connection_cache.trait_data = value.trait_data
         self.update(connection_cache)
 
 
@@ -401,9 +404,11 @@ async def _v1_trait(context: RoborockContext, device_id: str, display_func: Call
     device_manager = await context.get_device_manager()
     device = await device_manager.get_device(device_id)
     if device.v1_properties is None:
-        raise RoborockException(f"Device {device.name} does not support V1 protocol")
+        raise RoborockUnsupportedFeature(f"Device {device.name} does not support V1 protocol")
     await device.v1_properties.discover_features()
     trait = display_func(device.v1_properties)
+    if trait is None:
+        raise RoborockUnsupportedFeature("Trait not supported by device")
     await trait.refresh()
     return trait
 
@@ -438,6 +443,26 @@ async def clean_summary(ctx, device_id: str):
     """Get device clean summary."""
     context: RoborockContext = ctx.obj
     await _display_v1_trait(context, device_id, lambda v1: v1.clean_summary)
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.pass_context
+@async_command
+async def clean_record(ctx, device_id: str):
+    """Get device last clean record."""
+    context: RoborockContext = ctx.obj
+    await _display_v1_trait(context, device_id, lambda v1: v1.clean_record)
+
+
+@session.command()
+@click.option("--device_id", required=True)
+@click.pass_context
+@async_command
+async def dock_summary(ctx, device_id: str):
+    """Get device dock summary."""
+    context: RoborockContext = ctx.obj
+    await _display_v1_trait(context, device_id, lambda v1: v1.dock_summary)
 
 
 @session.command()
@@ -938,6 +963,8 @@ cli.add_command(session)
 cli.add_command(get_device_info)
 cli.add_command(update_docs)
 cli.add_command(clean_summary)
+cli.add_command(clean_record)
+cli.add_command(dock_summary)
 cli.add_command(volume)
 cli.add_command(set_volume)
 cli.add_command(maps)

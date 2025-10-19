@@ -124,6 +124,26 @@
   ]
   '''
 # ---
+# name: test_decode_rpc_payload[get_last_clean_record]
+  20003
+# ---
+# name: test_decode_rpc_payload[get_last_clean_record].1
+  '''
+  [
+    [
+      1738864366,
+      1738868964,
+      4358,
+      81122500,
+      0,
+      0,
+      1,
+      1,
+      21
+    ]
+  ]
+  '''
+# ---
 # name: test_decode_rpc_payload[get_multi_maps_list]
   20001
 # ---
