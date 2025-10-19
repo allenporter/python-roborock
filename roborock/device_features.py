@@ -642,3 +642,13 @@ WASH_N_FILL_DOCK_TYPES = [
     RoborockDockTypeCode.saros_r10_dock,
     RoborockDockTypeCode.qrevo_curv_dock,
 ]
+
+
+def is_wash_n_fill_dock(dock_type: RoborockDockTypeCode) -> bool:
+    """Check if the dock type is a wash and fill dock."""
+    return dock_type in WASH_N_FILL_DOCK_TYPES
+
+
+def is_valid_dock(dock_type: RoborockDockTypeCode) -> bool:
+    """Check if device supports a dock."""
+    return dock_type != RoborockDockTypeCode.no_dock

@@ -26,9 +26,8 @@ optional traits:
     - `requires_feature` - The string name of the device feature that must be supported
         for this trait to be enabled. See `DeviceFeaturesTrait` for a list of
         available features.
-    - `requires_dock_type` - If set, this trait requires the
-        device to have any of the specified dock types to be enabled. See
-        `RoborockDockTypeCode` for a list of available dock types.
+    - `requires_dock_type` - If set, this is a function that accepts a `RoborockDockTypeCode`
+        and returns a boolean indicating whether the trait is supported for that dock type.
 """
 
 import logging
@@ -50,7 +49,6 @@ from .common import V1TraitMixin
 from .consumeable import ConsumableTrait
 from .device_features import DeviceFeaturesTrait
 from .do_not_disturb import DoNotDisturbTrait
-from .dock_summary import DockSummaryTrait
 from .dust_collection_mode import DustCollectionModeTrait
 from .flow_led_status import FlowLedStatusTrait
 from .home import HomeTrait
@@ -84,7 +82,6 @@ __all__ = [
     "FlowLedStatusTrait",
     "LedStatusTrait",
     "ValleyElectricityTimerTrait",
-    "DockSummaryTrait",
     "DustCollectionModeTrait",
     "WashTowelModeTrait",
     "SmartWashParamsTrait",
@@ -111,16 +108,15 @@ class PropertiesApi(Trait):
     consumables: ConsumableTrait
     home: HomeTrait
     device_features: DeviceFeaturesTrait
-    dust_collection_mode: DustCollectionModeTrait
 
     # Optional features that may not be supported on all devices
     child_lock: ChildLockTrait | None = None
     led_status: LedStatusTrait | None = None
     flow_led_status: FlowLedStatusTrait | None = None
     valley_electricity_timer: ValleyElectricityTimerTrait | None = None
+    dust_collection_mode: DustCollectionModeTrait | None = None
     wash_towel_mode: WashTowelModeTrait | None = None
     smart_wash_params: SmartWashParamsTrait | None = None
-    dock_summary: DockSummaryTrait | None = None
 
     def __init__(
         self,
@@ -191,35 +187,21 @@ class PropertiesApi(Trait):
 
             # Union args may not be in declared order
             item_type = union_args[0] if union_args[1] is type(None) else union_args[1]
-            if item_type is DockSummaryTrait:
-                # DockSummaryTrait is created manually below
-                continue
-            trait = item_type()
-            if not self._is_supported(trait, item.name, dock_type):
+            if not self._is_supported(item_type, item.name, dock_type):
                 _LOGGER.debug("Trait '%s' not supported, skipping", item.name)
                 continue
-
             _LOGGER.debug("Trait '%s' is supported, initializing", item.name)
+            trait = item_type()
             setattr(self, item.name, trait)
             trait._rpc_channel = self._get_rpc_channel(trait)
 
-        if dock_type is None or dock_type == RoborockDockTypeCode.no_dock:
-            _LOGGER.debug("Trait 'dock_summary' not supported, skipping")
-        else:
-            _LOGGER.debug("Trait 'dock_summary' is supported, initializing")
-            self.dock_summary = DockSummaryTrait(
-                self.dust_collection_mode,
-                self.wash_towel_mode,
-                self.smart_wash_params,
-            )
-
-    def _is_supported(self, trait: V1TraitMixin, name: str, dock_type: RoborockDockTypeCode) -> bool:
+    def _is_supported(self, trait_type: type[V1TraitMixin], name: str, dock_type: RoborockDockTypeCode) -> bool:
         """Check if a trait is supported by the device."""
 
-        if (requires_dock_type := getattr(trait, "requires_dock_type", None)) is not None:
-            return dock_type in requires_dock_type
+        if (requires_dock_type := getattr(trait_type, "requires_dock_type", None)) is not None:
+            return requires_dock_type(dock_type)
 
-        if (feature_name := getattr(trait, "requires_feature", None)) is None:
+        if (feature_name := getattr(trait_type, "requires_feature", None)) is None:
             _LOGGER.debug("Optional trait missing 'requires_feature' attribute %s, skipping", name)
             return False
         if (is_supported := getattr(self.device_features, feature_name)) is None:
