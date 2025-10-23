@@ -58,6 +58,6 @@ async def test_network_info_from_device(
 
     # Verify it's now in the cache
     cache_data = await roborock_cache.get()
-    assert "roborock.vacuum.a15" in cache_data.network_info
-    cached_info = cache_data.network_info[DEVICE_UID]
+    cached_info = cache_data.network_info.get(DEVICE_UID)
+    assert cached_info
     assert cached_info.ip == "2.2.2.2"
