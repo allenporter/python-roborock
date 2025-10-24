@@ -156,15 +156,15 @@ class Status(RoborockBase):
 
     @property
     def error_code_name(self) -> str | None:
-        return self.error_code.name if self.error_code else None
+        return self.error_code.name if self.error_code is not None else None
 
     @property
     def state_name(self) -> str | None:
-        return self.state.name if self.state else None
+        return self.state.name if self.state is not None else None
 
     @property
     def water_box_mode_name(self) -> str | None:
-        return self.water_box_mode.name if self.water_box_mode else None
+        return self.water_box_mode.name if self.water_box_mode is not None else None
 
     @property
     def fan_power_options(self) -> list[str]:
@@ -174,11 +174,11 @@ class Status(RoborockBase):
 
     @property
     def fan_power_name(self) -> str | None:
-        return self.fan_power.name if self.fan_power else None
+        return self.fan_power.name if self.fan_power is not None else None
 
     @property
     def mop_mode_name(self) -> str | None:
-        return self.mop_mode.name if self.mop_mode else None
+        return self.mop_mode.name if self.mop_mode is not None else None
 
     def get_fan_speed_code(self, fan_speed: str) -> int:
         if self.fan_power is None:
