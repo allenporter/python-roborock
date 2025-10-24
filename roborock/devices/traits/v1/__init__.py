@@ -54,6 +54,7 @@ from .home import HomeTrait
 from .led_status import LedStatusTrait
 from .map_content import MapContentTrait
 from .maps import MapsTrait
+from .network_info import NetworkInfoTrait
 from .rooms import RoomsTrait
 from .smart_wash_params import SmartWashParamsTrait
 from .status import StatusTrait
@@ -83,6 +84,7 @@ __all__ = [
     "DustCollectionModeTrait",
     "WashTowelModeTrait",
     "SmartWashParamsTrait",
+    "NetworkInfoTrait",
 ]
 
 
@@ -105,6 +107,7 @@ class PropertiesApi(Trait):
     consumables: ConsumableTrait
     home: HomeTrait
     device_features: DeviceFeaturesTrait
+    network_info: NetworkInfoTrait
 
     # Optional features that may not be supported on all devices
     child_lock: ChildLockTrait | None = None
@@ -117,6 +120,7 @@ class PropertiesApi(Trait):
 
     def __init__(
         self,
+        device_uid: str,
         product: HomeDataProduct,
         home_data: HomeData,
         rpc_channel: V1RpcChannel,
@@ -126,6 +130,7 @@ class PropertiesApi(Trait):
         map_parser_config: MapParserConfig | None = None,
     ) -> None:
         """Initialize the V1TraitProps."""
+        self._device_uid = device_uid
         self._rpc_channel = rpc_channel
         self._mqtt_rpc_channel = mqtt_rpc_channel
         self._map_rpc_channel = map_rpc_channel
@@ -138,6 +143,7 @@ class PropertiesApi(Trait):
         self.map_content = MapContentTrait(map_parser_config)
         self.home = HomeTrait(self.status, self.maps, self.rooms, cache)
         self.device_features = DeviceFeaturesTrait(product.product_nickname, cache)
+        self.network_info = NetworkInfoTrait(device_uid, cache)
 
         # Dynamically create any traits that need to be populated
         for item in fields(self):
@@ -243,6 +249,7 @@ class PropertiesApi(Trait):
 
 
 def create(
+    device_uid: str,
     product: HomeDataProduct,
     home_data: HomeData,
     rpc_channel: V1RpcChannel,
@@ -252,4 +259,13 @@ def create(
     map_parser_config: MapParserConfig | None = None,
 ) -> PropertiesApi:
     """Create traits for V1 devices."""
-    return PropertiesApi(product, home_data, rpc_channel, mqtt_rpc_channel, map_rpc_channel, cache, map_parser_config)
+    return PropertiesApi(
+        device_uid,
+        product,
+        home_data,
+        rpc_channel,
+        mqtt_rpc_channel,
+        map_rpc_channel,
+        cache,
+        map_parser_config,
+    )
