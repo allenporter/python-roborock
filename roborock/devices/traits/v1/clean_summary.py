@@ -53,6 +53,8 @@ class CleanSummaryTrait(CleanSummaryWithDetail, common.V1TraitMixin):
     @classmethod
     def _parse_clean_record_response(cls, response: common.V1ResponseData) -> CleanRecord:
         """Parse the response from the device into a CleanRecord."""
+        if isinstance(response, list) and len(response) == 1:
+            response = response[0]
         if isinstance(response, dict):
             return CleanRecord.from_dict(response)
         if isinstance(response, list):
