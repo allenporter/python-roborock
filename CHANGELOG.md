@@ -2,6 +2,20 @@
 
 <!-- version list -->
 
+## v3.1.1 (2025-10-25)
+
+### Bug Fixes
+
+- Explicitly pip install uv in release
+  ([`4409ee9`](https://github.com/Python-roborock/python-roborock/commit/4409ee90694e9b3389342692f30fbf3706f2f00c))
+
+### Chores
+
+- Add pre commit step for commitlint
+  ([#563](https://github.com/Python-roborock/python-roborock/pull/563),
+  [`14c811f`](https://github.com/Python-roborock/python-roborock/commit/14c811f30f0bb1f574be59e759aecab5ca61cd65))
+
+
 ## v3.1.0 (2025-10-25)
 
 ### Bug Fixes
