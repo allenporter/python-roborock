@@ -72,13 +72,21 @@ branch = "main"
 [tool.semantic_release.branches.main]
 match = "main"
 prerelease = false
+version_toml = ["pyproject.toml:project.version"]
+build_command = """
+    uv lock --upgrade-package python-roborock
+    git add uv.lock
+    uv build
+"""
+changelog_file = 'CHANGELOG.md'
+commit = true
 
 [tool.semantic_release.branches.temp-main-branch]
 match = "temp-main-branch"
 prerelease = false
 version_toml = ["pyproject.toml:project.version"]
 build_command = """
-    uv lock --upgrade-package "$PACKAGE_NAME"
+    uv lock --upgrade-package python-roborock
     git add uv.lock
     uv build
 """
