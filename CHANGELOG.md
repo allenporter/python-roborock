@@ -2,6 +2,47 @@
 
 <!-- version list -->
 
+## v3.3.0 (2025-10-25)
+
+### Bug Fixes
+
+- Lower local timeout ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+- Remove unneeded params setting
+  ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+### Chores
+
+- Add some tests and adress comments
+  ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+- Fix comments ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+- Handle failed hello ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+- Remove unneeded code ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+- Switch to more specific exception
+  ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+- Update roborock/devices/local_channel.py
+  ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+### Features
+
+- Add l01 to the new device format
+  ([#559](https://github.com/Python-roborock/python-roborock/pull/559),
+  [`8514461`](https://github.com/Python-roborock/python-roborock/commit/8514461a0d5e69b7c1fc1466ac5f19cb8bd5cbd5))
+
+
 ## v3.2.0 (2025-10-25)
 
 ### Bug Fixes
