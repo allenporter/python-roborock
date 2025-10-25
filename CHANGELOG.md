@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v3.3.3 (2025-10-25)
+
+### Bug Fixes
+
+- FIx bug in clean record parsing
+  ([#567](https://github.com/Python-roborock/python-roborock/pull/567),
+  [`8196bcc`](https://github.com/Python-roborock/python-roborock/commit/8196bccdf5239ef540291bf55fa2bd270a4544ed))
+
+
 ## v3.3.2 (2025-10-25)
 
 ### Bug Fixes
