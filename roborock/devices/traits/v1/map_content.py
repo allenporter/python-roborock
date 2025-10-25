@@ -12,6 +12,8 @@ from roborock.roborock_typing import RoborockCommand
 
 _LOGGER = logging.getLogger(__name__)
 
+_TRUNCATE_LENGTH = 20
+
 
 @dataclass
 class MapContent(RoborockBase):
@@ -22,6 +24,13 @@ class MapContent(RoborockBase):
 
     map_data: MapData | None = None
     """The parsed map data which contains metadata for points on the map."""
+
+    def __repr__(self) -> str:
+        """Return a string representation of the MapContent."""
+        img = self.image_content
+        if self.image_content and len(self.image_content) > _TRUNCATE_LENGTH:
+            img = self.image_content[: _TRUNCATE_LENGTH - 3] + b"..."
+        return f"MapContent(image_content={img!r}, map_data={self.map_data!r})"
 
 
 @common.map_rpc_channel
