@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v3.3.2 (2025-10-25)
+
+### Bug Fixes
+
+- Ensure that result is not none
+  ([#565](https://github.com/Python-roborock/python-roborock/pull/565),
+  [`c0a84eb`](https://github.com/Python-roborock/python-roborock/commit/c0a84eb434ea1b8e15adea7adeba28b7fb1853f6))
+
+- Set to empty dict ([#565](https://github.com/Python-roborock/python-roborock/pull/565),
+  [`c0a84eb`](https://github.com/Python-roborock/python-roborock/commit/c0a84eb434ea1b8e15adea7adeba28b7fb1853f6))
+
+### Chores
+
+- Fix typing for InMemoryCache ([#566](https://github.com/Python-roborock/python-roborock/pull/566),
+  [`904494d`](https://github.com/Python-roborock/python-roborock/commit/904494da3dcf899d9a4d5d4ab589d543dcea1fe2))
+
+- Go back to the other way ([#565](https://github.com/Python-roborock/python-roborock/pull/565),
+  [`c0a84eb`](https://github.com/Python-roborock/python-roborock/commit/c0a84eb434ea1b8e15adea7adeba28b7fb1853f6))
+
+- Update roborock/protocols/v1_protocol.py
+  ([#565](https://github.com/Python-roborock/python-roborock/pull/565),
+  [`c0a84eb`](https://github.com/Python-roborock/python-roborock/commit/c0a84eb434ea1b8e15adea7adeba28b7fb1853f6))
+
+
 ## v3.3.1 (2025-10-25)
 
 ### Bug Fixes
