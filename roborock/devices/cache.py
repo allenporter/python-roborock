@@ -47,7 +47,8 @@ class Cache(Protocol):
 class InMemoryCache(Cache):
     """In-memory cache implementation."""
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the in-memory cache."""
         self._data = CacheData()
 
     async def get(self) -> CacheData:
