@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v3.1.2 (2025-10-25)
+
+### Bug Fixes
+
+- Move semantic release build command
+  ([`8ed178d`](https://github.com/Python-roborock/python-roborock/commit/8ed178d9f75245bde3ffcebbf8ef18e171ba563d))
+
+
 ## v3.1.1 (2025-10-25)
 
 ### Bug Fixes
