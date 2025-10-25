@@ -2,6 +2,21 @@
 
 <!-- version list -->
 
+## v3.3.1 (2025-10-25)
+
+### Bug Fixes
+
+- Truncate debug strings for MapContent
+  ([#564](https://github.com/Python-roborock/python-roborock/pull/564),
+  [`5a377de`](https://github.com/Python-roborock/python-roborock/commit/5a377ded245f6948f86775287eb7d70c12ec7740))
+
+### Chores
+
+- Apply github co-pilot recommendation
+  ([#564](https://github.com/Python-roborock/python-roborock/pull/564),
+  [`5a377de`](https://github.com/Python-roborock/python-roborock/commit/5a377ded245f6948f86775287eb7d70c12ec7740))
+
+
 ## v3.3.0 (2025-10-25)
 
 ### Bug Fixes
