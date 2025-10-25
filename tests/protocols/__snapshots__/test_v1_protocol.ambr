@@ -216,6 +216,12 @@
   ]
   '''
 # ---
+# name: test_decode_rpc_payload[get_room_mapping3]
+  20086
+# ---
+# name: test_decode_rpc_payload[get_room_mapping3].1
+  '[]'
+# ---
 # name: test_decode_rpc_payload[get_room_mapping]
   20001
 # ---

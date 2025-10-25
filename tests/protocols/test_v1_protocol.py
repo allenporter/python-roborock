@@ -160,6 +160,7 @@ def test_decode_rpc_payload(filename: str, snapshot: SnapshotAssertion) -> None:
     decoded_message = decode_rpc_response(message)
     assert decoded_message.request_id == snapshot
     assert json.dumps(decoded_message.data, indent=2) == snapshot
+    assert decoded_message.api_error is None
 
 
 def test_create_map_response_decoder():
