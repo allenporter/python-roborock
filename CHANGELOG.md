@@ -2,6 +2,36 @@
 
 <!-- version list -->
 
+## v3.2.0 (2025-10-25)
+
+### Bug Fixes
+
+- Update redacted values to remove sensitive values
+  ([#560](https://github.com/Python-roborock/python-roborock/pull/560),
+  [`0fc7200`](https://github.com/Python-roborock/python-roborock/commit/0fc720034f9da988fe0ba981128b7d66c4998e60))
+
+- Update shapshots ([#560](https://github.com/Python-roborock/python-roborock/pull/560),
+  [`0fc7200`](https://github.com/Python-roborock/python-roborock/commit/0fc720034f9da988fe0ba981128b7d66c4998e60))
+
+### Chores
+
+- Cleanup lint ([#560](https://github.com/Python-roborock/python-roborock/pull/560),
+  [`0fc7200`](https://github.com/Python-roborock/python-roborock/commit/0fc720034f9da988fe0ba981128b7d66c4998e60))
+
+- Only emit traits that have any values set
+  ([#560](https://github.com/Python-roborock/python-roborock/pull/560),
+  [`0fc7200`](https://github.com/Python-roborock/python-roborock/commit/0fc720034f9da988fe0ba981128b7d66c4998e60))
+
+- Revert mqtt channel changes ([#560](https://github.com/Python-roborock/python-roborock/pull/560),
+  [`0fc7200`](https://github.com/Python-roborock/python-roborock/commit/0fc720034f9da988fe0ba981128b7d66c4998e60))
+
+### Features
+
+- Add diagnostic information to the device
+  ([#560](https://github.com/Python-roborock/python-roborock/pull/560),
+  [`0fc7200`](https://github.com/Python-roborock/python-roborock/commit/0fc720034f9da988fe0ba981128b7d66c4998e60))
+
+
 ## v3.1.2 (2025-10-25)
 
 ### Bug Fixes
