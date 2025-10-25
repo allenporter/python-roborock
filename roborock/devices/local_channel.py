@@ -7,13 +7,25 @@ from dataclasses import dataclass
 
 from roborock.callbacks import CallbackList, decoder_callback
 from roborock.exceptions import RoborockConnectionException, RoborockException
-from roborock.protocol import Decoder, Encoder, create_local_decoder, create_local_encoder
-from roborock.roborock_message import RoborockMessage
+from roborock.protocol import create_local_decoder, create_local_encoder
+from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 
+from ..protocols.v1_protocol import LocalProtocolVersion
+from ..util import get_next_int
 from .channel import Channel
 
 _LOGGER = logging.getLogger(__name__)
 _PORT = 58867
+_TIMEOUT = 5.0
+
+
+@dataclass
+class LocalChannelParams:
+    """Parameters for local channel encoder/decoder."""
+
+    local_key: str
+    connect_nonce: int
+    ack_nonce: int | None
 
 
 @dataclass
@@ -45,11 +57,73 @@ class LocalChannel(Channel):
         self._protocol: _LocalProtocol | None = None
         self._subscribers: CallbackList[RoborockMessage] = CallbackList(_LOGGER)
         self._is_connected = False
+        self._local_protocol_version: LocalProtocolVersion | None = None
+        self._update_encoder_decoder(
+            LocalChannelParams(local_key=local_key, connect_nonce=get_next_int(10000, 32767), ack_nonce=None)
+        )
 
-        self._decoder: Decoder = create_local_decoder(local_key)
-        self._encoder: Encoder = create_local_encoder(local_key)
+    def _update_encoder_decoder(self, params: LocalChannelParams):
+        self._params = params
+        self._encoder = create_local_encoder(
+            local_key=params.local_key, connect_nonce=params.connect_nonce, ack_nonce=params.ack_nonce
+        )
+        self._decoder = create_local_decoder(
+            local_key=params.local_key, connect_nonce=params.connect_nonce, ack_nonce=params.ack_nonce
+        )
         # Callback to decode messages and dispatch to subscribers
         self._data_received: Callable[[bytes], None] = decoder_callback(self._decoder, self._subscribers, _LOGGER)
+
+    async def _do_hello(self, local_protocol_version: LocalProtocolVersion) -> LocalChannelParams | None:
+        """Perform the initial handshaking and return encoder params if successful."""
+        _LOGGER.debug(
+            "Attempting to use the %s protocol for client %s...",
+            local_protocol_version,
+            self._host,
+        )
+        request = RoborockMessage(
+            protocol=RoborockMessageProtocol.HELLO_REQUEST,
+            version=local_protocol_version.encode(),
+            random=self._params.connect_nonce,
+            seq=1,
+        )
+        try:
+            response = await self._send_message(
+                roborock_message=request,
+                request_id=request.seq,
+                response_protocol=RoborockMessageProtocol.HELLO_RESPONSE,
+            )
+            _LOGGER.debug(
+                "Client %s speaks the %s protocol.",
+                self._host,
+                local_protocol_version,
+            )
+            return LocalChannelParams(
+                local_key=self._params.local_key, connect_nonce=self._params.connect_nonce, ack_nonce=response.random
+            )
+        except RoborockException as e:
+            _LOGGER.debug(
+                "Client %s did not respond or does not speak the %s protocol. %s",
+                self._host,
+                local_protocol_version,
+                e,
+            )
+            return None
+
+    async def _hello(self):
+        """Send hello to the device to negotiate protocol."""
+        attempt_versions = [LocalProtocolVersion.V1, LocalProtocolVersion.L01]
+        if self._local_protocol_version:
+            # Sort to try the preferred version first
+            attempt_versions.sort(key=lambda v: v != self._local_protocol_version)
+
+        for version in attempt_versions:
+            params = await self._do_hello(version)
+            if params is not None:
+                self._local_protocol_version = version
+                self._update_encoder_decoder(params)
+                return
+
+        raise RoborockException("Failed to connect to device with any known protocol")
 
     @property
     def is_connected(self) -> bool:
@@ -62,7 +136,7 @@ class LocalChannel(Channel):
         return self._is_connected
 
     async def connect(self) -> None:
-        """Connect to the device."""
+        """Connect to the device and negotiate protocol."""
         if self._is_connected:
             _LOGGER.warning("Already connected")
             return
@@ -74,6 +148,14 @@ class LocalChannel(Channel):
             self._is_connected = True
         except OSError as e:
             raise RoborockConnectionException(f"Failed to connect to {self._host}:{_PORT}") from e
+
+        # Perform protocol negotiation
+        try:
+            await self._hello()
+        except RoborockException:
+            # If protocol negotiation fails, clean up the connection state
+            self.close()
+            raise
 
     def close(self) -> None:
         """Disconnect from the device."""
@@ -112,6 +194,29 @@ class LocalChannel(Channel):
         except Exception as err:
             logging.exception("Uncaught error sending command")
             raise RoborockException(f"Failed to send message: {message}") from err
+
+    async def _send_message(
+        self,
+        roborock_message: RoborockMessage,
+        request_id: int,
+        response_protocol: int,
+    ) -> RoborockMessage:
+        """Send a raw message and wait for a raw response."""
+        future: asyncio.Future[RoborockMessage] = asyncio.Future()
+
+        def find_response(response_message: RoborockMessage) -> None:
+            if response_message.protocol == response_protocol and response_message.seq == request_id:
+                future.set_result(response_message)
+
+        unsub = await self.subscribe(find_response)
+        try:
+            await self.publish(roborock_message)
+            return await asyncio.wait_for(future, timeout=_TIMEOUT)
+        except TimeoutError as ex:
+            future.cancel()
+            raise RoborockException(f"Command timed out after {_TIMEOUT}s") from ex
+        finally:
+            unsub()
 
 
 # This module provides a factory function to create LocalChannel instances.
