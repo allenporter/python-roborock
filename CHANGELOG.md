@@ -2,6 +2,21 @@
 
 <!-- version list -->
 
+## v3.4.0 (2025-10-26)
+
+### Bug Fixes
+
+- Only validate connection when sending commands
+  ([#571](https://github.com/Python-roborock/python-roborock/pull/571),
+  [`efa48e9`](https://github.com/Python-roborock/python-roborock/commit/efa48e96a1554b7a7358f9f22873b847d93d663d))
+
+### Features
+
+- Rename home_cache to home_map_info
+  ([#569](https://github.com/Python-roborock/python-roborock/pull/569),
+  [`9aff1cf`](https://github.com/Python-roborock/python-roborock/commit/9aff1cf01aa8e1a56d594cd2be20400cbf1eb324))
+
+
 ## v3.3.3 (2025-10-25)
 
 ### Bug Fixes
