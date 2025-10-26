@@ -210,6 +210,7 @@ class RoborockLocalClientV1(RoborockClientV1, RoborockClient):
             version=self.local_protocol_version,
         )
         self._logger.debug("Building message id %s for method %s", request_message.request_id, method)
+        await self._validate_connection()
         return await self._send_message(
             roborock_message,
             request_id=request_message.request_id,
@@ -226,7 +227,6 @@ class RoborockLocalClientV1(RoborockClientV1, RoborockClient):
         method: str | None = None,
         params: list | dict | int | None = None,
     ) -> RoborockMessage:
-        await self._validate_connection()
         msg = self._encoder(roborock_message)
         if method:
             self._logger.debug(f"id={request_id} Requesting method {method} with {params}")
