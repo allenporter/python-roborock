@@ -42,7 +42,7 @@ def map_rpc_channel_fixture() -> AsyncMock:
 
 @pytest.fixture(autouse=True, name="web_api_client")
 def web_api_client_fixture() -> AsyncMock:
-    """Fixture to set up the channel for tests."""
+    """Fixture to set up the web API client for tests."""
     return AsyncMock()
 
 
