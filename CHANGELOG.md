@@ -2,6 +2,23 @@
 
 <!-- version list -->
 
+## v3.5.0 (2025-10-27)
+
+### Chores
+
+- Disable body-max-line-length ([#573](https://github.com/Python-roborock/python-roborock/pull/573),
+  [`6a5db1d`](https://github.com/Python-roborock/python-roborock/commit/6a5db1d9aac274bbfa46624250def64ada2b507b))
+
+- Go back to old web API name ([#570](https://github.com/Python-roborock/python-roborock/pull/570),
+  [`4e7e776`](https://github.com/Python-roborock/python-roborock/commit/4e7e776fed4cae17636659b9e3365ac26347e86b))
+
+### Features
+
+- Simplify device manager creation
+  ([#570](https://github.com/Python-roborock/python-roborock/pull/570),
+  [`4e7e776`](https://github.com/Python-roborock/python-roborock/commit/4e7e776fed4cae17636659b9e3365ac26347e86b))
+
+
 ## v3.4.0 (2025-10-26)
 
 ### Bug Fixes
