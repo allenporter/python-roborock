@@ -40,6 +40,7 @@ from roborock.devices.cache import Cache
 from roborock.devices.traits import Trait
 from roborock.devices.v1_rpc_channel import V1RpcChannel
 from roborock.map.map_parser import MapParserConfig
+from roborock.web_api import UserWebApiClient
 
 from .child_lock import ChildLockTrait
 from .clean_summary import CleanSummaryTrait
@@ -56,6 +57,7 @@ from .map_content import MapContentTrait
 from .maps import MapsTrait
 from .network_info import NetworkInfoTrait
 from .rooms import RoomsTrait
+from .routines import RoutinesTrait
 from .smart_wash_params import SmartWashParamsTrait
 from .status import StatusTrait
 from .valley_electricity_timer import ValleyElectricityTimerTrait
@@ -85,6 +87,7 @@ __all__ = [
     "WashTowelModeTrait",
     "SmartWashParamsTrait",
     "NetworkInfoTrait",
+    "RoutinesTrait",
 ]
 
 
@@ -108,6 +111,7 @@ class PropertiesApi(Trait):
     home: HomeTrait
     device_features: DeviceFeaturesTrait
     network_info: NetworkInfoTrait
+    routines: RoutinesTrait
 
     # Optional features that may not be supported on all devices
     child_lock: ChildLockTrait | None = None
@@ -126,6 +130,7 @@ class PropertiesApi(Trait):
         rpc_channel: V1RpcChannel,
         mqtt_rpc_channel: V1RpcChannel,
         map_rpc_channel: V1RpcChannel,
+        web_api: UserWebApiClient,
         cache: Cache,
         map_parser_config: MapParserConfig | None = None,
     ) -> None:
@@ -134,6 +139,7 @@ class PropertiesApi(Trait):
         self._rpc_channel = rpc_channel
         self._mqtt_rpc_channel = mqtt_rpc_channel
         self._map_rpc_channel = map_rpc_channel
+        self._web_api = web_api
         self._cache = cache
 
         self.status = StatusTrait(product)
@@ -144,6 +150,7 @@ class PropertiesApi(Trait):
         self.home = HomeTrait(self.status, self.maps, self.map_content, self.rooms, cache)
         self.device_features = DeviceFeaturesTrait(product.product_nickname, cache)
         self.network_info = NetworkInfoTrait(device_uid, cache)
+        self.routines = RoutinesTrait(device_uid, web_api)
 
         # Dynamically create any traits that need to be populated
         for item in fields(self):
@@ -267,6 +274,7 @@ def create(
     rpc_channel: V1RpcChannel,
     mqtt_rpc_channel: V1RpcChannel,
     map_rpc_channel: V1RpcChannel,
+    web_api: UserWebApiClient,
     cache: Cache,
     map_parser_config: MapParserConfig | None = None,
 ) -> PropertiesApi:
@@ -278,6 +286,7 @@ def create(
         rpc_channel,
         mqtt_rpc_channel,
         map_rpc_channel,
+        web_api,
         cache,
         map_parser_config,
     )

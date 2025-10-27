@@ -40,6 +40,12 @@ def map_rpc_channel_fixture() -> AsyncMock:
     return AsyncMock()
 
 
+@pytest.fixture(autouse=True, name="web_api_client")
+def web_api_client_fixture() -> AsyncMock:
+    """Fixture to set up the web API client for tests."""
+    return AsyncMock()
+
+
 @pytest.fixture(autouse=True, name="roborock_cache")
 def roborock_cache_fixture() -> Cache:
     """Fixture to provide a NoCache instance for tests."""
@@ -52,6 +58,7 @@ def device_fixture(
     mock_rpc_channel: AsyncMock,
     mock_mqtt_rpc_channel: AsyncMock,
     mock_map_rpc_channel: AsyncMock,
+    web_api_client: AsyncMock,
     roborock_cache: Cache,
 ) -> RoborockDevice:
     """Fixture to set up the device for tests."""
@@ -66,6 +73,7 @@ def device_fixture(
             mock_rpc_channel,
             mock_mqtt_rpc_channel,
             mock_map_rpc_channel,
+            web_api_client,
             roborock_cache,
         ),
     )
