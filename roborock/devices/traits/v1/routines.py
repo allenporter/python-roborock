@@ -1,13 +1,7 @@
 """Routines trait for V1 devices."""
 
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
 from roborock.data.containers import HomeDataScene
-
-if TYPE_CHECKING:
-    from roborock.web_api import UserWebApiClient
+from roborock.web_api import UserWebApiClient
 
 
 class RoutinesTrait:
