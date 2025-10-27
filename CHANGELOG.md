@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v3.7.0 (2025-10-27)
+
+### Chores
+
+- Change imports for typing ([#574](https://github.com/Python-roborock/python-roborock/pull/574),
+  [`05c8e94`](https://github.com/Python-roborock/python-roborock/commit/05c8e9458e44a6ca61977cc0d26c2776bb1fcae5))
+
+- Update tests/devices/traits/v1/fixtures.py
+  ([#574](https://github.com/Python-roborock/python-roborock/pull/574),
+  [`05c8e94`](https://github.com/Python-roborock/python-roborock/commit/05c8e9458e44a6ca61977cc0d26c2776bb1fcae5))
+
+### Features
+
+- Add a trait for working with routines
+  ([#574](https://github.com/Python-roborock/python-roborock/pull/574),
+  [`05c8e94`](https://github.com/Python-roborock/python-roborock/commit/05c8e9458e44a6ca61977cc0d26c2776bb1fcae5))
+
+
 ## v3.6.0 (2025-10-27)
 
 ### Chores
