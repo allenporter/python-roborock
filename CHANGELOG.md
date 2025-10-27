@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v3.6.0 (2025-10-27)
+
+### Chores
+
+- Add test coverage for failing to parse bytes
+  ([#572](https://github.com/Python-roborock/python-roborock/pull/572),
+  [`e524d31`](https://github.com/Python-roborock/python-roborock/commit/e524d31fa63cc6c97c10bf890dbde91e7e5d3840))
+
+- Update tests/devices/traits/v1/test_home.py
+  ([#572](https://github.com/Python-roborock/python-roborock/pull/572),
+  [`e524d31`](https://github.com/Python-roborock/python-roborock/commit/e524d31fa63cc6c97c10bf890dbde91e7e5d3840))
+
+### Features
+
+- Add map content to the Home trait
+  ([#572](https://github.com/Python-roborock/python-roborock/pull/572),
+  [`e524d31`](https://github.com/Python-roborock/python-roborock/commit/e524d31fa63cc6c97c10bf890dbde91e7e5d3840))
+
+
 ## v3.5.0 (2025-10-27)
 
 ### Chores
