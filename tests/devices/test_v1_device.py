@@ -62,6 +62,7 @@ def device_fixture(channel: AsyncMock, rpc_channel: AsyncMock, mqtt_rpc_channel:
             rpc_channel,
             mqtt_rpc_channel,
             AsyncMock(),
+            AsyncMock(),
             NoCache(),
         ),
     )

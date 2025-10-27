@@ -725,3 +725,11 @@ class UserWebApiClient:
     async def get_home_data(self) -> HomeData:
         """Fetch home data using the API client."""
         return await self._web_api.get_home_data_v3(self._user_data)
+
+    async def get_routines(self, device_id: str) -> list[HomeDataScene]:
+        """Fetch routines (scenes) for a specific device."""
+        return await self._web_api.get_scenes(self._user_data, device_id)
+
+    async def execute_routine(self, scene_id: int) -> None:
+        """Execute a specific routine (scene) by its ID."""
+        await self._web_api.execute_scene(self._user_data, scene_id)
