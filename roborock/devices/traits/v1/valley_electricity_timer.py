@@ -5,7 +5,7 @@ from roborock.roborock_typing import RoborockCommand
 _ENABLED_PARAM = "enabled"
 
 
-class ValleyElectricityTimerTrait(ValleyElectricityTimer, common.V1TraitMixin):
+class ValleyElectricityTimerTrait(ValleyElectricityTimer, common.V1TraitMixin, common.RoborockSwitchBase):
     """Trait for managing Valley Electricity Timer settings on Roborock devices."""
 
     command = RoborockCommand.GET_VALLEY_ELECTRICITY_TIMER

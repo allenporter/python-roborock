@@ -1,6 +1,7 @@
 from typing import Any
 
 from roborock import RoborockCommand
+from roborock.protocols.v1_protocol import ParamsType
 
 
 class CommandTrait:
@@ -14,7 +15,7 @@ class CommandTrait:
         """
         self._rpc_channel = None
 
-    async def send(self, command: RoborockCommand | str, params: dict[str, Any] | None = None) -> Any:
+    async def send(self, command: RoborockCommand | str, params: ParamsType = None) -> Any:
         """Send a command to the device."""
         if not self._rpc_channel:
             raise ValueError("Device trait in invalid state")
