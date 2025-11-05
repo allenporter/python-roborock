@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v3.7.1 (2025-11-05)
+
+### Bug Fixes
+
+- Fix typing issues in new device traits
+  ([#577](https://github.com/Python-roborock/python-roborock/pull/577),
+  [`3266ae6`](https://github.com/Python-roborock/python-roborock/commit/3266ae6aa9d799c398542c95463d63a8cb77dd4e))
+
+
 ## v3.7.0 (2025-10-27)
 
 ### Chores
