@@ -424,7 +424,7 @@ async def test_discover_home_device_busy_cleaning(
     """Test that discovery raises RoborockDeviceBusy when device is cleaning.
 
     This tests the initial failure scenario during discovery where the device
-    is busy, then a retry attepmt where the device is still busy, then finally
+    is busy, then a retry attempt where the device is still busy, then finally
     a successful attempt to run discovery when the device is idle.
     """
     # Set the status trait state to cleaning
