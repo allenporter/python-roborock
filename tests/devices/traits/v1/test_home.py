@@ -227,6 +227,11 @@ async def test_discover_home_empty_cache(
     assert current_map_data.map_flag == 0
     assert current_map_data.name == "Ground Floor"
 
+    # Verify the persistent cache has been updated
+    cache_data = await home_trait._cache.get()
+    assert len(cache_data.home_map_info) == 2
+    assert len(cache_data.home_map_content) == 2
+
 
 async def test_discover_home_with_existing_cache(
     home_trait: HomeTrait,
@@ -372,17 +377,6 @@ async def test_refresh_updates_current_map_cache(
     assert home_trait.home_map_content[0].image_content == TEST_IMAGE_CONTENT_1
 
 
-async def test_refresh_no_cache_no_update(
-    home_trait: HomeTrait,
-    mock_rpc_channel: AsyncMock,
-    mock_mqtt_rpc_channel: AsyncMock,
-) -> None:
-    """Test that refresh doesn't update when no cache exists."""
-    # Perform refresh without existing cache
-    with pytest.raises(Exception, match="Cannot refresh home data without home cache, did you call discover_home()?"):
-        await home_trait.refresh()
-
-
 async def test_current_map_data_property(
     home_trait: HomeTrait,
     mock_rpc_channel: AsyncMock,
@@ -425,8 +419,14 @@ async def test_discover_home_device_busy_cleaning(
     home_trait: HomeTrait,
     mock_rpc_channel: AsyncMock,
     mock_mqtt_rpc_channel: AsyncMock,
+    mock_map_rpc_channel: AsyncMock,
 ) -> None:
-    """Test that discovery raises RoborockDeviceBusy when device is cleaning."""
+    """Test that discovery raises RoborockDeviceBusy when device is cleaning.
+
+    This tests the initial failure scenario during discovery where the device
+    is busy, then a retry attepmt where the device is still busy, then finally
+    a successful attempt to run discovery when the device is idle.
+    """
     # Set the status trait state to cleaning
     status_trait.state = RoborockStateCode.cleaning
 
@@ -437,6 +437,80 @@ async def test_discover_home_device_busy_cleaning(
     # Verify no RPC calls were made (discovery was prevented)
     assert mock_rpc_channel.send_command.call_count == 0
     assert mock_mqtt_rpc_channel.send_command.call_count == 0
+
+    # Setup mocks for refresh
+    mock_rpc_channel.send_command.side_effect = [
+        ROOM_MAPPING_DATA_MAP_0,  # Room mapping refresh
+    ]
+    mock_mqtt_rpc_channel.send_command.side_effect = [
+        MULTI_MAP_LIST_DATA,  # Maps refresh
+    ]
+    mock_map_rpc_channel.send_command.side_effect = [
+        MAP_BYTES_RESPONSE_1,  # Map bytes refresh
+    ]
+
+    # Now attempt to refresh the device while cleaning. This should still fail
+    # home discovery but allow refresh to update the current map.
+    await home_trait.refresh()
+
+    # Verify the home information is now populated
+    current_data = home_trait.current_map_data
+    assert current_data is not None
+    assert current_data.map_flag == 0
+    assert current_data.name == "Ground Floor"
+    assert home_trait.home_map_info is not None
+    assert home_trait.home_map_info.keys() == {0}
+    assert home_trait.home_map_content is not None
+    assert home_trait.home_map_content.keys() == {0}
+    map_0_content = home_trait.home_map_content[0]
+    assert map_0_content is not None
+    assert map_0_content.image_content == TEST_IMAGE_CONTENT_1
+    assert map_0_content.map_data is not None
+
+    # Verify the persistent cache has not been updated since discovery
+    # has not fully completed.
+    cache_data = await home_trait._cache.get()
+    assert not cache_data.home_map_info
+    assert not cache_data.home_map_content
+
+    # Set the status trait state to idle which will mean we can attempt discovery
+    # on the next refresh. This should have the result of updating the
+    # persistent cache which is verified below.
+    status_trait.state = RoborockStateCode.idle
+
+    # Setup mocks for the discovery process
+    mock_rpc_channel.send_command.side_effect = [
+        UPDATED_STATUS_MAP_123,  # Status after switching to map 123
+        ROOM_MAPPING_DATA_MAP_123,  # Rooms for map 123
+        UPDATED_STATUS_MAP_0,  # Status after switching back to map 0
+        ROOM_MAPPING_DATA_MAP_0,  # Rooms for map 0
+    ]
+    mock_mqtt_rpc_channel.send_command.side_effect = [
+        MULTI_MAP_LIST_DATA,  # Multi maps list
+        {},  # LOAD_MULTI_MAP response for map 123
+        {},  # LOAD_MULTI_MAP response back to map 0
+    ]
+    mock_map_rpc_channel.send_command.side_effect = [
+        MAP_BYTES_RESPONSE_2,  # Map bytes for 123
+        MAP_BYTES_RESPONSE_1,  # Map bytes for 0
+    ]
+
+    # Refreshing should now perform discovery successfully
+    await home_trait.refresh()
+
+    # Verify we now have all of the information populated from discovery
+    assert home_trait.home_map_info is not None
+    assert len(home_trait.home_map_info) == 2
+
+    assert home_trait.home_map_info is not None
+    assert home_trait.home_map_info.keys() == {0, 123}
+    assert home_trait.home_map_content is not None
+    assert home_trait.home_map_content.keys() == {0, 123}
+
+    # Verify the persistent cache has been updated
+    cache_data = await home_trait._cache.get()
+    assert len(cache_data.home_map_info) == 2
+    assert len(cache_data.home_map_content) == 2
 
 
 async def test_single_map_no_switching(

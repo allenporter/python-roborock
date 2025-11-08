@@ -7,6 +7,12 @@ on the map. It also makes it straight forward to fetch the map image and data.
 This trait depends on the MapsTrait and RoomsTrait to gather the necessary
 information. It provides properties to access the current map, the list of
 rooms with names, and the map image and data.
+
+Callers may first call `discover_home()` to populate the home layout cache by
+iterating through all available maps on the device. This will cache the map
+information and room names for all maps to minimize map switching and improve
+performance. After the initial discovery, callers can call `refresh()` to update
+the current map's information and room names as needed.
 """
 
 import asyncio
@@ -64,6 +70,7 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         self._map_content = map_content
         self._rooms_trait = rooms_trait
         self._cache = cache
+        self._discovery_completed = False
         self._home_map_info: dict[int, CombinedMapInfo] | None = None
         self._home_map_content: dict[int, MapContent] | None = None
 
@@ -82,6 +89,7 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         if cache_data.home_map_info and cache_data.home_map_content:
             _LOGGER.debug("Home cache already populated, skipping discovery")
             self._home_map_info = cache_data.home_map_info
+            self._discovery_completed = True
             try:
                 self._home_map_content = {
                     k: self._map_content.parse_map_content(v) for k, v in cache_data.home_map_content.items()
@@ -101,6 +109,7 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
 
         home_map_info, home_map_content = await self._build_home_map_info()
         _LOGGER.debug("Home discovery complete, caching data for %d maps", len(home_map_info))
+        self._discovery_completed = True
         await self._update_home_cache(home_map_info, home_map_content)
 
     async def _refresh_map_info(self, map_info) -> CombinedMapInfo:
@@ -156,8 +165,15 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         active maps or re-discover the home. It is expected that this will keep
         information up to date for the current map as users switch to that map.
         """
-        if self._home_map_info is None:
-            raise RoborockException("Cannot refresh home data without home cache, did you call discover_home()?")
+        if not self._discovery_completed:
+            # Running initial discovery also populates all of the same information
+            # as below so we can just call that method. If the device is busy
+            # then we'll fall through below to refresh the current map only.
+            try:
+                await self.discover_home()
+                return self
+            except RoborockDeviceBusy:
+                _LOGGER.debug("Cannot refresh home data while device is busy cleaning")
 
         # Refresh the list of map names/info
         await self._maps_trait.refresh()
@@ -170,7 +186,9 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         new_map_content = await self._refresh_map_content()
         # Refresh the current map's room data
         combined_map_info = await self._refresh_map_info(current_map_info)
-        await self._update_current_map_cache(map_flag, combined_map_info, new_map_content)
+        await self._update_current_map(
+            map_flag, combined_map_info, new_map_content, update_cache=self._discovery_completed
+        )
         return self
 
     @property
@@ -206,16 +224,28 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         self._home_map_info = home_map_info
         self._home_map_content = home_map_content
 
-    async def _update_current_map_cache(
-        self, map_flag: int, map_info: CombinedMapInfo, map_content: MapContent
+    async def _update_current_map(
+        self,
+        map_flag: int,
+        map_info: CombinedMapInfo,
+        map_content: MapContent,
+        update_cache: bool,
     ) -> None:
         """Update the cache for the current map only."""
-        cache_data = await self._cache.get()
-        cache_data.home_map_info[map_flag] = map_info
-        if map_content.raw_api_response:
-            cache_data.home_map_content[map_flag] = map_content.raw_api_response
-        await self._cache.set(cache_data)
-        if self._home_map_info is None or self._home_map_content is None:
-            raise RoborockException("Home cache is not initialized, cannot update current map cache")
+        # Update the persistent cache if requested e.g. home discovery has
+        # completed and we want to keep it fresh. Otherwise just update the
+        # in memory map below.
+        if update_cache:
+            cache_data = await self._cache.get()
+            cache_data.home_map_info[map_flag] = map_info
+            if map_content.raw_api_response:
+                cache_data.home_map_content[map_flag] = map_content.raw_api_response
+            await self._cache.set(cache_data)
+
+        if self._home_map_info is None:
+            self._home_map_info = {}
         self._home_map_info[map_flag] = map_info
+
+        if self._home_map_content is None:
+            self._home_map_content = {}
         self._home_map_content[map_flag] = map_content
