@@ -500,9 +500,6 @@ async def test_discover_home_device_busy_cleaning(
 
     # Verify we now have all of the information populated from discovery
     assert home_trait.home_map_info is not None
-    assert len(home_trait.home_map_info) == 2
-
-    assert home_trait.home_map_info is not None
     assert home_trait.home_map_info.keys() == {0, 123}
     assert home_trait.home_map_content is not None
     assert home_trait.home_map_content.keys() == {0, 123}
