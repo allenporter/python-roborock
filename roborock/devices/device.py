@@ -120,15 +120,20 @@ class RoborockDevice(ABC, TraitsMixin):
 
         async def connect_loop() -> None:
             backoff = MIN_BACKOFF_INTERVAL
-            while True:
-                try:
-                    await self.connect()
-                    return
-                except RoborockException as e:
-                    _LOGGER.info("Failed to connect to device %s: %s", self.name, e)
-                    _LOGGER.info("Retrying connection to device %s in %s seconds", self.name, backoff.total_seconds())
-                    await asyncio.sleep(backoff.total_seconds())
-                    backoff = min(backoff * BACKOFF_MULTIPLIER, MAX_BACKOFF_INTERVAL)
+            try:
+                while True:
+                    try:
+                        await self.connect()
+                        return
+                    except RoborockException as e:
+                        _LOGGER.info("Failed to connect to device %s: %s", self.name, e)
+                        _LOGGER.info("Retrying connection to device %s in %s seconds", self.name, backoff.total_seconds())
+                        await asyncio.sleep(backoff.total_seconds())
+                        backoff = min(backoff * BACKOFF_MULTIPLIER, MAX_BACKOFF_INTERVAL)
+            except asyncio.CancelledError:
+                _LOGGER.info("connect_loop for device %s was cancelled", self.name)
+                # Clean exit on cancellation
+                return
 
         self._connect_task = asyncio.create_task(connect_loop())
 
