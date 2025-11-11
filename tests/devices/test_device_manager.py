@@ -37,7 +37,7 @@ def channel_fixture() -> Generator[Mock, None, None]:
 
 
 @pytest.fixture(autouse=True)
-def mock_sleep() -> Generator[Mock, None, None]:
+def mock_sleep() -> Generator[None, None, None]:
     """Mock sleep logic to speed up tests."""
     sleep_time = datetime.timedelta(seconds=0.001)
     with (
