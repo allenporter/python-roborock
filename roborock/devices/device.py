@@ -148,6 +148,10 @@ class RoborockDevice(ABC, TraitsMixin):
         """Close all connections to the device."""
         if self._connect_task:
             self._connect_task.cancel()
+            try:
+                await self._connect_task
+            except asyncio.CancelledError:
+                pass
         if self._unsub:
             self._unsub()
             self._unsub = None
