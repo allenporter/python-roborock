@@ -148,6 +148,7 @@ async def test_cache_logic() -> None:
         await device_manager.close()
         assert len(devices2) == 1
 
+        # Ensure closing again works without error
         await device_manager.close()
 
 
