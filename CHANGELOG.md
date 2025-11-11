@@ -2,6 +2,37 @@
 
 <!-- version list -->
 
+## v3.7.2 (2025-11-11)
+
+### Bug Fixes
+
+- Improve Home trait discovery process.
+  ([#580](https://github.com/Python-roborock/python-roborock/pull/580),
+  [`44680e3`](https://github.com/Python-roborock/python-roborock/commit/44680e367991b6eafef0267f6b4209a09929973a))
+
+### Chores
+
+- Refactor test by removing redundant assertion
+  ([#580](https://github.com/Python-roborock/python-roborock/pull/580),
+  [`44680e3`](https://github.com/Python-roborock/python-roborock/commit/44680e367991b6eafef0267f6b4209a09929973a))
+
+- Update tests/devices/traits/v1/test_home.py
+  ([#580](https://github.com/Python-roborock/python-roborock/pull/580),
+  [`44680e3`](https://github.com/Python-roborock/python-roborock/commit/44680e367991b6eafef0267f6b4209a09929973a))
+
+- **deps**: Bump aiohttp from 3.13.0 to 3.13.2
+  ([#583](https://github.com/Python-roborock/python-roborock/pull/583),
+  [`c7bacad`](https://github.com/Python-roborock/python-roborock/commit/c7bacad32ede1290fbaea261538e1b90476d61c6))
+
+- **deps**: Bump pre-commit from 4.3.0 to 4.4.0
+  ([#584](https://github.com/Python-roborock/python-roborock/pull/584),
+  [`3adc76b`](https://github.com/Python-roborock/python-roborock/commit/3adc76bdd21c16fcb25d9d3dee9c5857eccea960))
+
+- **deps**: Bump python-semantic-release/publish-action
+  ([#582](https://github.com/Python-roborock/python-roborock/pull/582),
+  [`c76bf06`](https://github.com/Python-roborock/python-roborock/commit/c76bf069191bf221a848c4dfa34104e8b93b81b8))
+
+
 ## v3.7.1 (2025-11-05)
 
 ### Bug Fixes
