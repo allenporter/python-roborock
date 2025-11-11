@@ -1,5 +1,7 @@
 """Tests for the DeviceManager class."""
 
+import datetime
+import asyncio
 from collections.abc import Generator, Iterator
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -31,6 +33,25 @@ def channel_fixture() -> Generator[Mock, None, None]:
         mock_unsub = Mock()
         mock_channel.return_value.subscribe = AsyncMock()
         mock_channel.return_value.subscribe.return_value = mock_unsub
+        yield mock_channel
+
+
+@pytest.fixture(autouse=True)
+def mock_sleep() -> Generator[Mock, None, None]:
+    """Mock asyncio.sleep in device module to speed up tests."""
+    sleep_time = datetime.timedelta(seconds=0.001)
+    with patch("roborock.devices.device.MIN_BACKOFF_INTERVAL", sleep_time), patch("roborock.devices.device.MAX_BACKOFF_INTERVAL", sleep_time):
+        yield
+
+
+@pytest.fixture(name="channel_failure")
+def channel_failure_fixture() -> Generator[Mock, None, None]:
+    """Fixture that makes channel subscribe fail."""
+    with patch("roborock.devices.device_manager.create_v1_channel") as mock_channel:
+        mock_channel.return_value.subscribe = AsyncMock(
+            side_effect=RoborockException("Connection failed")
+        )
+        mock_channel.return_value.is_connected = False
         yield mock_channel
 
 
@@ -127,3 +148,43 @@ async def test_cache_logic() -> None:
         assert len(devices2) == 1
 
         await device_manager.close()
+
+
+async def test_start_connect_failure(home_data: HomeData, channel_failure: Mock, mock_sleep: Mock) -> None:
+    """Test that start_connect retries when connection fails."""
+    device_manager = await create_device_manager(USER_PARAMS)
+    devices = await device_manager.get_devices()
+
+    # Wait for the device to attempt to connect
+    attempts = 0
+    subscribe_mock = channel_failure.return_value.subscribe
+    while subscribe_mock.call_count < 1:
+        await asyncio.sleep(0.01)
+        attempts += 1
+        assert attempts < 10, "Device did not connect after multiple attempts"
+
+    # Device should exist but not be connected
+    assert len(devices) == 1
+    assert not devices[0].is_connected
+
+    # Verify retry attempts
+    assert channel_failure.return_value.subscribe.call_count >= 1
+
+    # Reset the mock channel so that it succeeds on the next attempt
+    mock_unsub = Mock()
+    subscribe_mock = AsyncMock()
+    subscribe_mock.return_value = mock_unsub
+    channel_failure.return_value.subscribe = subscribe_mock
+    channel_failure.return_value.is_connected = True
+
+    # Wait for the device to attempt to connect again
+    attempts = 0
+    while subscribe_mock.call_count < 1:
+        await asyncio.sleep(0.01)
+        attempts += 1
+        assert attempts < 10, "Device did not connect after multiple attempts"
+
+    assert devices[0].is_connected
+
+    await device_manager.close()
+    assert mock_unsub.call_count == 1

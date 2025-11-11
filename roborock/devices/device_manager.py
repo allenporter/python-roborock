@@ -86,7 +86,7 @@ class DeviceManager:
             if duid in self._devices:
                 continue
             new_device = self._device_creator(home_data, device, product)
-            await new_device.connect()
+            new_device.start_connect()
             new_devices[duid] = new_device
 
         self._devices.update(new_devices)
