@@ -1,7 +1,7 @@
 """Tests for the DeviceManager class."""
 
-import datetime
 import asyncio
+import datetime
 from collections.abc import Generator, Iterator
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -38,9 +38,12 @@ def channel_fixture() -> Generator[Mock, None, None]:
 
 @pytest.fixture(autouse=True)
 def mock_sleep() -> Generator[Mock, None, None]:
-    """Mock asyncio.sleep in device module to speed up tests."""
+    """Mock sleep logic to speed up tests."""
     sleep_time = datetime.timedelta(seconds=0.001)
-    with patch("roborock.devices.device.MIN_BACKOFF_INTERVAL", sleep_time), patch("roborock.devices.device.MAX_BACKOFF_INTERVAL", sleep_time):
+    with (
+        patch("roborock.devices.device.MIN_BACKOFF_INTERVAL", sleep_time),
+        patch("roborock.devices.device.MAX_BACKOFF_INTERVAL", sleep_time),
+    ):
         yield
 
 
@@ -48,9 +51,7 @@ def mock_sleep() -> Generator[Mock, None, None]:
 def channel_failure_fixture() -> Generator[Mock, None, None]:
     """Fixture that makes channel subscribe fail."""
     with patch("roborock.devices.device_manager.create_v1_channel") as mock_channel:
-        mock_channel.return_value.subscribe = AsyncMock(
-            side_effect=RoborockException("Connection failed")
-        )
+        mock_channel.return_value.subscribe = AsyncMock(side_effect=RoborockException("Connection failed"))
         mock_channel.return_value.is_connected = False
         yield mock_channel
 
