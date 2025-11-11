@@ -71,7 +71,7 @@ __all__ = [
     "child_lock",
     "clean_summary",
     "common",
-    "consumable",
+    "consumeable",
     "device_features",
     "do_not_disturb",
     "dust_collection_mode",
