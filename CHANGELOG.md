@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v3.7.3 (2025-11-14)
+
+### Bug Fixes
+
+- Switches commands were incorrect
+  ([#591](https://github.com/Python-roborock/python-roborock/pull/591),
+  [`40aa6b6`](https://github.com/Python-roborock/python-roborock/commit/40aa6b67a6e43e273d6e4512ccdc8df11dd4dc8a))
+
+### Chores
+
+- Add device info for roborock.vacuum.s5e
+  ([#587](https://github.com/Python-roborock/python-roborock/pull/587),
+  [`20afa92`](https://github.com/Python-roborock/python-roborock/commit/20afa925e298f9fb36fc3e1ac79bf8cba90fcdf5))
+
+- **deps**: Bump ruff from 0.14.1 to 0.14.4
+  ([#585](https://github.com/Python-roborock/python-roborock/pull/585),
+  [`324c816`](https://github.com/Python-roborock/python-roborock/commit/324c8165bacfdd7abbc1561c3f4f5768cd9c331c))
+
+
 ## v3.7.2 (2025-11-11)
 
 ### Bug Fixes
