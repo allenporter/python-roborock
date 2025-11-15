@@ -17,7 +17,7 @@ class CommandTrait:
 
     async def send(self, command: RoborockCommand | str, params: ParamsType = None) -> Any:
         """Send a command to the device.
-        
+
         Sending a raw command to the device using this method does not update
         the internal state of any other traits. It is the responsibility of the
         caller to ensure that any traits affected by the command are refreshed
