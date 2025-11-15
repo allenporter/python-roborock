@@ -31,9 +31,11 @@ class DoNotDisturbTrait(DnDTimer, common.V1TraitMixin, common.RoborockSwitchBase
             RoborockCommand.SET_DND_TIMER,
             params=self.as_list(),
         )
+        # Optimistcally update state to avoid an extra refresh
         self.enabled = 1
 
     async def disable(self) -> None:
         """Disable the Do Not Disturb (DND) timer settings of the device."""
         await self.rpc_channel.send_command(RoborockCommand.CLOSE_DND_TIMER)
+        # Optimistcally update state to avoid an extra refresh
         self.enabled = 0
