@@ -48,13 +48,13 @@ async def main():
 
     # Get all vacuum devices that support the v1 PropertiesApi
     for device in devices:
-      if not device.v1_properties:
-        continue
+        if not device.v1_properties:
+            continue
 
-      # Refresh the current device status
-      status_trait = device.v1_properties.status
-      await status_trait.refresh()
-      print(status_trait)
+        # Refresh the current device status
+        status_trait = device.v1_properties.status
+        await status_trait.refresh()
+        print(status_trait)
 
 asyncio.run(main())
 ```

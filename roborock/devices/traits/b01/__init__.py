@@ -6,7 +6,7 @@ from roborock.devices.mqtt_channel import MqttChannel
 from roborock.devices.traits import Trait
 from roborock.roborock_message import RoborockB01Props
 
-__init__ = [
+__all__ = [
     "PropertiesApi",
 ]
 
