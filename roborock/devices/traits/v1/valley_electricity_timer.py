@@ -32,7 +32,7 @@ class ValleyElectricityTimerTrait(ValleyElectricityTimer, common.V1TraitMixin, c
             RoborockCommand.SET_VALLEY_ELECTRICITY_TIMER,
             params=self.as_list(),
         )
-        # Optimistcally update state to avoid an extra refresh
+        # Optimistic update to avoid an extra refresh
         self.enabled = 1
 
     async def disable(self) -> None:
@@ -40,5 +40,5 @@ class ValleyElectricityTimerTrait(ValleyElectricityTimer, common.V1TraitMixin, c
         await self.rpc_channel.send_command(
             RoborockCommand.CLOSE_VALLEY_ELECTRICITY_TIMER,
         )
-        # Optimistcally update state to avoid an extra refresh
+        # Optimistic update to avoid an extra refresh
         self.enabled = 0
