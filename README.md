@@ -20,16 +20,14 @@ Install this via pip (or your favourite package manager):
 
 You can see all of the commands supported [here](https://python-roborock.readthedocs.io/en/latest/api_commands.html)
 
-## Sending Commands
+## Example Usage
 
-Here is an example that requires no manual intervention and can be done all automatically. You can skip some steps by
-caching values or looking at them and grabbing them manually.
 ```python
 import asyncio
 
-from roborock import HomeDataProduct, DeviceData, RoborockCommand
-from roborock.version_1_apis import RoborockMqttClientV1, RoborockLocalClientV1
 from roborock.web_api import RoborockApiClient
+from roborock.devices.device_manager import create_device_manager, UserParams
+
 
 async def main():
     web_api = RoborockApiClient(username="youremailhere")
@@ -40,29 +38,30 @@ async def main():
     code = input("What is the code?")
     user_data = await web_api.code_login(code)
 
-    # Get home data
-    home_data = await web_api.get_home_data_v2(user_data)
+    # Create a device manager that can discover devices.
+    user_params = UserParams(
+        username="youremailhere",
+        user_data=user_data,
+    )
+    device_manager = await create_device_manager(user_params)
+    devices = await device_manager.get_devices()
 
-    # Get the device you want
-    device = home_data.devices[0]
+    # Get all vacuum devices that support the v1 PropertiesApi
+    for device in devices:
+        if not device.v1_properties:
+            continue
 
-    # Get product ids:
-    product_info: dict[str, HomeDataProduct] = {
-            product.id: product for product in home_data.products
-        }
-    # Create the Mqtt(aka cloud required) Client
-    device_data = DeviceData(device, product_info[device.product_id].model)
-    mqtt_client = RoborockMqttClientV1(user_data, device_data)
-    networking = await mqtt_client.get_networking()
-    local_device_data = DeviceData(device, product_info[device.product_id].model, networking.ip)
-    local_client = RoborockLocalClientV1(local_device_data)
-    # You can use the send_command to send any command to the device
-    status = await local_client.send_command(RoborockCommand.GET_STATUS)
-    # Or use existing functions that will give you data classes
-    status = await local_client.get_status()
+        # Refresh the current device status
+        status_trait = device.v1_properties.status
+        await status_trait.refresh()
+        print(status_trait)
 
 asyncio.run(main())
 ```
+
+See [examples/example.py](examples/example.py) for a more full featured example
+that has performance improvements to cache cloud information to prefer
+connections over the local network.
 
 ## Supported devices
 

@@ -1,7 +1,11 @@
-"""The devices module provides functionality to discover Roborock devices on the network."""
+"""
+.. include:: ./README.md
+"""
 
 __all__ = [
     "device",
     "device_manager",
     "cache",
+    "file_cache",
+    "traits",
 ]
