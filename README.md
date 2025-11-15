@@ -20,10 +20,7 @@ Install this via pip (or your favourite package manager):
 
 You can see all of the commands supported [here](https://python-roborock.readthedocs.io/en/latest/api_commands.html)
 
-## Sending Commands
-
-Here is an example that requires no manual intervention and can be done all automatically. You can skip some steps by
-caching values or looking at them and grabbing them manually.
+## Example Usage
 
 ```python
 import asyncio
@@ -61,6 +58,10 @@ async def main():
 
 asyncio.run(main())
 ```
+
+See [examples/example.py](examples/example.py) for a more full featured example
+that has performance improvements to cache cloud information to prefer
+connections over the local network.
 
 ## Supported devices
 
