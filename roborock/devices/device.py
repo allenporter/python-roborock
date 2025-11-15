@@ -4,12 +4,15 @@ This interface is experimental and subject to breaking changes without notice
 until the API is stable.
 """
 
+import asyncio
+import datetime
 import logging
 from abc import ABC
 from collections.abc import Callable, Mapping
 from typing import Any, TypeVar, cast
 
 from roborock.data import HomeDataDevice, HomeDataProduct
+from roborock.exceptions import RoborockException
 from roborock.roborock_message import RoborockMessage
 
 from .channel import Channel
@@ -21,6 +24,11 @@ _LOGGER = logging.getLogger(__name__)
 __all__ = [
     "RoborockDevice",
 ]
+
+# Exponential backoff parameters
+MIN_BACKOFF_INTERVAL = datetime.timedelta(seconds=10)
+MAX_BACKOFF_INTERVAL = datetime.timedelta(minutes=30)
+BACKOFF_MULTIPLIER = 1.5
 
 
 class RoborockDevice(ABC, TraitsMixin):
@@ -54,6 +62,7 @@ class RoborockDevice(ABC, TraitsMixin):
         self._device_info = device_info
         self._product = product
         self._channel = channel
+        self._connect_task: asyncio.Task[None] | None = None
         self._unsub: Callable[[], None] | None = None
 
     @property
@@ -98,6 +107,38 @@ class RoborockDevice(ABC, TraitsMixin):
         """
         return self._channel.is_local_connected
 
+    def start_connect(self) -> None:
+        """Start a background task to connect to the device.
+
+        This will attempt to connect to the device using the appropriate protocol
+        channel. If the connection fails, it will retry with exponential backoff.
+
+        Once connected, the device will remain connected until `close()` is
+        called. The device will automatically attempt to reconnect if the connection
+        is lost.
+        """
+
+        async def connect_loop() -> None:
+            backoff = MIN_BACKOFF_INTERVAL
+            try:
+                while True:
+                    try:
+                        await self.connect()
+                        return
+                    except RoborockException as e:
+                        _LOGGER.info("Failed to connect to device %s: %s", self.name, e)
+                        _LOGGER.info(
+                            "Retrying connection to device %s in %s seconds", self.name, backoff.total_seconds()
+                        )
+                        await asyncio.sleep(backoff.total_seconds())
+                        backoff = min(backoff * BACKOFF_MULTIPLIER, MAX_BACKOFF_INTERVAL)
+            except asyncio.CancelledError:
+                _LOGGER.info("connect_loop for device %s was cancelled", self.name)
+                # Clean exit on cancellation
+                return
+
+        self._connect_task = asyncio.create_task(connect_loop())
+
     async def connect(self) -> None:
         """Connect to the device using the appropriate protocol channel."""
         if self._unsub:
@@ -107,6 +148,12 @@ class RoborockDevice(ABC, TraitsMixin):
 
     async def close(self) -> None:
         """Close all connections to the device."""
+        if self._connect_task:
+            self._connect_task.cancel()
+            try:
+                await self._connect_task
+            except asyncio.CancelledError:
+                pass
         if self._unsub:
             self._unsub()
             self._unsub = None
