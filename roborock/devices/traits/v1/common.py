@@ -31,7 +31,7 @@ class V1TraitMixin(ABC):
     from the device.
 
     A trait can also support additional commands for updating state associated
-    with the trait. It is expected that a trait will update it's own internal
+    with the trait. It is expected that a trait will update its own internal
     state either reflecting the change optimistically or by refreshing the
     trait state from the device. In cases where one trait caches data that is
     also represented in another trait, it is the responsibility of the caller
