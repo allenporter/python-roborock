@@ -19,7 +19,9 @@ class ChildLockTrait(ChildLockStatus, common.V1TraitMixin, common.RoborockSwitch
     async def enable(self) -> None:
         """Enable the child lock."""
         await self.rpc_channel.send_command(RoborockCommand.SET_CHILD_LOCK_STATUS, params={_STATUS_PARAM: 1})
+        self.lock_status = 1
 
     async def disable(self) -> None:
         """Disable the child lock."""
         await self.rpc_channel.send_command(RoborockCommand.SET_CHILD_LOCK_STATUS, params={_STATUS_PARAM: 0})
+        self.lock_status = 0
