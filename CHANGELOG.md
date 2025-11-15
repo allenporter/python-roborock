@@ -2,6 +2,32 @@
 
 <!-- version list -->
 
+## v3.7.4 (2025-11-15)
+
+### Bug Fixes
+
+- Update trait `refresh` method to return `None`
+  ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+### Chores
+
+- Fix lint errors ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+- Remove unnecessary whitespace
+  ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+- Revert accidental CleanSummary changes
+  ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+- Revert unnecessary change to Clean Summary Trait
+  ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+
 ## v3.7.3 (2025-11-14)
 
 ### Bug Fixes
