@@ -14,7 +14,7 @@ class CleanSummaryTrait(CleanSummaryWithDetail, common.V1TraitMixin):
 
     command = RoborockCommand.GET_CLEAN_SUMMARY
 
-    async def refresh(self) -> Self:
+    async def refresh(self) -> None:
         """Refresh the clean summary data and last clean record.
 
         Assumes that the clean summary has already been fetched.
@@ -23,10 +23,9 @@ class CleanSummaryTrait(CleanSummaryWithDetail, common.V1TraitMixin):
         if not self.records:
             _LOGGER.debug("No clean records available in clean summary.")
             self.last_clean_record = None
-            return self
+            return
         last_record_id = self.records[-1]
         self.last_clean_record = await self.get_clean_record(last_record_id)
-        return self
 
     @classmethod
     def _parse_type_response(cls, response: common.V1ResponseData) -> Self:
