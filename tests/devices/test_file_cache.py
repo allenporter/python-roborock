@@ -44,9 +44,7 @@ async def test_get_caches_in_memory(cache_file: pathlib.Path) -> None:
     cache = FileCache(cache_file)
     initial_data = await cache.get()
 
-    with patch(
-        "roborock.devices.file_cache.load_value", new_callable=AsyncMock
-    ) as mock_load_value:
+    with patch("roborock.devices.file_cache.load_value", new_callable=AsyncMock) as mock_load_value:
         # This call should use the in-memory cache
         second_get_data = await cache.get()
         assert second_get_data is initial_data
