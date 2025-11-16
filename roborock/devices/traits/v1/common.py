@@ -82,7 +82,7 @@ class V1TraitMixin(ABC):
             raise ValueError("Device trait in invalid state")
         return self._rpc_channel
 
-    async def refresh(self) -> Self:
+    async def refresh(self) -> None:
         """Refresh the contents of this trait."""
         response = await self.rpc_channel.send_command(self.command)
         new_data = self._parse_response(response)
@@ -90,7 +90,6 @@ class V1TraitMixin(ABC):
             raise ValueError(f"Internal error, unexpected response type: {new_data!r}")
         _LOGGER.debug("Refreshed %s: %s", self.__class__.__name__, new_data)
         self._update_trait_values(new_data)
-        return self
 
     def _update_trait_values(self, new_data: RoborockBase) -> None:
         """Update the values of this trait from another instance."""

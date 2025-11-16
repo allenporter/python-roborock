@@ -2,6 +2,107 @@
 
 <!-- version list -->
 
+## v3.8.0 (2025-11-15)
+
+### Bug Fixes
+
+- Update roborock/devices/device.py
+  ([#588](https://github.com/Python-roborock/python-roborock/pull/588),
+  [`3994110`](https://github.com/Python-roborock/python-roborock/commit/39941103fe5247a9764d38db5ee0915dd39e043d))
+
+### Chores
+
+- Fix lint ([#589](https://github.com/Python-roborock/python-roborock/pull/589),
+  [`fa69bf2`](https://github.com/Python-roborock/python-roborock/commit/fa69bf2d9d090bf8bc6cf89ead6ab122d5dbcd00))
+
+- Fix lint errors ([#588](https://github.com/Python-roborock/python-roborock/pull/588),
+  [`3994110`](https://github.com/Python-roborock/python-roborock/commit/39941103fe5247a9764d38db5ee0915dd39e043d))
+
+- Update comments to clarify close call
+  ([#588](https://github.com/Python-roborock/python-roborock/pull/588),
+  [`3994110`](https://github.com/Python-roborock/python-roborock/commit/39941103fe5247a9764d38db5ee0915dd39e043d))
+
+- Update documentation to point to the newer device APIs
+  ([#589](https://github.com/Python-roborock/python-roborock/pull/589),
+  [`fa69bf2`](https://github.com/Python-roborock/python-roborock/commit/fa69bf2d9d090bf8bc6cf89ead6ab122d5dbcd00))
+
+- Update pydoc and formatting ([#588](https://github.com/Python-roborock/python-roborock/pull/588),
+  [`3994110`](https://github.com/Python-roborock/python-roborock/commit/39941103fe5247a9764d38db5ee0915dd39e043d))
+
+- Update README.md ([#589](https://github.com/Python-roborock/python-roborock/pull/589),
+  [`fa69bf2`](https://github.com/Python-roborock/python-roborock/commit/fa69bf2d9d090bf8bc6cf89ead6ab122d5dbcd00))
+
+- Update roborock/devices/device.py
+  ([#588](https://github.com/Python-roborock/python-roborock/pull/588),
+  [`3994110`](https://github.com/Python-roborock/python-roborock/commit/39941103fe5247a9764d38db5ee0915dd39e043d))
+
+- Update roborock/devices/traits/b01/__init__.py
+  ([#589](https://github.com/Python-roborock/python-roborock/pull/589),
+  [`fa69bf2`](https://github.com/Python-roborock/python-roborock/commit/fa69bf2d9d090bf8bc6cf89ead6ab122d5dbcd00))
+
+- Update roborock/devices/traits/v1/__init__.py
+  ([#589](https://github.com/Python-roborock/python-roborock/pull/589),
+  [`fa69bf2`](https://github.com/Python-roborock/python-roborock/commit/fa69bf2d9d090bf8bc6cf89ead6ab122d5dbcd00))
+
+- Update typing ([#588](https://github.com/Python-roborock/python-roborock/pull/588),
+  [`3994110`](https://github.com/Python-roborock/python-roborock/commit/39941103fe5247a9764d38db5ee0915dd39e043d))
+
+### Features
+
+- Add examples that show how to use the cache and implement a file cache
+  ([#589](https://github.com/Python-roborock/python-roborock/pull/589),
+  [`fa69bf2`](https://github.com/Python-roborock/python-roborock/commit/fa69bf2d9d090bf8bc6cf89ead6ab122d5dbcd00))
+
+- Connect to devices asynchronously
+  ([#588](https://github.com/Python-roborock/python-roborock/pull/588),
+  [`3994110`](https://github.com/Python-roborock/python-roborock/commit/39941103fe5247a9764d38db5ee0915dd39e043d))
+
+
+## v3.7.4 (2025-11-15)
+
+### Bug Fixes
+
+- Update trait `refresh` method to return `None`
+  ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+### Chores
+
+- Fix lint errors ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+- Remove unnecessary whitespace
+  ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+- Revert accidental CleanSummary changes
+  ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+- Revert unnecessary change to Clean Summary Trait
+  ([#586](https://github.com/Python-roborock/python-roborock/pull/586),
+  [`86ec1a7`](https://github.com/Python-roborock/python-roborock/commit/86ec1a7377159ed9bdceb339804b61c73532f441))
+
+
+## v3.7.3 (2025-11-14)
+
+### Bug Fixes
+
+- Switches commands were incorrect
+  ([#591](https://github.com/Python-roborock/python-roborock/pull/591),
+  [`40aa6b6`](https://github.com/Python-roborock/python-roborock/commit/40aa6b67a6e43e273d6e4512ccdc8df11dd4dc8a))
+
+### Chores
+
+- Add device info for roborock.vacuum.s5e
+  ([#587](https://github.com/Python-roborock/python-roborock/pull/587),
+  [`20afa92`](https://github.com/Python-roborock/python-roborock/commit/20afa925e298f9fb36fc3e1ac79bf8cba90fcdf5))
+
+- **deps**: Bump ruff from 0.14.1 to 0.14.4
+  ([#585](https://github.com/Python-roborock/python-roborock/pull/585),
+  [`324c816`](https://github.com/Python-roborock/python-roborock/commit/324c8165bacfdd7abbc1561c3f4f5768cd9c331c))
+
+
 ## v3.7.2 (2025-11-11)
 
 ### Bug Fixes

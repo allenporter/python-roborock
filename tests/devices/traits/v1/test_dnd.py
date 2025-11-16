@@ -94,18 +94,8 @@ async def test_set_dnd_timer_success(
 
     # Verify the RPC call was made correctly with dataclass converted to dict
 
-    mock_rpc_channel.send_command.mock_calls = [
-        call(RoborockCommand.SET_DND_TIMER, params=expected_params),
-        call(RoborockCommand.GET_DND_TIMER),
-    ]
-
-    # Verify the trait state is updated
-    assert dnd_trait.enabled == 1
-    assert dnd_trait.is_on
-    assert dnd_trait.start_hour == 22
-    assert dnd_trait.start_minute == 30
-    assert dnd_trait.end_hour == 9
-    assert dnd_trait.end_minute == 30
+    expected_params = [22, 0, 8, 0]
+    mock_rpc_channel.send_command.assert_called_once_with(RoborockCommand.SET_DND_TIMER, params=expected_params)
 
 
 async def test_clear_dnd_timer_success(dnd_trait: DoNotDisturbTrait, mock_rpc_channel: AsyncMock) -> None:

@@ -1,6 +1,8 @@
-# Roborock Device Discovery
+# Roborock Devices & Discovery
 
-This page documents the full lifecycle of device discovery across Cloud and Network.
+The devices module provides functionality to discover Roborock devices on the
+network. This section documents the full lifecycle of device discovery across
+Cloud and Network.
 
 ## Init account setup
 
@@ -61,7 +63,7 @@ that a newer version of the API should be used.
 
 ## Design
 
-### Current API Issues
+### Prior API Issues
 
 - Complex Inheritance Hierarchy: Multiple inheritance with classes like RoborockMqttClientV1 inheriting from both RoborockMqttClient and RoborockClientV1
 

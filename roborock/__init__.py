@@ -11,6 +11,7 @@ from . import (
     cloud_api,
     const,
     data,
+    devices,
     exceptions,
     roborock_typing,
     version_1_apis,
@@ -19,13 +20,11 @@ from . import (
 )
 
 __all__ = [
+    "devices",
+    "data",
+    "map",
     "web_api",
-    "version_1_apis",
-    "version_a01_apis",
-    "const",
-    "cloud_api",
     "roborock_typing",
     "exceptions",
-    "data",
-    # Add new APIs here in the future when they are public e.g. devices/
+    "const",
 ]
