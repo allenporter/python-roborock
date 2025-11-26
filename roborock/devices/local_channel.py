@@ -62,7 +62,14 @@ class LocalChannel(Channel):
             LocalChannelParams(local_key=local_key, connect_nonce=get_next_int(10000, 32767), ack_nonce=None)
         )
 
-    def _update_encoder_decoder(self, params: LocalChannelParams):
+    def _update_encoder_decoder(self, params: LocalChannelParams) -> None:
+        """Update the encoder and decoder with new parameters.
+
+        This is invoked once with an initial set of values used for protocol
+        negotiation. Once negotiation completes, it is updated again to set the
+        correct nonces for the follow up communications and updates the encoder
+        and decoder functions accordingly.
+        """
         self._params = params
         self._encoder = create_local_encoder(
             local_key=params.local_key, connect_nonce=params.connect_nonce, ack_nonce=params.ack_nonce
@@ -71,7 +78,7 @@ class LocalChannel(Channel):
             local_key=params.local_key, connect_nonce=params.connect_nonce, ack_nonce=params.ack_nonce
         )
         # Callback to decode messages and dispatch to subscribers
-        self._data_received: Callable[[bytes], None] = decoder_callback(self._decoder, self._subscribers, _LOGGER)
+        self._dispatch = decoder_callback(self._decoder, self._subscribers, _LOGGER)
 
     async def _do_hello(self, local_protocol_version: LocalProtocolVersion) -> LocalChannelParams | None:
         """Perform the initial handshaking and return encoder params if successful."""
@@ -126,6 +133,13 @@ class LocalChannel(Channel):
         raise RoborockException("Failed to connect to device with any known protocol")
 
     @property
+    def protocol_version(self) -> LocalProtocolVersion:
+        """Return the negotiated local protocol version, or a sensible default."""
+        if self._local_protocol_version is not None:
+            return self._local_protocol_version
+        return LocalProtocolVersion.V1
+
+    @property
     def is_connected(self) -> bool:
         """Check if the channel is currently connected."""
         return self._is_connected
@@ -156,6 +170,10 @@ class LocalChannel(Channel):
             # If protocol negotiation fails, clean up the connection state
             self.close()
             raise
+
+    def _data_received(self, data: bytes) -> None:
+        """Invoked when data is received on the stream."""
+        self._dispatch(data)
 
     def close(self) -> None:
         """Disconnect from the device."""
