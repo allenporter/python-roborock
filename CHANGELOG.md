@@ -2,6 +2,93 @@
 
 <!-- version list -->
 
+## v3.8.1 (2025-11-26)
+
+### Bug Fixes
+
+- Attempt to fix l01 ([#593](https://github.com/Python-roborock/python-roborock/pull/593),
+  [`87e60d9`](https://github.com/Python-roborock/python-roborock/commit/87e60d9a9cb99ef9ddf99b1691baa2573db4221d))
+
+- Decoding l01 ([#593](https://github.com/Python-roborock/python-roborock/pull/593),
+  [`87e60d9`](https://github.com/Python-roborock/python-roborock/commit/87e60d9a9cb99ef9ddf99b1691baa2573db4221d))
+
+- Ensure traits to always reflect the the status of commands
+  ([#592](https://github.com/Python-roborock/python-roborock/pull/592),
+  [`3d0ad74`](https://github.com/Python-roborock/python-roborock/commit/3d0ad74954948ebf0ea5c1a144aff3f9d111b1f7))
+
+- Fix L01 encoding and decoding
+  ([#593](https://github.com/Python-roborock/python-roborock/pull/593),
+  [`87e60d9`](https://github.com/Python-roborock/python-roborock/commit/87e60d9a9cb99ef9ddf99b1691baa2573db4221d))
+
+- Temp cache of protocol version until restart
+  ([#593](https://github.com/Python-roborock/python-roborock/pull/593),
+  [`87e60d9`](https://github.com/Python-roborock/python-roborock/commit/87e60d9a9cb99ef9ddf99b1691baa2573db4221d))
+
+- Update bad asserts found by co-pilot
+  ([#592](https://github.com/Python-roborock/python-roborock/pull/592),
+  [`3d0ad74`](https://github.com/Python-roborock/python-roborock/commit/3d0ad74954948ebf0ea5c1a144aff3f9d111b1f7))
+
+- Update the messages callback to not mutate the protocol once created.
+  ([#593](https://github.com/Python-roborock/python-roborock/pull/593),
+  [`87e60d9`](https://github.com/Python-roborock/python-roborock/commit/87e60d9a9cb99ef9ddf99b1691baa2573db4221d))
+
+### Chores
+
+- Add comments everywhere on implicit refreshes
+  ([#592](https://github.com/Python-roborock/python-roborock/pull/592),
+  [`3d0ad74`](https://github.com/Python-roborock/python-roborock/commit/3d0ad74954948ebf0ea5c1a144aff3f9d111b1f7))
+
+- Fix lint errors ([#593](https://github.com/Python-roborock/python-roborock/pull/593),
+  [`87e60d9`](https://github.com/Python-roborock/python-roborock/commit/87e60d9a9cb99ef9ddf99b1691baa2573db4221d))
+
+- Fix typos ([#592](https://github.com/Python-roborock/python-roborock/pull/592),
+  [`3d0ad74`](https://github.com/Python-roborock/python-roborock/commit/3d0ad74954948ebf0ea5c1a144aff3f9d111b1f7))
+
+- Remove unnecessary whitespace
+  ([#592](https://github.com/Python-roborock/python-roborock/pull/592),
+  [`3d0ad74`](https://github.com/Python-roborock/python-roborock/commit/3d0ad74954948ebf0ea5c1a144aff3f9d111b1f7))
+
+- Update roborock/devices/traits/v1/common.py
+  ([#592](https://github.com/Python-roborock/python-roborock/pull/592),
+  [`3d0ad74`](https://github.com/Python-roborock/python-roborock/commit/3d0ad74954948ebf0ea5c1a144aff3f9d111b1f7))
+
+- Update working for the CommandTrait
+  ([#592](https://github.com/Python-roborock/python-roborock/pull/592),
+  [`3d0ad74`](https://github.com/Python-roborock/python-roborock/commit/3d0ad74954948ebf0ea5c1a144aff3f9d111b1f7))
+
+- **deps**: Bump actions/checkout from 5 to 6
+  ([#598](https://github.com/Python-roborock/python-roborock/pull/598),
+  [`a9e91ae`](https://github.com/Python-roborock/python-roborock/commit/a9e91aedaed142f433d52c8b21b3fda3a1f62450))
+
+- **deps**: Bump click from 8.3.0 to 8.3.1
+  ([#594](https://github.com/Python-roborock/python-roborock/pull/594),
+  [`4b5d6bb`](https://github.com/Python-roborock/python-roborock/commit/4b5d6bb0044deef158484b712f75ef3ab76f1cef))
+
+- **deps**: Bump pre-commit from 4.4.0 to 4.5.0
+  ([#602](https://github.com/Python-roborock/python-roborock/pull/602),
+  [`50b70a4`](https://github.com/Python-roborock/python-roborock/commit/50b70a454dd80c1b41df855496c72818ecf30cea))
+
+- **deps**: Bump pytest-asyncio from 1.2.0 to 1.3.0
+  ([#596](https://github.com/Python-roborock/python-roborock/pull/596),
+  [`ee85762`](https://github.com/Python-roborock/python-roborock/commit/ee85762ebe34663c25c3c05509a265f2d624b3ab))
+
+- **deps**: Bump python-semantic-release/publish-action
+  ([#599](https://github.com/Python-roborock/python-roborock/pull/599),
+  [`bcfe314`](https://github.com/Python-roborock/python-roborock/commit/bcfe3141fde31b1930c54ac1ce8f0a3aef9adea7))
+
+- **deps**: Bump python-semantic-release/python-semantic-release
+  ([#600](https://github.com/Python-roborock/python-roborock/pull/600),
+  [`f8061ff`](https://github.com/Python-roborock/python-roborock/commit/f8061ffcf416bd2618ac5b6f4b056650599bcbe8))
+
+- **deps**: Bump ruff from 0.14.4 to 0.14.5
+  ([#595](https://github.com/Python-roborock/python-roborock/pull/595),
+  [`e561838`](https://github.com/Python-roborock/python-roborock/commit/e561838449be48abebf6ea94ff944222eea4d0ec))
+
+- **deps**: Bump ruff from 0.14.5 to 0.14.6
+  ([#601](https://github.com/Python-roborock/python-roborock/pull/601),
+  [`c16c529`](https://github.com/Python-roborock/python-roborock/commit/c16c529881d84f370f99a7c5b31255a24a74da3a))
+
+
 ## v3.8.0 (2025-11-15)
 
 ### Bug Fixes
