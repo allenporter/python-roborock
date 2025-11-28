@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v3.8.2 (2025-11-28)
+
+### Bug Fixes
+
+- Fix device feature discovery ([#603](https://github.com/Python-roborock/python-roborock/pull/603),
+  [`d048001`](https://github.com/Python-roborock/python-roborock/commit/d0480015550edbe3e978902e141563e9c537fad1))
+
+### Chores
+
+- Revert requires_feature ([#603](https://github.com/Python-roborock/python-roborock/pull/603),
+  [`d048001`](https://github.com/Python-roborock/python-roborock/commit/d0480015550edbe3e978902e141563e9c537fad1))
+
+
 ## v3.8.1 (2025-11-26)
 
 ### Bug Fixes
