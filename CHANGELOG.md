@@ -2,6 +2,32 @@
 
 <!-- version list -->
 
+## v3.8.4 (2025-11-29)
+
+### Bug Fixes
+
+- Encode map content bytes as base64
+  ([#608](https://github.com/Python-roborock/python-roborock/pull/608),
+  [`27c61f9`](https://github.com/Python-roborock/python-roborock/commit/27c61f9b7958edb5b4ca374e60898eb966163802))
+
+- Fallback to the cached network information on failure
+  ([#606](https://github.com/Python-roborock/python-roborock/pull/606),
+  [`80d7d5a`](https://github.com/Python-roborock/python-roborock/commit/80d7d5af72629e83fbc7f2bf418ccecd793dbd58))
+
+- Fallback to the cached network information when failing to lookup network info
+  ([#606](https://github.com/Python-roborock/python-roborock/pull/606),
+  [`80d7d5a`](https://github.com/Python-roborock/python-roborock/commit/80d7d5af72629e83fbc7f2bf418ccecd793dbd58))
+
+- Improve partial update code ([#608](https://github.com/Python-roborock/python-roborock/pull/608),
+  [`27c61f9`](https://github.com/Python-roborock/python-roborock/commit/27c61f9b7958edb5b4ca374e60898eb966163802))
+
+### Chores
+
+- Update roborock/devices/v1_channel.py
+  ([#606](https://github.com/Python-roborock/python-roborock/pull/606),
+  [`80d7d5a`](https://github.com/Python-roborock/python-roborock/commit/80d7d5af72629e83fbc7f2bf418ccecd793dbd58))
+
+
 ## v3.8.3 (2025-11-29)
 
 ### Bug Fixes
