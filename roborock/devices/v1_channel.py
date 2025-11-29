@@ -189,7 +189,7 @@ class V1Channel(Channel):
                 RoborockCommand.GET_NETWORK_INFO, response_type=NetworkInfo
             )
         except RoborockException as e:
-            logging.debug("Error fetching network info for device %s", self._device_uid)
+            _LOGGER.debug("Error fetching network info for device %s", self._device_uid)
             if cache_data.network_info and (network_info := cache_data.network_info.get(self._device_uid)):
                 _LOGGER.debug("Falling back to cached network info for device %s after error", self._device_uid)
                 return network_info
