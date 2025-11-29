@@ -2,6 +2,40 @@
 
 <!-- version list -->
 
+## v3.8.5 (2025-11-29)
+
+### Bug Fixes
+
+- Remove python 3.11 incompatibility
+  ([#609](https://github.com/Python-roborock/python-roborock/pull/609),
+  [`f3487e8`](https://github.com/Python-roborock/python-roborock/commit/f3487e8ec478e000d1330745dff178125796bfb5))
+
+### Chores
+
+- Fix v1 channel typing and improve readability
+  ([#609](https://github.com/Python-roborock/python-roborock/pull/609),
+  [`f3487e8`](https://github.com/Python-roborock/python-roborock/commit/f3487e8ec478e000d1330745dff178125796bfb5))
+
+- Improve doc string readability and grammar
+  ([#609](https://github.com/Python-roborock/python-roborock/pull/609),
+  [`f3487e8`](https://github.com/Python-roborock/python-roborock/commit/f3487e8ec478e000d1330745dff178125796bfb5))
+
+- Refactor v1 rpc channels ([#609](https://github.com/Python-roborock/python-roborock/pull/609),
+  [`f3487e8`](https://github.com/Python-roborock/python-roborock/commit/f3487e8ec478e000d1330745dff178125796bfb5))
+
+- Remove unnecessary docstrings
+  ([#609](https://github.com/Python-roborock/python-roborock/pull/609),
+  [`f3487e8`](https://github.com/Python-roborock/python-roborock/commit/f3487e8ec478e000d1330745dff178125796bfb5))
+
+- Remove unnecessary pydoc on private members
+  ([#609](https://github.com/Python-roborock/python-roborock/pull/609),
+  [`f3487e8`](https://github.com/Python-roborock/python-roborock/commit/f3487e8ec478e000d1330745dff178125796bfb5))
+
+- Remove unnecessary pydoc to make the code more compact
+  ([#609](https://github.com/Python-roborock/python-roborock/pull/609),
+  [`f3487e8`](https://github.com/Python-roborock/python-roborock/commit/f3487e8ec478e000d1330745dff178125796bfb5))
+
+
 ## v3.8.4 (2025-11-29)
 
 ### Bug Fixes
