@@ -1,5 +1,6 @@
 """Tests for the Home related functionality."""
 
+import base64
 from collections.abc import Iterator
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -7,7 +8,7 @@ import pytest
 
 from roborock.data.containers import CombinedMapInfo
 from roborock.data.v1.v1_code_mappings import RoborockStateCode
-from roborock.devices.cache import InMemoryCache
+from roborock.devices.cache import CacheData, InMemoryCache
 from roborock.devices.device import RoborockDevice
 from roborock.devices.traits.v1.home import HomeTrait
 from roborock.devices.traits.v1.map_content import MapContentTrait
@@ -230,19 +231,32 @@ async def test_discover_home_empty_cache(
     # Verify the persistent cache has been updated
     cache_data = await home_trait._cache.get()
     assert len(cache_data.home_map_info) == 2
-    assert len(cache_data.home_map_content) == 2
+    assert len(cache_data.home_map_content_base64) == 2
+    assert len(cache_data.home_map_content) == 0
 
 
+@pytest.mark.parametrize(
+    "cache_data",
+    [
+        CacheData(
+            home_map_info={0: CombinedMapInfo(map_flag=0, name="Dummy", rooms=[])},
+            home_map_content={0: MAP_BYTES_RESPONSE_1},
+        ),
+        CacheData(
+            home_map_info={0: CombinedMapInfo(map_flag=0, name="Dummy", rooms=[])},
+            home_map_content={},
+            home_map_content_base64={0: base64.b64encode(MAP_BYTES_RESPONSE_1).decode("utf-8")},
+        ),
+    ],
+)
 async def test_discover_home_with_existing_cache(
     home_trait: HomeTrait,
     mock_rpc_channel: AsyncMock,
     mock_mqtt_rpc_channel: AsyncMock,
+    cache_data: CacheData,
 ) -> None:
     """Test that discovery is skipped when cache already exists."""
     # Pre-populate the cache
-    cache_data = await home_trait._cache.get()
-    cache_data.home_map_info = {0: CombinedMapInfo(map_flag=0, name="Dummy", rooms=[])}
-    cache_data.home_map_content = {0: MAP_BYTES_RESPONSE_1}
     await home_trait._cache.set(cache_data)
 
     # Call discover_home
@@ -507,7 +521,8 @@ async def test_discover_home_device_busy_cleaning(
     # Verify the persistent cache has been updated
     cache_data = await home_trait._cache.get()
     assert len(cache_data.home_map_info) == 2
-    assert len(cache_data.home_map_content) == 2
+    assert len(cache_data.home_map_content_base64) == 2
+    assert len(cache_data.home_map_content) == 0
 
 
 async def test_single_map_no_switching(

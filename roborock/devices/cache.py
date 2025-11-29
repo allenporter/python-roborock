@@ -26,7 +26,13 @@ class CacheData:
     """Home map information indexed by map_flag."""
 
     home_map_content: dict[int, bytes] = field(default_factory=dict)
-    """Home cache content for each map data indexed by map_flag."""
+    """Home cache content for each map data indexed by map_flag.
+
+    This is deprecated in favor of `home_map_content_base64`.
+    """
+
+    home_map_content_base64: dict[int, str] = field(default_factory=dict)
+    """Home cache content for each map data (encoded base64) indexed by map_flag."""
 
     device_features: DeviceFeatures | None = None
     """Device features information."""

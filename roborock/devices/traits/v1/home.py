@@ -16,6 +16,7 @@ the current map's information and room names as needed.
 """
 
 import asyncio
+import base64
 import logging
 from typing import Self
 
@@ -86,14 +87,20 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         After discovery, the home cache will be populated and can be accessed via the `home_map_info` property.
         """
         cache_data = await self._cache.get()
-        if cache_data.home_map_info and cache_data.home_map_content:
+        if cache_data.home_map_info and (cache_data.home_map_content or cache_data.home_map_content_base64):
             _LOGGER.debug("Home cache already populated, skipping discovery")
             self._home_map_info = cache_data.home_map_info
             self._discovery_completed = True
             try:
-                self._home_map_content = {
-                    k: self._map_content.parse_map_content(v) for k, v in cache_data.home_map_content.items()
-                }
+                if cache_data.home_map_content_base64:
+                    self._home_map_content = {
+                        k: self._map_content.parse_map_content(base64.b64decode(v))
+                        for k, v in cache_data.home_map_content_base64.items()
+                    }
+                else:
+                    self._home_map_content = {
+                        k: self._map_content.parse_map_content(v) for k, v in cache_data.home_map_content.items()
+                    }
             except (ValueError, RoborockException) as ex:
                 _LOGGER.warning("Failed to parse cached home map content, will re-discover: %s", ex)
                 self._home_map_content = {}
@@ -218,7 +225,12 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         """Update the entire home cache with new map info and content."""
         cache_data = await self._cache.get()
         cache_data.home_map_info = home_map_info
-        cache_data.home_map_content = {k: v.raw_api_response for k, v in home_map_content.items() if v.raw_api_response}
+        cache_data.home_map_content_base64 = {
+            k: base64.b64encode(v.raw_api_response).decode("utf-8")
+            for k, v in home_map_content.items()
+            if v.raw_api_response
+        }
+        cache_data.home_map_content = {}
         await self._cache.set(cache_data)
         self._home_map_info = home_map_info
         self._home_map_content = home_map_content
@@ -238,7 +250,13 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
             cache_data = await self._cache.get()
             cache_data.home_map_info[map_flag] = map_info
             if map_content.raw_api_response:
-                cache_data.home_map_content[map_flag] = map_content.raw_api_response
+                if cache_data.home_map_content_base64 is None:
+                    cache_data.home_map_content_base64 = {}
+                cache_data.home_map_content_base64[map_flag] = base64.b64encode(
+                    map_content.raw_api_response
+                ).decode("utf-8")
+                if cache_data.home_map_content and map_flag in cache_data.home_map_content:
+                    del cache_data.home_map_content[map_flag]
             await self._cache.set(cache_data)
 
         if self._home_map_info is None:
