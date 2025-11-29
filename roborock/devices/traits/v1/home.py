@@ -249,14 +249,18 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         if update_cache:
             cache_data = await self._cache.get()
             cache_data.home_map_info[map_flag] = map_info
+            # Migrate existing cached content to base64 if needed
+            if cache_data.home_map_content and not cache_data.home_map_content_base64:
+                cache_data.home_map_content_base64 = {
+                    k: base64.b64encode(v).decode("utf-8") for k, v in cache_data.home_map_content.items()
+                }
+                cache_data.home_map_content = {}
             if map_content.raw_api_response:
                 if cache_data.home_map_content_base64 is None:
                     cache_data.home_map_content_base64 = {}
-                cache_data.home_map_content_base64[map_flag] = base64.b64encode(
-                    map_content.raw_api_response
-                ).decode("utf-8")
-                if cache_data.home_map_content and map_flag in cache_data.home_map_content:
-                    del cache_data.home_map_content[map_flag]
+                cache_data.home_map_content_base64[map_flag] = base64.b64encode(map_content.raw_api_response).decode(
+                    "utf-8"
+                )
             await self._cache.set(cache_data)
 
         if self._home_map_info is None:
