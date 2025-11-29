@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## v3.8.3 (2025-11-29)
+
+### Bug Fixes
+
+- Add a health manager for restarting unhealthy mqtt connections
+  ([#605](https://github.com/Python-roborock/python-roborock/pull/605),
+  [`879a641`](https://github.com/Python-roborock/python-roborock/commit/879a6412aafe8e7d0ba7a16e867ff3028873fd02))
+
+- Add ability to restart the mqtt session
+  ([#605](https://github.com/Python-roborock/python-roborock/pull/605),
+  [`879a641`](https://github.com/Python-roborock/python-roborock/commit/879a6412aafe8e7d0ba7a16e867ff3028873fd02))
+
+- Reset start_future each loop ([#605](https://github.com/Python-roborock/python-roborock/pull/605),
+  [`879a641`](https://github.com/Python-roborock/python-roborock/commit/879a6412aafe8e7d0ba7a16e867ff3028873fd02))
+
+### Chores
+
+- Always use utc for now ([#605](https://github.com/Python-roborock/python-roborock/pull/605),
+  [`879a641`](https://github.com/Python-roborock/python-roborock/commit/879a6412aafe8e7d0ba7a16e867ff3028873fd02))
+
+- Cancel the connection and reconnect tasks
+  ([#605](https://github.com/Python-roborock/python-roborock/pull/605),
+  [`879a641`](https://github.com/Python-roborock/python-roborock/commit/879a6412aafe8e7d0ba7a16e867ff3028873fd02))
+
+- Fix async tests ([#605](https://github.com/Python-roborock/python-roborock/pull/605),
+  [`879a641`](https://github.com/Python-roborock/python-roborock/commit/879a6412aafe8e7d0ba7a16e867ff3028873fd02))
+
+
 ## v3.8.2 (2025-11-28)
 
 ### Bug Fixes
