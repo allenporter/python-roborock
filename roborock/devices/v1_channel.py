@@ -142,7 +142,7 @@ class V1Channel(Channel):
         # Make an initial, optimistic attempt to connect to local with the
         # cache. The cache information will be refreshed by the background task.
         try:
-            await self._local_connect(use_cache=True)
+            await self._local_connect(prefer_cache=True)
         except RoborockException as err:
             _LOGGER.warning("Could not establish local connection for device %s: %s", self._device_uid, err)
 
@@ -175,13 +175,13 @@ class V1Channel(Channel):
         self._callback = callback
         return unsub
 
-    async def _get_networking_info(self, *, use_cache: bool = True) -> NetworkInfo:
+    async def _get_networking_info(self, *, prefer_cache: bool = True) -> NetworkInfo:
         """Retrieve networking information for the device.
 
         This is a cloud only command used to get the local device's IP address.
         """
         cache_data = await self._cache.get()
-        if use_cache and cache_data.network_info and (network_info := cache_data.network_info.get(self._device_uid)):
+        if prefer_cache and cache_data.network_info and (network_info := cache_data.network_info.get(self._device_uid)):
             _LOGGER.debug("Using cached network info for device %s", self._device_uid)
             return network_info
         try:
@@ -189,6 +189,10 @@ class V1Channel(Channel):
                 RoborockCommand.GET_NETWORK_INFO, response_type=NetworkInfo
             )
         except RoborockException as e:
+            _LOGGER.debug("Error fetching network info for device %s", self._device_uid)
+            if cache_data.network_info and (network_info := cache_data.network_info.get(self._device_uid)):
+                _LOGGER.debug("Falling back to cached network info for device %s after error", self._device_uid)
+                return network_info
             raise RoborockException(f"Network info failed for device {self._device_uid}") from e
         _LOGGER.debug("Network info for device %s: %s", self._device_uid, network_info)
         self._last_network_info_refresh = datetime.datetime.now(datetime.UTC)
@@ -196,12 +200,12 @@ class V1Channel(Channel):
         await self._cache.set(cache_data)
         return network_info
 
-    async def _local_connect(self, *, use_cache: bool = True) -> None:
+    async def _local_connect(self, *, prefer_cache: bool = True) -> None:
         """Set up local connection if possible."""
         _LOGGER.debug(
-            "Attempting to connect to local channel for device %s (use_cache=%s)", self._device_uid, use_cache
+            "Attempting to connect to local channel for device %s (prefer_cache=%s)", self._device_uid, prefer_cache
         )
-        networking_info = await self._get_networking_info(use_cache=use_cache)
+        networking_info = await self._get_networking_info(prefer_cache=prefer_cache)
         host = networking_info.ip
         _LOGGER.debug("Connecting to local channel at %s", host)
         # Create a new local channel and connect
@@ -236,7 +240,7 @@ class V1Channel(Channel):
                     reconnect_backoff = min(reconnect_backoff * RECONNECT_MULTIPLIER, MAX_RECONNECT_INTERVAL)
 
                 use_cache = self._should_use_cache(local_connect_failures)
-                await self._local_connect(use_cache=use_cache)
+                await self._local_connect(prefer_cache=use_cache)
                 # Reset backoff and failures on success
                 reconnect_backoff = MIN_RECONNECT_INTERVAL
                 local_connect_failures = 0

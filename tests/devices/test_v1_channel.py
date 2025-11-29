@@ -33,7 +33,7 @@ USER_DATA = UserData.from_dict(mock_data.USER_DATA)
 TEST_DEVICE_UID = "abc123"
 TEST_LOCAL_KEY = "local_key"
 TEST_SECURITY_DATA = SecurityData(endpoint="test_endpoint", nonce=b"test_nonce_16byte")
-TEST_HOST = "1.1.1.1"
+TEST_HOST = mock_data.TEST_LOCAL_API_HOST
 
 
 # Test messages for V1 protocol
@@ -112,11 +112,18 @@ def setup_mock_map_decoder() -> Iterator[Mock]:
         yield mock_create_decoder
 
 
+@pytest.fixture(name="cache")
+def cache_fixtures() -> InMemoryCache:
+    """Mock cache for testing."""
+    return InMemoryCache()
+
+
 @pytest.fixture(name="v1_channel")
 def setup_v1_channel(
     mock_mqtt_channel: Mock,
     mock_local_session: Mock,
     mock_create_map_response_decoder: Mock,
+    cache: InMemoryCache,
 ) -> V1Channel:
     """Fixture to set up the V1 channel for tests."""
     return V1Channel(
@@ -124,7 +131,7 @@ def setup_v1_channel(
         security_data=TEST_SECURITY_DATA,
         mqtt_channel=mock_mqtt_channel,
         local_session=mock_local_session,
-        cache=InMemoryCache(),
+        cache=cache,
     )
 
 
@@ -435,6 +442,35 @@ async def test_v1_channel_local_connect_network_info_failure(
 
     with pytest.raises(RoborockException):
         await v1_channel._local_connect()
+
+
+async def test_v1_channel_local_connect_network_info_failure_fallback_to_cache(
+    mock_mqtt_channel: FakeChannel,
+    mock_local_session: Mock,
+    v1_channel: V1Channel,
+    cache: InMemoryCache,
+) -> None:
+    """Test local connection falls back to cache when network info retrieval fails."""
+    # Create a cache with pre-populated network info
+    cache_data = CacheData()
+    cache_data.network_info[TEST_DEVICE_UID] = TEST_NETWORKING_INFO
+    await cache.set(cache_data)
+
+    # Setup: MQTT fails to publish
+    mock_mqtt_channel.publish_side_effect = RoborockException("Network info failed")
+
+    # Attempt local connect, forcing a refresh (prefer_cache=False)
+    # This should try MQTT, fail, and then fall back to cache
+    await v1_channel._local_connect(prefer_cache=False)
+
+    # Verify local connection was established
+    assert v1_channel.is_local_connected
+
+    # Verify MQTT was attempted (published message)
+    assert mock_mqtt_channel.published_messages
+
+    # Verify local session was created with the correct IP from cache
+    mock_local_session.assert_called_once_with(TEST_HOST)
 
 
 async def test_v1_channel_command_encoding_validation(
