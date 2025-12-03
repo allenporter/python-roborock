@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v3.9.2 (2025-12-03)
+
+### Bug Fixes
+
+- Add device info getters and setters
+  ([#614](https://github.com/Python-roborock/python-roborock/pull/614),
+  [`ee02a71`](https://github.com/Python-roborock/python-roborock/commit/ee02a71a8d99848256f2bb69533e9d1827f52585))
+
+- Fix issues with the cache clobbering information for each device
+  ([#614](https://github.com/Python-roborock/python-roborock/pull/614),
+  [`ee02a71`](https://github.com/Python-roborock/python-roborock/commit/ee02a71a8d99848256f2bb69533e9d1827f52585))
+
+- Update DeviceCache interface ([#614](https://github.com/Python-roborock/python-roborock/pull/614),
+  [`ee02a71`](https://github.com/Python-roborock/python-roborock/commit/ee02a71a8d99848256f2bb69533e9d1827f52585))
+
+### Chores
+
+- Fix test snapshots ([#614](https://github.com/Python-roborock/python-roborock/pull/614),
+  [`ee02a71`](https://github.com/Python-roborock/python-roborock/commit/ee02a71a8d99848256f2bb69533e9d1827f52585))
+
+- Remove unnecessary imports ([#614](https://github.com/Python-roborock/python-roborock/pull/614),
+  [`ee02a71`](https://github.com/Python-roborock/python-roborock/commit/ee02a71a8d99848256f2bb69533e9d1827f52585))
+
+
 ## v3.9.1 (2025-12-03)
 
 ### Bug Fixes
