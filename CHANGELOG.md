@@ -2,6 +2,32 @@
 
 <!-- version list -->
 
+## v3.9.0 (2025-12-03)
+
+### Bug Fixes
+
+- Set default arugments to store/load value functions
+  ([#613](https://github.com/Python-roborock/python-roborock/pull/613),
+  [`ce3d88d`](https://github.com/Python-roborock/python-roborock/commit/ce3d88dd52e78adccf7f705d4076cc963bbe9724))
+
+### Chores
+
+- Remove unncessary logging ([#613](https://github.com/Python-roborock/python-roborock/pull/613),
+  [`ce3d88d`](https://github.com/Python-roborock/python-roborock/commit/ce3d88dd52e78adccf7f705d4076cc963bbe9724))
+
+- Remove unnecessary snapshot files
+  ([#613](https://github.com/Python-roborock/python-roborock/pull/613),
+  [`ce3d88d`](https://github.com/Python-roborock/python-roborock/commit/ce3d88dd52e78adccf7f705d4076cc963bbe9724))
+
+- Remove unused import ([#613](https://github.com/Python-roborock/python-roborock/pull/613),
+  [`ce3d88d`](https://github.com/Python-roborock/python-roborock/commit/ce3d88dd52e78adccf7f705d4076cc963bbe9724))
+
+### Features
+
+- Make CacheData serializable ([#613](https://github.com/Python-roborock/python-roborock/pull/613),
+  [`ce3d88d`](https://github.com/Python-roborock/python-roborock/commit/ce3d88dd52e78adccf7f705d4076cc963bbe9724))
+
+
 ## v3.8.5 (2025-11-29)
 
 ### Bug Fixes
