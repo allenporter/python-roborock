@@ -20,11 +20,11 @@ class DeviceCacheData(RoborockBase):
     network_info: NetworkInfo | None = None
     """Network information for the device"""
 
-    home_map_info: CombinedMapInfo | None = None
-    """Home map information for the device."""
+    home_map_info: dict[int, CombinedMapInfo] | None = None
+    """Home map information for the device by map_flag."""
 
-    home_map_content_base64: str | None = None
-    """Home cache content for the device (encoded base64)."""
+    home_map_content_base64: dict[int, str] | None = None
+    """Home cache content for the device (encoded base64) by map_flag."""
 
     device_features: DeviceFeatures | None = None
     """Device features information."""
@@ -91,19 +91,33 @@ class Cache(Protocol):
         """Set value in the cache."""
         ...
 
-    async def get_device_info(self, duid: str) -> DeviceCacheData:
-        """Get cached device-specific information."""
-        cache_data = await self.get()
-        if duid not in cache_data.device_info:
-            cache_data.device_info[duid] = DeviceCacheData()
-            await self.set(cache_data)
-        return cache_data.device_info[duid]
 
-    async def set_device_info(self, duid: str, device_cache_data: DeviceCacheData) -> None:
+@dataclass
+class DeviceCache(RoborockBase):
+    """Provides a cache interface for a specific device.
+
+    This is a convenience wrapper around a general Cache implementation to
+    provide device-specific caching functionality.
+    """
+
+    def __init__(self, duid: str, cache: Cache) -> None:
+        """Initialize the device cache with the given cache implementation."""
+        self._duid = duid
+        self._cache = cache
+
+    async def get(self) -> DeviceCacheData:
+        """Get cached device-specific information."""
+        cache_data = await self._cache.get()
+        if self._duid not in cache_data.device_info:
+            cache_data.device_info[self._duid] = DeviceCacheData()
+            await self._cache.set(cache_data)
+        return cache_data.device_info[self._duid]
+
+    async def set(self, device_cache_data: DeviceCacheData) -> None:
         """Set cached device-specific information."""
-        cache_data = await self.get()
-        cache_data.device_info[duid] = device_cache_data
-        await self.set(cache_data)
+        cache_data = await self._cache.get()
+        cache_data.device_info[self._duid] = device_cache_data
+        await self._cache.set(cache_data)
 
 
 class InMemoryCache(Cache):
