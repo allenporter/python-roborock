@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v3.9.3 (2025-12-03)
+
+### Bug Fixes
+
+- Use correct index for clean records
+  ([#620](https://github.com/Python-roborock/python-roborock/pull/620),
+  [`f129603`](https://github.com/Python-roborock/python-roborock/commit/f1296032e7b8c8c1348882d58e9da5ecc8287eee))
+
+
 ## v3.9.2 (2025-12-03)
 
 ### Bug Fixes
