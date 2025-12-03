@@ -1,8 +1,10 @@
 """Test cases for the containers module."""
 
+import dataclasses
 from dataclasses import dataclass
 from typing import Any
 
+import pytest
 from syrupy import SnapshotAssertion
 
 from roborock import CleanRecord, CleanSummary, Consumable, DnDTimer, HomeData, S7MaxVStatus, UserData
@@ -13,6 +15,7 @@ from roborock.data.b01_q7 import (
     SCWindMapping,
     WorkStatusMapping,
 )
+from roborock.data.containers import _camelize, _decamelize
 from roborock.data.v1 import (
     MultiMapsList,
     RoborockDockErrorCode,
@@ -56,6 +59,15 @@ class ComplexObject(RoborockBase):
     nested_dict: dict[str, SimpleObject] | None = None
     nested_list: list[SimpleObject] | None = None
     any: Any | None = None
+
+
+@dataclass
+class BoolFeatures(RoborockBase):
+    """Complex object for testing serialization."""
+
+    my_flag_supported: bool | None = None
+    my_flag_2_supported: bool | None = None
+    is_ces_2022_supported: bool | None = None
 
 
 def test_simple_object() -> None:
@@ -494,3 +506,37 @@ def test_accurate_map_flag() -> None:
         }
     )
     assert s.current_map is None
+
+
+def test_boolean_features() -> None:
+    """Test serialization and deserialization of BoolFeatures."""
+    obj = BoolFeatures(my_flag_supported=True, my_flag_2_supported=False, is_ces_2022_supported=True)
+    serialized = obj.as_dict()
+    assert serialized == {
+        "myFlagSupported": True,
+        "myFlag2Supported": False,
+        "isCes2022Supported": True,
+    }
+    deserialized = BoolFeatures.from_dict(serialized)
+    assert dataclasses.asdict(deserialized) == {
+        "my_flag_supported": True,
+        "my_flag_2_supported": False,
+        "is_ces_2022_supported": True,
+    }
+
+
+@pytest.mark.parametrize(
+    "input_str,expected",
+    [
+        ("simpleTest", "simple_test"),
+        ("testValue", "test_value"),
+        ("anotherExampleHere", "another_example_here"),
+        ("isCes2022Supported", "is_ces_2022_supported"),
+        ("isThreeDMappingInnerTestSupported", "is_three_d_mapping_inner_test_supported"),
+    ],
+)
+def test_decamelize_function(input_str: str, expected: str) -> None:
+    """Test the _decamelize function."""
+
+    assert _decamelize(input_str) == expected
+    assert _camelize(expected) == input_str
