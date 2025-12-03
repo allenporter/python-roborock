@@ -9,7 +9,6 @@ from dataclasses import dataclass, field
 from typing import Any, Protocol
 
 from roborock.data import CombinedMapInfo, HomeData, NetworkInfo, RoborockBase
-from roborock.data.containers import RoborockBase
 from roborock.device_features import DeviceFeatures
 
 
