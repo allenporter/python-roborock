@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v3.9.1 (2025-12-03)
+
+### Bug Fixes
+
+- Fix DeviceFeatures so that it can be serialized and deserialized properly.
+  ([#615](https://github.com/Python-roborock/python-roborock/pull/615),
+  [`88b2055`](https://github.com/Python-roborock/python-roborock/commit/88b2055a7aea50d8b45bfb07c3a937b6d8d267d0))
+
+
 ## v3.9.0 (2025-12-03)
 
 ### Bug Fixes
