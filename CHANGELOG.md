@@ -2,6 +2,39 @@
 
 <!-- version list -->
 
+## v3.10.0 (2025-12-04)
+
+### Bug Fixes
+
+- Catch UnicodeDecodeError when parsing messages
+  ([#629](https://github.com/Python-roborock/python-roborock/pull/629),
+  [`e8c3b75`](https://github.com/Python-roborock/python-roborock/commit/e8c3b75a9d3efb8ff79a6d4e8544549a5abe766a))
+
+- Reset keep_alive_task to None
+  ([#627](https://github.com/Python-roborock/python-roborock/pull/627),
+  [`a802f66`](https://github.com/Python-roborock/python-roborock/commit/a802f66fec913be82a25ae45d96555c2d328964b))
+
+### Chores
+
+- Copilot test ([#627](https://github.com/Python-roborock/python-roborock/pull/627),
+  [`a802f66`](https://github.com/Python-roborock/python-roborock/commit/a802f66fec913be82a25ae45d96555c2d328964b))
+
+### Features
+
+- Add comprehensive test coverage for keep-alive functionality
+  ([#627](https://github.com/Python-roborock/python-roborock/pull/627),
+  [`a802f66`](https://github.com/Python-roborock/python-roborock/commit/a802f66fec913be82a25ae45d96555c2d328964b))
+
+- Add pinging to local client ([#627](https://github.com/Python-roborock/python-roborock/pull/627),
+  [`a802f66`](https://github.com/Python-roborock/python-roborock/commit/a802f66fec913be82a25ae45d96555c2d328964b))
+
+### Refactoring
+
+- Address code review feedback on keep-alive tests
+  ([#627](https://github.com/Python-roborock/python-roborock/pull/627),
+  [`a802f66`](https://github.com/Python-roborock/python-roborock/commit/a802f66fec913be82a25ae45d96555c2d328964b))
+
+
 ## v3.9.3 (2025-12-03)
 
 ### Bug Fixes
