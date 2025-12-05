@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v3.10.2 (2025-12-05)
+
+### Bug Fixes
+
+- Keep MQTT topic subscriptions alive with an idle timeout
+  ([#632](https://github.com/Python-roborock/python-roborock/pull/632),
+  [`d0d2e42`](https://github.com/Python-roborock/python-roborock/commit/d0d2e425e3005f3f83f4a57079fcef4736171b7a))
+
+### Chores
+
+- Add tests that reproduce key parsing bugs
+  ([#631](https://github.com/Python-roborock/python-roborock/pull/631),
+  [`87e14a2`](https://github.com/Python-roborock/python-roborock/commit/87e14a265a6c6bbe18fbe63f360ca57ca63db9c3))
+
+- Fix lint errors ([#631](https://github.com/Python-roborock/python-roborock/pull/631),
+  [`87e14a2`](https://github.com/Python-roborock/python-roborock/commit/87e14a265a6c6bbe18fbe63f360ca57ca63db9c3))
+
+
 ## v3.10.1 (2025-12-05)
 
 ### Bug Fixes
