@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v3.10.1 (2025-12-05)
+
+### Bug Fixes
+
+- Add fallback ([#630](https://github.com/Python-roborock/python-roborock/pull/630),
+  [`e4fa8c6`](https://github.com/Python-roborock/python-roborock/commit/e4fa8c60bb29978b06704ce22dc4a2cda0e28875))
+
+- Ensure keys are correct type when serializing from data
+  ([#630](https://github.com/Python-roborock/python-roborock/pull/630),
+  [`e4fa8c6`](https://github.com/Python-roborock/python-roborock/commit/e4fa8c60bb29978b06704ce22dc4a2cda0e28875))
+
+- Ensure keys are valid type when serializing from data
+  ([#630](https://github.com/Python-roborock/python-roborock/pull/630),
+  [`e4fa8c6`](https://github.com/Python-roborock/python-roborock/commit/e4fa8c60bb29978b06704ce22dc4a2cda0e28875))
+
+
 ## v3.10.0 (2025-12-04)
 
 ### Bug Fixes
