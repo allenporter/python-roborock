@@ -59,6 +59,7 @@ class ComplexObject(RoborockBase):
     nested_dict: dict[str, SimpleObject] | None = None
     nested_list: list[SimpleObject] | None = None
     any: Any | None = None
+    nested_int_dict: dict[int, SimpleObject] | None = None
 
 
 @dataclass
@@ -92,6 +93,9 @@ def test_complex_object() -> None:
             "nested1": SimpleObject(name="Nested1", value=1),
             "nested2": SimpleObject(name="Nested2", value=2),
         },
+        nested_int_dict={
+            10: SimpleObject(name="IntKey1", value=10),
+        },
         nested_list=[SimpleObject(name="Nested3", value=3), SimpleObject(name="Nested4", value=4)],
         any="This can be anything",
     )
@@ -103,6 +107,9 @@ def test_complex_object() -> None:
         "nestedDict": {
             "nested1": {"name": "Nested1", "value": 1},
             "nested2": {"name": "Nested2", "value": 2},
+        },
+        "nestedIntDict": {
+            10: {"name": "IntKey1", "value": 10},
         },
         "nestedList": [
             {"name": "Nested3", "value": 3},
@@ -119,11 +126,33 @@ def test_complex_object() -> None:
         "nested1": SimpleObject(name="Nested1", value=1),
         "nested2": SimpleObject(name="Nested2", value=2),
     }
+    assert deserialized.nested_int_dict == {
+        10: SimpleObject(name="IntKey1", value=10),
+    }
     assert deserialized.nested_list == [
         SimpleObject(name="Nested3", value=3),
         SimpleObject(name="Nested4", value=4),
     ]
     assert deserialized.any == "This can be anything"
+
+
+@pytest.mark.parametrize(
+    ("data"),
+    [
+        {
+            "nested_int_dict": {10: {"name": "IntKey1", "value": 10}},
+        },
+        {
+            "nested_int_dict": {"10": {"name": "IntKey1", "value": 10}},
+        }
+    ]
+)
+def test_from_dict_key_types(data: dict) -> None:
+    """Test serialization and deserialization of a complex object."""
+    obj = ComplexObject.from_dict(data)
+    assert obj.nested_int_dict == {
+        10: SimpleObject(name="IntKey1", value=10),
+    }
 
 
 def test_ignore_unknown_keys() -> None:

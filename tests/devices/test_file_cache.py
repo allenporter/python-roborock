@@ -9,6 +9,7 @@ import pytest
 from syrupy import SnapshotAssertion
 
 from roborock.data import HomeData
+from roborock.data.containers import CombinedMapInfo, NamedRoomMapping
 from roborock.data.v1.v1_containers import NetworkInfo
 from roborock.devices.cache import CacheData
 from roborock.devices.file_cache import FileCache
@@ -38,7 +39,18 @@ async def test_get_from_non_existent_cache(cache_file: pathlib.Path) -> None:
     [
         CacheData(),
         CacheData(home_data=HOME_DATA),
-        CacheData(home_data=HOME_DATA, network_info={"abc123": NETWORK_INFO}),
+        CacheData(
+            home_data=HOME_DATA,
+            network_info={"abc123": NETWORK_INFO},
+            home_map_info={
+                # Ensure that int keys are serialized and parsed correctly
+                1: CombinedMapInfo(
+                    map_flag=1,
+                    name="Test Map",
+                    rooms=[NamedRoomMapping(segment_id=1023, iot_id="4321", name="Living Room")],
+                )
+            },
+        ),
     ],
     ids=["empty_cache", "populated_cache", "multiple_fields_cache"],
 )
