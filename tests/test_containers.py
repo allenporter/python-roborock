@@ -144,8 +144,8 @@ def test_complex_object() -> None:
         },
         {
             "nested_int_dict": {"10": {"name": "IntKey1", "value": 10}},
-        }
-    ]
+        },
+    ],
 )
 def test_from_dict_key_types(data: dict) -> None:
     """Test serialization and deserialization of a complex object."""
