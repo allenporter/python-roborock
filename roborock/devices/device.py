@@ -114,7 +114,7 @@ class RoborockDevice(ABC, TraitsMixin):
         This will give a moment for the first connection attempt to start so
         that the device will have connections established -- however, this will
         never directly fail.
-        
+
         If the connection fails, it will retry in the background with
         exponential backoff.
 
@@ -148,12 +148,11 @@ class RoborockDevice(ABC, TraitsMixin):
                 start_attempt.set()
 
         self._connect_task = asyncio.create_task(connect_loop())
-        
+
         try:
             await asyncio.wait_for(start_attempt.wait(), timeout=START_ATTEMPT_TIMEOUT.total_seconds())
-        except asyncio.Timeout:
+        except TimeoutError:
             _LOGGER.debug("Initial connection attempt to device %s is taking longer than expected", self.name)
-        
 
     async def connect(self) -> None:
         """Connect to the device using the appropriate protocol channel."""
