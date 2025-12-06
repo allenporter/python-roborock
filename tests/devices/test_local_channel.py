@@ -102,7 +102,6 @@ async def test_connection_failure(local_channel: LocalChannel, mock_loop: Mock) 
     assert local_channel._is_connected is False
 
 
-
 async def test_close_connection(local_channel: LocalChannel, mock_loop: Mock, mock_transport: Mock) -> None:
     """Test closing the connection."""
     await local_channel.connect()
