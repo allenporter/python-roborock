@@ -355,13 +355,15 @@ async def test_v1_channel_send_command_local_fails(
 @pytest.mark.parametrize(
     ("local_channel_side_effect", "local_channel_responses", "mock_mqtt_channel_responses"),
     [
-        # Local fails immediately, MQTT succeeds
         (RoborockException("Local failed"), [], [TEST_RESPONSE]),
-        # Local returns no response, MQTT succeeds
         (None, [], [TEST_RESPONSE]),
-        # Local returns invalid response, MQTT succeeds
-        # (None, [RoborockMessage(protocol=RoborockMessageProtocol.RPC_RESPONSE, payload=b"invalid")], [TEST_RESPONSE]),
+        (None, [RoborockMessage(protocol=RoborockMessageProtocol.RPC_RESPONSE, payload=b"invalid")], [TEST_RESPONSE]),
     ],
+    ids=[
+        "local-fails-mqtt-succeeds",
+        "local-no-response-mqtt-succeeds",
+        "local-invalid-response-mqtt-succeeds",
+    ]
 )
 async def test_v1_channel_send_pick_first_available(
     v1_channel: V1Channel,
