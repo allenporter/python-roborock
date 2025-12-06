@@ -2,6 +2,35 @@
 
 <!-- version list -->
 
+## v3.10.3 (2025-12-06)
+
+### Bug Fixes
+
+- Ensure immediate local connection is attempted
+  ([#640](https://github.com/Python-roborock/python-roborock/pull/640),
+  [`3c918ae`](https://github.com/Python-roborock/python-roborock/commit/3c918aec33483b93ae9d632cc4ada286b6761b70))
+
+- Fix mqtt rate limiting and broken local connections
+  ([#638](https://github.com/Python-roborock/python-roborock/pull/638),
+  [`4249769`](https://github.com/Python-roborock/python-roborock/commit/42497696e92dad79147e404be96e73b9e408bd0b))
+
+### Chores
+
+- Add back test case and add test ids
+  ([#638](https://github.com/Python-roborock/python-roborock/pull/638),
+  [`4249769`](https://github.com/Python-roborock/python-roborock/commit/42497696e92dad79147e404be96e73b9e408bd0b))
+
+- Fix lint errors ([#640](https://github.com/Python-roborock/python-roborock/pull/640),
+  [`3c918ae`](https://github.com/Python-roborock/python-roborock/commit/3c918aec33483b93ae9d632cc4ada286b6761b70))
+
+- Fix lint errors ([#638](https://github.com/Python-roborock/python-roborock/pull/638),
+  [`4249769`](https://github.com/Python-roborock/python-roborock/commit/42497696e92dad79147e404be96e73b9e408bd0b))
+
+- Update roborock/devices/v1_channel.py
+  ([#638](https://github.com/Python-roborock/python-roborock/pull/638),
+  [`4249769`](https://github.com/Python-roborock/python-roborock/commit/42497696e92dad79147e404be96e73b9e408bd0b))
+
+
 ## v3.10.2 (2025-12-05)
 
 ### Bug Fixes
