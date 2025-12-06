@@ -363,7 +363,7 @@ async def test_v1_channel_send_command_local_fails(
         "local-fails-mqtt-succeeds",
         "local-no-response-mqtt-succeeds",
         "local-invalid-response-mqtt-succeeds",
-    ]
+    ],
 )
 async def test_v1_channel_send_pick_first_available(
     v1_channel: V1Channel,
