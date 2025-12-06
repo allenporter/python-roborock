@@ -71,7 +71,7 @@ class RpcChannel(V1RpcChannel):
     """Provides an RPC interface around a pub/sub transport channel."""
 
     def __init__(self, rpc_strategies_cb: Callable[[], list[RpcStrategy]]) -> None:
-        """Initialize the RpcChannel with on ordered list of strategies."""
+        """Initialize the RpcChannel with an ordered list of strategies."""
         self._rpc_strategies_cb = rpc_strategies_cb
 
     async def send_command(
