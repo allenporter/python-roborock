@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v3.10.5 (2025-12-07)
+
+### Bug Fixes
+
+- Consider RPC channel health based on MQTT session
+  ([#642](https://github.com/Python-roborock/python-roborock/pull/642),
+  [`b1738fe`](https://github.com/Python-roborock/python-roborock/commit/b1738fec4edde302c5f0fb478146faaa3d864ee8))
+
+
 ## v3.10.4 (2025-12-07)
 
 ### Bug Fixes
