@@ -18,10 +18,10 @@ from roborock.data import DeviceData, RoborockCategory
 from roborock.exceptions import RoborockException
 from roborock.protocol import MessageParser
 from roborock.roborock_message import (
+    RoborockDyadDataProtocol,
     RoborockMessage,
     RoborockMessageProtocol,
     RoborockZeoProtocol,
-    RoborockDyadDataProtocol,
 )
 from roborock.version_a01_apis import RoborockMqttClientA01
 from tests.mock_data import (
@@ -46,7 +46,9 @@ def category_fixture() -> RoborockCategory:
 
 @pytest.fixture(name="a01_mqtt_client")
 async def a01_mqtt_client_fixture(
-    mock_create_connection: None, mock_select: None, category: RoborockCategory,
+    mock_create_connection: None,
+    mock_select: None,
+    category: RoborockCategory,
 ) -> AsyncGenerator[RoborockMqttClientA01, None]:
     user_data = UserData.from_dict(USER_DATA)
     home_data = HomeData.from_dict(
@@ -60,9 +62,7 @@ async def a01_mqtt_client_fixture(
         device=home_data.devices[0],
         model=home_data.products[0].model,
     )
-    client = RoborockMqttClientA01(
-        user_data, device_info, category, queue_timeout=QUEUE_TIMEOUT
-    )
+    client = RoborockMqttClientA01(user_data, device_info, category, queue_timeout=QUEUE_TIMEOUT)
     try:
         yield client
     finally:
@@ -217,7 +217,6 @@ async def test_update_zeo_values(
             RoborockZeoProtocol.SOFTENER_EMPTY,
             RoborockZeoProtocol.TIMES_AFTER_CLEAN,
             RoborockZeoProtocol.WASHING_LEFT,
-        
         ]
     )
     assert data == {
@@ -240,11 +239,11 @@ async def test_update_dyad_values(
 
     message = build_rpc_response(
         {
-            201: 3,      # charging
-            215: 920,    # Brush left
-            209: 74,     # Power
-            222: 1,      # STAND_LOCK_AUTO_RUN on
-            224: 0,      # AUTO_DRY_MODE off
+            201: 3,  # charging
+            215: 920,  # Brush left
+            209: 74,  # Power
+            222: 1,  # STAND_LOCK_AUTO_RUN on
+            224: 0,  # AUTO_DRY_MODE off
         }
     )
     response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
