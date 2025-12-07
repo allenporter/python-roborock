@@ -2,6 +2,27 @@
 
 <!-- version list -->
 
+## v3.10.4 (2025-12-07)
+
+### Bug Fixes
+
+- Lower log level for internal protocol connection details
+  ([#637](https://github.com/Python-roborock/python-roborock/pull/637),
+  [`6945c6a`](https://github.com/Python-roborock/python-roborock/commit/6945c6ad25f39930cdea23d2f7004824f681a6e7))
+
+- Revert CLIENT_KEEPALIVE back to 60
+  ([#641](https://github.com/Python-roborock/python-roborock/pull/641),
+  [`632b88b`](https://github.com/Python-roborock/python-roborock/commit/632b88b22e2ac722c5c4849b7b217fa4a88f757c))
+
+### Chores
+
+- Fix lint erors ([#637](https://github.com/Python-roborock/python-roborock/pull/637),
+  [`6945c6a`](https://github.com/Python-roborock/python-roborock/commit/6945c6ad25f39930cdea23d2f7004824f681a6e7))
+
+- Remove tests for logging ([#637](https://github.com/Python-roborock/python-roborock/pull/637),
+  [`6945c6a`](https://github.com/Python-roborock/python-roborock/commit/6945c6ad25f39930cdea23d2f7004824f681a6e7))
+
+
 ## v3.10.3 (2025-12-06)
 
 ### Bug Fixes
