@@ -14,13 +14,14 @@ from roborock import (
     HomeData,
     UserData,
 )
-from roborock.data import DeviceData, RoborockCategory, ZeoState, ZeoTemperature
+from roborock.data import DeviceData, RoborockCategory
 from roborock.exceptions import RoborockException
 from roborock.protocol import MessageParser
 from roborock.roborock_message import (
     RoborockMessage,
     RoborockMessageProtocol,
     RoborockZeoProtocol,
+    RoborockDyadDataProtocol,
 )
 from roborock.version_a01_apis import RoborockMqttClientA01
 from tests.mock_data import (
@@ -38,9 +39,14 @@ from .conftest import QUEUE_TIMEOUT
 RELEASE_TIMEOUT = 2
 
 
+@pytest.fixture(name="category")
+def category_fixture() -> RoborockCategory:
+    return RoborockCategory.WASHING_MACHINE
+
+
 @pytest.fixture(name="a01_mqtt_client")
 async def a01_mqtt_client_fixture(
-    mock_create_connection: None, mock_select: None
+    mock_create_connection: None, mock_select: None, category: RoborockCategory,
 ) -> AsyncGenerator[RoborockMqttClientA01, None]:
     user_data = UserData.from_dict(USER_DATA)
     home_data = HomeData.from_dict(
@@ -55,7 +61,7 @@ async def a01_mqtt_client_fixture(
         model=home_data.products[0].model,
     )
     client = RoborockMqttClientA01(
-        user_data, device_info, RoborockCategory.WASHING_MACHINE, queue_timeout=QUEUE_TIMEOUT
+        user_data, device_info, category, queue_timeout=QUEUE_TIMEOUT
     )
     try:
         yield client
@@ -184,7 +190,7 @@ def build_rpc_response(message: dict[Any, Any]) -> bytes:
     )
 
 
-async def test_update_values(
+async def test_update_zeo_values(
     received_requests: Queue,
     response_queue: Queue,
     connected_a01_mqtt_client: RoborockMqttClientA01,
@@ -195,13 +201,70 @@ async def test_update_values(
         {
             203: 6,  # spinning
             207: 3,  # medium
+            226: 1,
+            227: 0,
+            224: 1,  # Times after clean. Testing int value
+            218: 0,  # Washing left. Testing zero int value
         }
     )
     response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
 
-    data = await connected_a01_mqtt_client.update_values([RoborockZeoProtocol.STATE, RoborockZeoProtocol.TEMP])
-    assert data.get(RoborockZeoProtocol.STATE) == ZeoState.spinning.name
-    assert data.get(RoborockZeoProtocol.TEMP) == ZeoTemperature.medium.name
+    data = await connected_a01_mqtt_client.update_values(
+        [
+            RoborockZeoProtocol.STATE,
+            RoborockZeoProtocol.TEMP,
+            RoborockZeoProtocol.DETERGENT_EMPTY,
+            RoborockZeoProtocol.SOFTENER_EMPTY,
+            RoborockZeoProtocol.TIMES_AFTER_CLEAN,
+            RoborockZeoProtocol.WASHING_LEFT,
+        
+        ]
+    )
+    assert data == {
+        RoborockZeoProtocol.STATE: "spinning",
+        RoborockZeoProtocol.TEMP: "medium",
+        RoborockZeoProtocol.DETERGENT_EMPTY: True,
+        RoborockZeoProtocol.SOFTENER_EMPTY: False,
+        RoborockZeoProtocol.TIMES_AFTER_CLEAN: 1,
+        RoborockZeoProtocol.WASHING_LEFT: 0,
+    }
+
+
+@pytest.mark.parametrize("category", [RoborockCategory.WET_DRY_VAC])
+async def test_update_dyad_values(
+    received_requests: Queue,
+    response_queue: Queue,
+    connected_a01_mqtt_client: RoborockMqttClientA01,
+) -> None:
+    """Test sending an arbitrary MQTT message and parsing the response."""
+
+    message = build_rpc_response(
+        {
+            201: 3,      # charging
+            215: 920,    # Brush left
+            209: 74,     # Power
+            222: 1,      # STAND_LOCK_AUTO_RUN on
+            224: 0,      # AUTO_DRY_MODE off
+        }
+    )
+    response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
+
+    data = await connected_a01_mqtt_client.update_values(
+        [
+            RoborockDyadDataProtocol.STATUS,
+            RoborockDyadDataProtocol.BRUSH_LEFT,
+            RoborockDyadDataProtocol.POWER,
+            RoborockDyadDataProtocol.STAND_LOCK_AUTO_RUN,
+            RoborockDyadDataProtocol.AUTO_DRY_MODE,
+        ]
+    )
+    assert data == {
+        RoborockDyadDataProtocol.STATUS: "charging",
+        RoborockDyadDataProtocol.BRUSH_LEFT: 304800,
+        RoborockDyadDataProtocol.POWER: 74,
+        RoborockDyadDataProtocol.STAND_LOCK_AUTO_RUN: True,
+        RoborockDyadDataProtocol.AUTO_DRY_MODE: False,
+    }
 
 
 async def test_set_value(
