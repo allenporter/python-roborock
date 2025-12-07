@@ -24,7 +24,7 @@ from .session import MqttParams, MqttSession, MqttSessionException
 _LOGGER = logging.getLogger(__name__)
 _MQTT_LOGGER = logging.getLogger(f"{__name__}.aiomqtt")
 
-CLIENT_KEEPALIVE = datetime.timedelta(seconds=120)
+CLIENT_KEEPALIVE = datetime.timedelta(seconds=60)
 TOPIC_KEEPALIVE = datetime.timedelta(seconds=60)
 
 # Exponential backoff parameters
