@@ -4,8 +4,6 @@ import json
 from typing import Any
 
 import pytest
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
 
 from roborock.exceptions import RoborockException
 from roborock.protocols.a01_protocol import decode_rpc_response, encode_mqtt_payload
