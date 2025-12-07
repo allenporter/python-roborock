@@ -36,7 +36,7 @@ def test_encode_mqtt_payload_basic():
 
     # Decode the payload to verify structure
     decoded_data = decode_rpc_response(result)
-    assert decoded_data == {200: '{"test": "data", "number": 42}'}
+    assert decoded_data == {200: {"test": "data", "number": 42}}
 
 
 def test_encode_mqtt_payload_empty_data():
@@ -54,12 +54,11 @@ def test_encode_mqtt_payload_empty_data():
     assert decoded_data == {}
 
 
-def test_encode_mqtt_payload_list_conversion():
-    """Test that lists are converted to string representation (Fix validity)."""
-    # This verifies the fix where lists must be encoded as strings
+def test_value_encoder():
+    """Test that value_encoder is applied to all values."""
     data: dict[RoborockDyadDataProtocol | RoborockZeoProtocol, Any] = {RoborockDyadDataProtocol.ID_QUERY: [101, 102]}
 
-    result = encode_mqtt_payload(data)
+    result = encode_mqtt_payload(data, value_encoder=json.dumps)
 
     # Decode manually to check the raw JSON structure
     decoded_json = json.loads(unpad(result.payload, AES.block_size).decode())
@@ -91,17 +90,15 @@ def test_encode_mqtt_payload_complex_data():
     # Decode the payload to verify structure
     decoded_data = decode_rpc_response(result)
     assert decoded_data == {
-        201: json.dumps(
-            {
+        201: {
                 "nested": {"deep": {"value": 123}},
                 # Note: The list inside the dictionary is NOT converted because
                 # our fix only targets top-level list values in the dps map
                 "list": [1, 2, 3, "test"],
                 "boolean": True,
                 "null": None,
-            }
-        ),
-        204: '"simple_value"',
+        },
+        204: "simple_value",
     }
 
 
