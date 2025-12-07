@@ -33,6 +33,8 @@ async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMo
         RoborockDyadDataProtocol.SILENT_MODE_START_TIME: 85,
         RoborockDyadDataProtocol.RECENT_RUN_TIME: "3,4,5",
         RoborockDyadDataProtocol.TOTAL_RUN_TIME: 123456,
+        RoborockDyadDataProtocol.STAND_LOCK_AUTO_RUN: 1,
+        RoborockDyadDataProtocol.AUTO_DRY_MODE: 0,
     }
     result = await api.query_values(
         [
@@ -44,6 +46,8 @@ async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMo
             RoborockDyadDataProtocol.SILENT_MODE_START_TIME,
             RoborockDyadDataProtocol.RECENT_RUN_TIME,
             RoborockDyadDataProtocol.TOTAL_RUN_TIME,
+            RoborockDyadDataProtocol.STAND_LOCK_AUTO_RUN,
+            RoborockDyadDataProtocol.AUTO_DRY_MODE,
         ]
     )
     assert result == {
@@ -56,6 +60,8 @@ async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMo
         RoborockDyadDataProtocol.SILENT_MODE_START_TIME: 85,
         RoborockDyadDataProtocol.RECENT_RUN_TIME: "3,4,5",
         RoborockDyadDataProtocol.TOTAL_RUN_TIME: 123456,
+        RoborockDyadDataProtocol.STAND_LOCK_AUTO_RUN: 1,
+        RoborockDyadDataProtocol.AUTO_DRY_MODE: 0,
     }
 
     # Note: Bug here, this is the wrong encoding for the query
@@ -63,7 +69,7 @@ async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMo
         call(
             mock_channel,
             {
-                RoborockDyadDataProtocol.ID_QUERY: [209, 201, 207, 214, 215, 227, 229, 230],
+                RoborockDyadDataProtocol.ID_QUERY: [209, 201, 207, 214, 215, 227, 229, 230, 222, 224],
             },
         ),
     ]
@@ -139,25 +145,38 @@ async def test_zeo_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMoc
     api = ZeoApi(mock_channel)
 
     mock_send.return_value = {
-        RoborockZeoProtocol.STATE: 1,
-        RoborockZeoProtocol.MODE: 3,
-        RoborockZeoProtocol.WASHING_LEFT: 4,
+        203: 6,  # spinning
+        207: 3,  # medium
+        226: 1,
+        227: 0,
+        224: 1,  # Times after clean. Testing int value
+        218: 0,  # Washing left. Testing zero int value
     }
     result = await api.query_values(
-        [RoborockZeoProtocol.STATE, RoborockZeoProtocol.MODE, RoborockZeoProtocol.WASHING_LEFT]
+        [
+            RoborockZeoProtocol.STATE,
+            RoborockZeoProtocol.TEMP,
+            RoborockZeoProtocol.DETERGENT_EMPTY,
+            RoborockZeoProtocol.SOFTENER_EMPTY,
+            RoborockZeoProtocol.TIMES_AFTER_CLEAN,
+            RoborockZeoProtocol.WASHING_LEFT,
+        ]
     )
     assert result == {
-        # Note: Bug here, should return enum values
-        RoborockZeoProtocol.STATE: 1,
-        RoborockZeoProtocol.MODE: 3,
-        RoborockZeoProtocol.WASHING_LEFT: 4,
+        # Note: Bug here, should return enum/bool values
+        RoborockZeoProtocol.STATE: 6,
+        RoborockZeoProtocol.TEMP: 3,
+        RoborockZeoProtocol.DETERGENT_EMPTY: 1,
+        RoborockZeoProtocol.SOFTENER_EMPTY: 0,
+        RoborockZeoProtocol.TIMES_AFTER_CLEAN: 1,
+        RoborockZeoProtocol.WASHING_LEFT: 0,
     }
     # Note: Bug here, this is the wrong encoding for the query
     assert mock_send.call_args_list == [
         call(
             mock_channel,
             {
-                RoborockZeoProtocol.ID_QUERY: [203, 204, 218],
+                RoborockZeoProtocol.ID_QUERY: [203, 207, 226, 227, 224, 218],
             },
         ),
     ]
@@ -174,7 +193,7 @@ async def test_zeo_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMoc
                 9999: -3,
             },
             {
-                # Note: Bug here, should return enum value
+                # Note: Bug here, should return enum/bool value
                 RoborockZeoProtocol.STATE: 1,
                 # Note: Bug here, unknown value should not be returned
                 7: 1,
