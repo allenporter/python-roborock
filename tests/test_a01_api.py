@@ -1,5 +1,4 @@
 import asyncio
-import json
 from collections.abc import AsyncGenerator
 from queue import Queue
 from typing import Any
@@ -7,8 +6,6 @@ from unittest.mock import patch
 
 import paho.mqtt.client as mqtt
 import pytest
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad
 
 from roborock import (
     HomeData,
@@ -19,12 +16,13 @@ from roborock.exceptions import RoborockException
 from roborock.protocol import MessageParser
 from roborock.roborock_message import (
     RoborockDyadDataProtocol,
-    RoborockMessage,
-    RoborockMessageProtocol,
     RoborockZeoProtocol,
 )
 from roborock.version_a01_apis import RoborockMqttClientA01
-from tests.mock_data import (
+
+from . import mqtt_packet
+from .conftest import QUEUE_TIMEOUT
+from .mock_data import (
     HOME_DATA_RAW,
     LOCAL_KEY,
     MQTT_PUBLISH_TOPIC,
@@ -32,9 +30,7 @@ from tests.mock_data import (
     WASHER_PRODUCT,
     ZEO_ONE_DEVICE,
 )
-
-from . import mqtt_packet
-from .conftest import QUEUE_TIMEOUT
+from .protocols.common import build_a01_message
 
 RELEASE_TIMEOUT = 2
 
@@ -170,24 +166,7 @@ async def test_subscribe_failure(
 
 def build_rpc_response(message: dict[Any, Any]) -> bytes:
     """Build an encoded RPC response message."""
-    return MessageParser.build(
-        [
-            RoborockMessage(
-                protocol=RoborockMessageProtocol.RPC_RESPONSE,
-                payload=pad(
-                    json.dumps(
-                        {
-                            "dps": message,  # {10000: json.dumps(message)},
-                        }
-                    ).encode(),
-                    AES.block_size,
-                ),
-                version=b"A01",
-                seq=2020,
-            ),
-        ],
-        local_key=LOCAL_KEY,
-    )
+    return MessageParser.build([build_a01_message(message)], local_key=LOCAL_KEY)
 
 
 async def test_update_zeo_values(
