@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v3.10.6 (2025-12-07)
+
+### Bug Fixes
+
+- Handle base64 serializing wrong
+  ([#643](https://github.com/Python-roborock/python-roborock/pull/643),
+  [`d933ec8`](https://github.com/Python-roborock/python-roborock/commit/d933ec82f470fec47339f938065ab70a635112fd))
+
+
 ## v3.10.5 (2025-12-07)
 
 ### Bug Fixes
