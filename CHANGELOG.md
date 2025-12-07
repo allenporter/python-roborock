@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v3.10.7 (2025-12-07)
+
+### Bug Fixes
+
+- Add test coverage for a01 traits
+  ([#649](https://github.com/Python-roborock/python-roborock/pull/649),
+  [`89874cb`](https://github.com/Python-roborock/python-roborock/commit/89874cb5de97362c29d31f50916b2355e1d3f90f))
+
+### Chores
+
+- Add codecov support ([#646](https://github.com/Python-roborock/python-roborock/pull/646),
+  [`3928280`](https://github.com/Python-roborock/python-roborock/commit/39282809217ec6d4b6e0c4f4f7729fbfd48ecadb))
+
+- Add more test coverage for a01 API and fix `False` value handling
+  ([#648](https://github.com/Python-roborock/python-roborock/pull/648),
+  [`4bd9b18`](https://github.com/Python-roborock/python-roborock/commit/4bd9b18fddf4df6e05c185ff23d8be2d8fa90763))
+
+- Fix lint errors in tests ([#648](https://github.com/Python-roborock/python-roborock/pull/648),
+  [`4bd9b18`](https://github.com/Python-roborock/python-roborock/commit/4bd9b18fddf4df6e05c185ff23d8be2d8fa90763))
+
+- Use raw return values ([#649](https://github.com/Python-roborock/python-roborock/pull/649),
+  [`89874cb`](https://github.com/Python-roborock/python-roborock/commit/89874cb5de97362c29d31f50916b2355e1d3f90f))
+
+
 ## v3.10.6 (2025-12-07)
 
 ### Bug Fixes
