@@ -25,16 +25,16 @@ async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMo
     api = DyadApi(mock_channel)
 
     mock_send.return_value = {
-        RoborockDyadDataProtocol.POWER: 1,
-        RoborockDyadDataProtocol.STATUS: 6,
-        RoborockDyadDataProtocol.WATER_LEVEL: 3,
-        RoborockDyadDataProtocol.MESH_LEFT: 120,
-        RoborockDyadDataProtocol.BRUSH_LEFT: 90,
-        RoborockDyadDataProtocol.SILENT_MODE_START_TIME: 85,
-        RoborockDyadDataProtocol.RECENT_RUN_TIME: "3,4,5",
-        RoborockDyadDataProtocol.TOTAL_RUN_TIME: 123456,
-        RoborockDyadDataProtocol.STAND_LOCK_AUTO_RUN: 1,
-        RoborockDyadDataProtocol.AUTO_DRY_MODE: 0,
+        209: 1,  # POWER
+        201: 6,  # STATUS
+        207: 3,  # WATER_LEVEL
+        214: 120,  # MESH_LEFT
+        215: 90,  # BRUSH_LEFT
+        227: 85,  # SILENT_MODE_START_TIME
+        229: "3,4,5",  # RECENT_RUN_TIME
+        230: 123456,  # TOTAL_RUN_TIME
+        222: 1,  # STAND_LOCK_AUTO_RUN
+        224: 0,  # AUTO_DRY_MODE
     }
     result = await api.query_values(
         [
