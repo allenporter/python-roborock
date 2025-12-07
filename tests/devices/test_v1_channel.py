@@ -256,7 +256,7 @@ async def test_v1_channel_subscribe_local_success(
     assert mock_local_channel.subscribers
 
     # Verify properties
-    assert not v1_channel.is_mqtt_connected
+    assert v1_channel.is_mqtt_connected
     assert v1_channel.is_local_connected
 
     # Test unsubscribe cleans up both
