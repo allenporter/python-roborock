@@ -21,7 +21,7 @@ class DyadApi(Trait):
 
     async def query_values(self, protocols: list[RoborockDyadDataProtocol]) -> dict[RoborockDyadDataProtocol, Any]:
         """Query the device for the values of the given Dyad protocols."""
-        params = {RoborockDyadDataProtocol.ID_QUERY: [int(p) for p in protocols]}
+        params = {RoborockDyadDataProtocol.ID_QUERY: str([int(p) for p in protocols])}
         return await send_decoded_command(self._channel, params)
 
     async def set_value(self, protocol: RoborockDyadDataProtocol, value: Any) -> dict[RoborockDyadDataProtocol, Any]:
@@ -41,7 +41,7 @@ class ZeoApi(Trait):
 
     async def query_values(self, protocols: list[RoborockZeoProtocol]) -> dict[RoborockZeoProtocol, Any]:
         """Query the device for the values of the given protocols."""
-        params = {RoborockZeoProtocol.ID_QUERY: [int(p) for p in protocols]}
+        params = {RoborockZeoProtocol.ID_QUERY: str([int(p) for p in protocols])}
         return await send_decoded_command(self._channel, params)
 
     async def set_value(self, protocol: RoborockZeoProtocol, value: Any) -> dict[RoborockZeoProtocol, Any]:
