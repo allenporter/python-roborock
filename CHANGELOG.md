@@ -2,6 +2,28 @@
 
 <!-- version list -->
 
+## v3.10.8 (2025-12-07)
+
+### Bug Fixes
+
+- Encode a01 values as json strings
+  ([#645](https://github.com/Python-roborock/python-roborock/pull/645),
+  [`7301a2a`](https://github.com/Python-roborock/python-roborock/commit/7301a2a7145b3ffa862b5ae83f2961b1b28b2867))
+
+- Update where the string conversion happens
+  ([#645](https://github.com/Python-roborock/python-roborock/pull/645),
+  [`7301a2a`](https://github.com/Python-roborock/python-roborock/commit/7301a2a7145b3ffa862b5ae83f2961b1b28b2867))
+
+### Chores
+
+- Remove unnecessary imports ([#645](https://github.com/Python-roborock/python-roborock/pull/645),
+  [`7301a2a`](https://github.com/Python-roborock/python-roborock/commit/7301a2a7145b3ffa862b5ae83f2961b1b28b2867))
+
+- Update tests to capture bug fix
+  ([#645](https://github.com/Python-roborock/python-roborock/pull/645),
+  [`7301a2a`](https://github.com/Python-roborock/python-roborock/commit/7301a2a7145b3ffa862b5ae83f2961b1b28b2867))
+
+
 ## v3.10.7 (2025-12-07)
 
 ### Bug Fixes
