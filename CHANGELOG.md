@@ -2,6 +2,23 @@
 
 <!-- version list -->
 
+## v3.10.9 (2025-12-07)
+
+### Bug Fixes
+
+- Convert a01 values ([#647](https://github.com/Python-roborock/python-roborock/pull/647),
+  [`f875e7a`](https://github.com/Python-roborock/python-roborock/commit/f875e7a65f5f422da97d0f2881956ec077c8a7df))
+
+- Update tests and conversion logic
+  ([#647](https://github.com/Python-roborock/python-roborock/pull/647),
+  [`f875e7a`](https://github.com/Python-roborock/python-roborock/commit/f875e7a65f5f422da97d0f2881956ec077c8a7df))
+
+### Chores
+
+- Small changes to comments ([#647](https://github.com/Python-roborock/python-roborock/pull/647),
+  [`f875e7a`](https://github.com/Python-roborock/python-roborock/commit/f875e7a65f5f422da97d0f2881956ec077c8a7df))
+
+
 ## v3.10.8 (2025-12-07)
 
 ### Bug Fixes
