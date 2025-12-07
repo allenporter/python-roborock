@@ -26,7 +26,10 @@ def encode_mqtt_payload(
     | dict[RoborockDyadDataProtocol | RoborockZeoProtocol, Any],
 ) -> RoborockMessage:
     """Encode payload for A01 commands over MQTT."""
-    dps_data = {"dps": data}
+    # The A01 protocol generally expects values to be encoded as strings.
+    # We use json.dumps for non-string types to ensure valid JSON formatting
+    # (e.g. [1, 2] -> "[1, 2]", True -> "true", 123 -> "123").
+    dps_data = {"dps": {key: json.dumps(value) for key, value in data.items()}}
     payload = pad(json.dumps(dps_data).encode("utf-8"), AES.block_size)
     return RoborockMessage(
         protocol=RoborockMessageProtocol.RPC_REQUEST,
