@@ -91,12 +91,12 @@ def test_encode_mqtt_payload_complex_data():
     decoded_data = decode_rpc_response(result)
     assert decoded_data == {
         201: {
-                "nested": {"deep": {"value": 123}},
-                # Note: The list inside the dictionary is NOT converted because
-                # our fix only targets top-level list values in the dps map
-                "list": [1, 2, 3, "test"],
-                "boolean": True,
-                "null": None,
+            "nested": {"deep": {"value": 123}},
+            # Note: The list inside the dictionary is NOT converted because
+            # our fix only targets top-level list values in the dps map
+            "list": [1, 2, 3, "test"],
+            "boolean": True,
+            "null": None,
         },
         204: "simple_value",
     }
