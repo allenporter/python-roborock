@@ -69,7 +69,7 @@ async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMo
         call(
             mock_channel,
             {
-                RoborockDyadDataProtocol.ID_QUERY: [209, 201, 207, 214, 215, 227, 229, 230, 222, 224],
+                RoborockDyadDataProtocol.ID_QUERY: "[209, 201, 207, 214, 215, 227, 229, 230, 222, 224]",
             },
         ),
     ]
@@ -176,7 +176,7 @@ async def test_zeo_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMoc
         call(
             mock_channel,
             {
-                RoborockZeoProtocol.ID_QUERY: [203, 207, 226, 227, 224, 218],
+                RoborockZeoProtocol.ID_QUERY: "[203, 207, 226, 227, 224, 218]",
             },
         ),
     ]
