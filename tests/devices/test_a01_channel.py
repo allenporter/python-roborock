@@ -34,7 +34,8 @@ async def test_id_query(mock_mqtt_channel: FakeChannel):
         {
             RoborockDyadDataProtocol.WARM_LEVEL: 101,
             RoborockDyadDataProtocol.POWER: 75,
-        }
+        },
+        value_encoder=lambda x: x,
     )
     response_message = RoborockMessage(
         protocol=RoborockMessageProtocol.RPC_RESPONSE, payload=encoded.payload, version=encoded.version

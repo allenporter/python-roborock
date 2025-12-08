@@ -1,3 +1,4 @@
+import json
 from collections.abc import Callable
 from datetime import time
 from typing import Any
@@ -121,8 +122,11 @@ class DyadApi(Trait):
 
     async def query_values(self, protocols: list[RoborockDyadDataProtocol]) -> dict[RoborockDyadDataProtocol, Any]:
         """Query the device for the values of the given Dyad protocols."""
-        params = {RoborockDyadDataProtocol.ID_QUERY: str([int(p) for p in protocols])}
-        response = await send_decoded_command(self._channel, params)
+        response = await send_decoded_command(
+            self._channel,
+            {RoborockDyadDataProtocol.ID_QUERY: protocols},
+            value_encoder=json.dumps,
+        )
         return {protocol: convert_dyad_value(protocol, response.get(protocol)) for protocol in protocols}
 
     async def set_value(self, protocol: RoborockDyadDataProtocol, value: Any) -> dict[RoborockDyadDataProtocol, Any]:
@@ -142,14 +146,17 @@ class ZeoApi(Trait):
 
     async def query_values(self, protocols: list[RoborockZeoProtocol]) -> dict[RoborockZeoProtocol, Any]:
         """Query the device for the values of the given protocols."""
-        params = {RoborockZeoProtocol.ID_QUERY: str([int(p) for p in protocols])}
-        response = await send_decoded_command(self._channel, params)
+        response = await send_decoded_command(
+            self._channel,
+            {RoborockZeoProtocol.ID_QUERY: protocols},
+            value_encoder=json.dumps,
+        )
         return {protocol: convert_zeo_value(protocol, response.get(protocol)) for protocol in protocols}
 
     async def set_value(self, protocol: RoborockZeoProtocol, value: Any) -> dict[RoborockZeoProtocol, Any]:
         """Set a value for a specific protocol on the device."""
         params = {protocol: value}
-        return await send_decoded_command(self._channel, params)
+        return await send_decoded_command(self._channel, params, value_encoder=lambda x: x)
 
 
 def create(product: HomeDataProduct, mqtt_channel: MqttChannel) -> DyadApi | ZeoApi:

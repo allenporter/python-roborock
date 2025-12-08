@@ -1,43 +1,51 @@
 import datetime
-from collections.abc import Generator
+import json
 from typing import Any
-from unittest.mock import AsyncMock, call, patch
 
 import pytest
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
 
-from roborock.devices.mqtt_channel import MqttChannel
 from roborock.devices.traits.a01 import DyadApi, ZeoApi
-from roborock.roborock_message import RoborockDyadDataProtocol, RoborockZeoProtocol
+from roborock.roborock_message import RoborockDyadDataProtocol, RoborockMessageProtocol, RoborockZeoProtocol
+from tests.conftest import FakeChannel
+from tests.protocols.common import build_a01_message
 
 
-@pytest.fixture(name="mock_channel")
-def mock_channel_fixture() -> AsyncMock:
-    return AsyncMock(spec=MqttChannel)
+@pytest.fixture(name="fake_channel")
+def fake_channel_fixture() -> FakeChannel:
+    return FakeChannel()
 
 
-@pytest.fixture(name="mock_send")
-def mock_send_fixture(mock_channel) -> Generator[AsyncMock, None, None]:
-    with patch("roborock.devices.traits.a01.send_decoded_command") as mock_send:
-        yield mock_send
+@pytest.fixture(name="dyad_api")
+def dyad_api_fixture(fake_channel: FakeChannel) -> DyadApi:
+    return DyadApi(fake_channel)  # type: ignore[arg-type]
 
 
-async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMock):
+@pytest.fixture(name="zeo_api")
+def zeo_api_fixture(fake_channel: FakeChannel) -> ZeoApi:
+    return ZeoApi(fake_channel)  # type: ignore[arg-type]
+
+
+async def test_dyad_api_query_values(dyad_api: DyadApi, fake_channel: FakeChannel):
     """Test that DyadApi currently returns raw values without conversion."""
-    api = DyadApi(mock_channel)
-
-    mock_send.return_value = {
-        209: 1,  # POWER
-        201: 6,  # STATUS
-        207: 3,  # WATER_LEVEL
-        214: 120,  # MESH_LEFT
-        215: 90,  # BRUSH_LEFT
-        227: 85,  # SILENT_MODE_START_TIME
-        229: "3,4,5",  # RECENT_RUN_TIME
-        230: 123456,  # TOTAL_RUN_TIME
-        222: 1,  # STAND_LOCK_AUTO_RUN
-        224: 0,  # AUTO_DRY_MODE
-    }
-    result = await api.query_values(
+    fake_channel.response_queue.append(
+        build_a01_message(
+            {
+                209: 1,  # POWER
+                201: 6,  # STATUS
+                207: 3,  # WATER_LEVEL
+                214: 120,  # MESH_LEFT
+                215: 90,  # BRUSH_LEFT
+                227: 85,  # SILENT_MODE_START_TIME
+                229: "3,4,5",  # RECENT_RUN_TIME
+                230: 123456,  # TOTAL_RUN_TIME
+                222: 1,  # STAND_LOCK_AUTO_RUN
+                224: 0,  # AUTO_DRY_MODE
+            }
+        )
+    )
+    result = await dyad_api.query_values(
         [
             RoborockDyadDataProtocol.POWER,
             RoborockDyadDataProtocol.STATUS,
@@ -64,15 +72,12 @@ async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMo
         RoborockDyadDataProtocol.AUTO_DRY_MODE: False,
     }
 
-    # Note: Bug here, this is the wrong encoding for the query
-    assert mock_send.call_args_list == [
-        call(
-            mock_channel,
-            {
-                RoborockDyadDataProtocol.ID_QUERY: "[209, 201, 207, 214, 215, 227, 229, 230, 222, 224]",
-            },
-        ),
-    ]
+    assert len(fake_channel.published_messages) == 1
+    message = fake_channel.published_messages[0]
+    assert message.protocol == RoborockMessageProtocol.RPC_REQUEST
+    assert message.version == b"A01"
+    payload_data = json.loads(unpad(message.payload, AES.block_size))
+    assert payload_data == {"dps": {"10000": "[209, 201, 207, 214, 215, 227, 229, 230, 222, 224]"}}
 
 
 @pytest.mark.parametrize(
@@ -117,33 +122,34 @@ async def test_dyad_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMo
     ],
 )
 async def test_dyad_invalid_response_value(
-    mock_channel: AsyncMock,
-    mock_send: AsyncMock,
     query: list[RoborockDyadDataProtocol],
     response: dict[int, Any],
     expected_result: dict[RoborockDyadDataProtocol, Any],
+    dyad_api: DyadApi,
+    fake_channel: FakeChannel,
 ):
     """Test that DyadApi currently returns raw values without conversion."""
-    api = DyadApi(mock_channel)
+    fake_channel.response_queue.append(build_a01_message(response))
 
-    mock_send.return_value = response
-    result = await api.query_values(query)
+    result = await dyad_api.query_values(query)
     assert result == expected_result
 
 
-async def test_zeo_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMock):
+async def test_zeo_api_query_values(zeo_api: ZeoApi, fake_channel: FakeChannel):
     """Test that ZeoApi currently returns raw values without conversion."""
-    api = ZeoApi(mock_channel)
-
-    mock_send.return_value = {
-        203: 6,  # spinning
-        207: 3,  # medium
-        226: 1,
-        227: 0,
-        224: 1,  # Times after clean. Testing int value
-        218: 0,  # Washing left. Testing zero int value
-    }
-    result = await api.query_values(
+    fake_channel.response_queue.append(
+        build_a01_message(
+            {
+                203: 6,  # spinning
+                207: 3,  # medium
+                226: 1,
+                227: 0,
+                224: 1,  # Times after clean. Testing int value
+                218: 0,  # Washing left. Testing zero int value
+            }
+        )
+    )
+    result = await zeo_api.query_values(
         [
             RoborockZeoProtocol.STATE,
             RoborockZeoProtocol.TEMP,
@@ -162,15 +168,13 @@ async def test_zeo_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMoc
         RoborockZeoProtocol.TIMES_AFTER_CLEAN: 1,
         RoborockZeoProtocol.WASHING_LEFT: 0,
     }
-    # Note: Bug here, this is the wrong encoding for the query
-    assert mock_send.call_args_list == [
-        call(
-            mock_channel,
-            {
-                RoborockZeoProtocol.ID_QUERY: "[203, 207, 226, 227, 224, 218]",
-            },
-        ),
-    ]
+
+    assert len(fake_channel.published_messages) == 1
+    message = fake_channel.published_messages[0]
+    assert message.protocol == RoborockMessageProtocol.RPC_REQUEST
+    assert message.version == b"A01"
+    payload_data = json.loads(unpad(message.payload, AES.block_size))
+    assert payload_data == {"dps": {"10000": "[203, 207, 226, 227, 224, 218]"}}
 
 
 @pytest.mark.parametrize(
@@ -215,15 +219,46 @@ async def test_zeo_api_query_values(mock_channel: AsyncMock, mock_send: AsyncMoc
     ],
 )
 async def test_zeo_invalid_response_value(
-    mock_channel: AsyncMock,
-    mock_send: AsyncMock,
     query: list[RoborockZeoProtocol],
     response: dict[int, Any],
     expected_result: dict[RoborockZeoProtocol, Any],
+    zeo_api: ZeoApi,
+    fake_channel: FakeChannel,
 ):
     """Test that ZeoApi currently returns raw values without conversion."""
-    api = ZeoApi(mock_channel)
+    fake_channel.response_queue.append(build_a01_message(response))
 
-    mock_send.return_value = response
-    result = await api.query_values(query)
+    result = await zeo_api.query_values(query)
     assert result == expected_result
+
+
+async def test_dyad_api_set_value(dyad_api: DyadApi, fake_channel: FakeChannel):
+    """Test DyadApi set_value sends correct command."""
+    await dyad_api.set_value(RoborockDyadDataProtocol.POWER, 1)
+
+    assert len(fake_channel.published_messages) == 1
+    message = fake_channel.published_messages[0]
+
+    assert message.protocol == RoborockMessageProtocol.RPC_REQUEST
+    assert message.version == b"A01"
+
+    # decode the payload to verify contents
+    payload_data = json.loads(unpad(message.payload, AES.block_size))
+    # A01 protocol expects values to be strings in the dps dict
+    assert payload_data == {"dps": {"209": 1}}
+
+
+async def test_zeo_api_set_value(zeo_api: ZeoApi, fake_channel: FakeChannel):
+    """Test ZeoApi set_value sends correct command."""
+    await zeo_api.set_value(RoborockZeoProtocol.MODE, "standard")
+
+    assert len(fake_channel.published_messages) == 1
+    message = fake_channel.published_messages[0]
+
+    assert message.protocol == RoborockMessageProtocol.RPC_REQUEST
+    assert message.version == b"A01"
+
+    # decode the payload to verify contents
+    payload_data = json.loads(unpad(message.payload, AES.block_size))
+    # A01 protocol expects values to be strings in the dps dict
+    assert payload_data == {"dps": {"204": "standard"}}
