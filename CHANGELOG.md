@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v3.10.10 (2025-12-08)
+
+### Bug Fixes
+
+- Fix exception when sending dyad/zeo requests
+  ([#651](https://github.com/Python-roborock/python-roborock/pull/651),
+  [`a1014a6`](https://github.com/Python-roborock/python-roborock/commit/a1014a60320c45d82c80c2c47f2cb7cc6f242252))
+
+### Chores
+
+- Fix lint ([#651](https://github.com/Python-roborock/python-roborock/pull/651),
+  [`a1014a6`](https://github.com/Python-roborock/python-roborock/commit/a1014a60320c45d82c80c2c47f2cb7cc6f242252))
+
+- Fix tests to be focused on value encoder
+  ([#651](https://github.com/Python-roborock/python-roborock/pull/651),
+  [`a1014a6`](https://github.com/Python-roborock/python-roborock/commit/a1014a60320c45d82c80c2c47f2cb7cc6f242252))
+
+
 ## v3.10.9 (2025-12-07)
 
 ### Bug Fixes
