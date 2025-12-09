@@ -18,9 +18,8 @@ import aiomqtt
 from aiomqtt import MqttCodeError, MqttError, TLSParameters
 
 from roborock.callbacks import CallbackMap
-from roborock.exceptions import RoborockInvalidCredentials
 
-from .session import MqttParams, MqttSession, MqttSessionException
+from .session import MqttParams, MqttSession, MqttSessionException, MqttSessionUnauthorized
 
 _LOGGER = logging.getLogger(__name__)
 _MQTT_LOGGER = logging.getLogger(f"{__name__}.aiomqtt")
@@ -96,7 +95,7 @@ class RoborockMqttSession(MqttSession):
             await start_future
         except MqttCodeError as err:
             if err.rc == MqttReasonCode.RC_ERROR_UNAUTHORIZED:
-                raise RoborockInvalidCredentials(f"Authorization error starting MQTT session: {err}") from err
+                raise MqttSessionUnauthorized(f"Authorization error starting MQTT session: {err}") from err
             raise MqttSessionException(f"Error starting MQTT session: {err}") from err
         except MqttError as err:
             raise MqttSessionException(f"Error starting MQTT session: {err}") from err

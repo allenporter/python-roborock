@@ -11,9 +11,8 @@ import aiomqtt
 import paho.mqtt.client as mqtt
 import pytest
 
-from roborock.exceptions import RoborockInvalidCredentials
 from roborock.mqtt.roborock_session import RoborockMqttSession, create_mqtt_session
-from roborock.mqtt.session import MqttParams, MqttSessionException
+from roborock.mqtt.session import MqttParams, MqttSessionException, MqttSessionUnauthorized
 from tests import mqtt_packet
 from tests.conftest import FakeSocketHandler
 
@@ -379,7 +378,7 @@ async def test_idle_timeout_multiple_callbacks(mock_mqtt_client: AsyncMock) -> N
         ),
         (
             aiomqtt.MqttCodeError(rc=135),
-            RoborockInvalidCredentials,
+            MqttSessionUnauthorized,
             "Authorization error starting MQTT session",
         ),
         (

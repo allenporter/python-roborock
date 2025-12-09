@@ -64,9 +64,17 @@ class MqttSession(ABC):
 
 
 class MqttSessionException(RoborockException):
-    """Raised when there is an error communicating with MQTT.
+    """Raised when there is an error communicating with MQTT."""
 
-    Note that not all exceptions raised by the MQTT session are of this type
-    as other `RoborockException`s may be raised for specific error conditions
-    such as authentication errors.
+
+class MqttSessionUnauthorized(RoborockException):
+    """Raised when there is an authorization error communicating with MQTT.
+
+    This error may be raised in multiple scenarios so there is not a well
+    defined behavior for how the caller should behave. The two cases are:
+    - Rate limiting is in effect and the caller should retry after some time.
+    - The credentials are invalid and the caller needs to obtain new credentials
+
+    However, it is observed that obtaining new credentials may resolve the
+    issue in both cases.
     """
