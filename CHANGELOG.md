@@ -2,6 +2,20 @@
 
 <!-- version list -->
 
+## v3.12.1 (2025-12-10)
+
+### Bug Fixes
+
+- Redact additional keys from diagnostic data
+  ([#659](https://github.com/Python-roborock/python-roborock/pull/659),
+  [`0330755`](https://github.com/Python-roborock/python-roborock/commit/033075559fb63f696073e235d36f4a906c324881))
+
+### Chores
+
+- Update comments on redaction ([#659](https://github.com/Python-roborock/python-roborock/pull/659),
+  [`0330755`](https://github.com/Python-roborock/python-roborock/commit/033075559fb63f696073e235d36f4a906c324881))
+
+
 ## v3.12.0 (2025-12-10)
 
 ### Bug Fixes
