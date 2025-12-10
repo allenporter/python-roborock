@@ -199,7 +199,7 @@ class RoborockDevice(ABC, TraitsMixin):
 T = TypeVar("T")
 
 REDACT_KEYS = {
-    # Sensitive identifiers
+    # Potential identifiers
     "duid",
     "localKey",
     "mac",
