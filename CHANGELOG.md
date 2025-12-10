@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v3.11.0 (2025-12-10)
+
+### Features
+
+- Add mappings for cleaning fluid states
+  ([#636](https://github.com/Python-roborock/python-roborock/pull/636),
+  [`32c717e`](https://github.com/Python-roborock/python-roborock/commit/32c717ebdcc963af691398d176b7175c59d7616c))
+
+
 ## v3.10.10 (2025-12-08)
 
 ### Bug Fixes
