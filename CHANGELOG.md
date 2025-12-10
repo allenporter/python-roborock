@@ -2,6 +2,35 @@
 
 <!-- version list -->
 
+## v3.12.2 (2025-12-10)
+
+### Bug Fixes
+
+- Filter tests to be warnings only
+  ([#656](https://github.com/Python-roborock/python-roborock/pull/656),
+  [`e725eab`](https://github.com/Python-roborock/python-roborock/commit/e725eabab7c498569c5e17be9a7b435c917745f1))
+
+- Handle random length bytes before version bytes
+  ([#656](https://github.com/Python-roborock/python-roborock/pull/656),
+  [`e725eab`](https://github.com/Python-roborock/python-roborock/commit/e725eabab7c498569c5e17be9a7b435c917745f1))
+
+### Chores
+
+- Add debug to help us determine if buffer is source of problem
+  ([#656](https://github.com/Python-roborock/python-roborock/pull/656),
+  [`e725eab`](https://github.com/Python-roborock/python-roborock/commit/e725eabab7c498569c5e17be9a7b435c917745f1))
+
+- Apply suggestions from code review
+  ([#656](https://github.com/Python-roborock/python-roborock/pull/656),
+  [`e725eab`](https://github.com/Python-roborock/python-roborock/commit/e725eabab7c498569c5e17be9a7b435c917745f1))
+
+- Only log if remaining ([#656](https://github.com/Python-roborock/python-roborock/pull/656),
+  [`e725eab`](https://github.com/Python-roborock/python-roborock/commit/e725eabab7c498569c5e17be9a7b435c917745f1))
+
+- Update roborock/protocol.py ([#656](https://github.com/Python-roborock/python-roborock/pull/656),
+  [`e725eab`](https://github.com/Python-roborock/python-roborock/commit/e725eabab7c498569c5e17be9a7b435c917745f1))
+
+
 ## v3.12.1 (2025-12-10)
 
 ### Bug Fixes
