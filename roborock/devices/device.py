@@ -198,7 +198,23 @@ class RoborockDevice(ABC, TraitsMixin):
 
 T = TypeVar("T")
 
-REDACT_KEYS = {"duid", "localKey", "mac", "bssid", "sn", "ip"}
+REDACT_KEYS = {
+    # Potential identifiers
+    "duid",
+    "localKey",
+    "mac",
+    "bssid",
+    "sn",
+    "ip",
+    "u",
+    "s",
+    "h",
+    "k",
+    # Large binary blobs are entirely omitted
+    "image_content",
+    "map_data",
+    "raw_api_response",
+}
 REDACTED = "**REDACTED**"
 
 
