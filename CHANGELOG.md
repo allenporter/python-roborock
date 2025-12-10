@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v3.12.0 (2025-12-10)
+
+### Bug Fixes
+
+- Align V4 code login with app ([#657](https://github.com/Python-roborock/python-roborock/pull/657),
+  [`2328d45`](https://github.com/Python-roborock/python-roborock/commit/2328d4596c6bda35686944880b601c35b390ac9c))
+
+### Chores
+
+- **deps**: Bump mypy from 1.18.2 to 1.19.0
+  ([#654](https://github.com/Python-roborock/python-roborock/pull/654),
+  [`2799a19`](https://github.com/Python-roborock/python-roborock/commit/2799a19263a511a2d141a97cdb6e9814961a4b0f))
+
+- **deps**: Bump syrupy from 4.9.1 to 5.0.0
+  ([#655](https://github.com/Python-roborock/python-roborock/pull/655),
+  [`cc2d00f`](https://github.com/Python-roborock/python-roborock/commit/cc2d00fdd21968c0cfe8da8704644dc2c7ff8091))
+
+### Features
+
+- Log when we see a new key we have never seen before for easier reverse engineering
+  ([#658](https://github.com/Python-roborock/python-roborock/pull/658),
+  [`81dde05`](https://github.com/Python-roborock/python-roborock/commit/81dde05eac61e7dc6e0fdb9eb0b7e0ffc97cf9d8))
+
+
 ## v3.11.1 (2025-12-10)
 
 ### Bug Fixes
