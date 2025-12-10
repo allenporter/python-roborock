@@ -15,11 +15,11 @@ from collections.abc import Callable
 from contextlib import asynccontextmanager
 
 import aiomqtt
-from aiomqtt import MqttError, TLSParameters
+from aiomqtt import MqttCodeError, MqttError, TLSParameters
 
 from roborock.callbacks import CallbackMap
 
-from .session import MqttParams, MqttSession, MqttSessionException
+from .session import MqttParams, MqttSession, MqttSessionException, MqttSessionUnauthorized
 
 _LOGGER = logging.getLogger(__name__)
 _MQTT_LOGGER = logging.getLogger(f"{__name__}.aiomqtt")
@@ -31,6 +31,16 @@ TOPIC_KEEPALIVE = datetime.timedelta(seconds=60)
 MIN_BACKOFF_INTERVAL = datetime.timedelta(seconds=10)
 MAX_BACKOFF_INTERVAL = datetime.timedelta(minutes=30)
 BACKOFF_MULTIPLIER = 1.5
+
+
+class MqttReasonCode:
+    """MQTT Reason Codes used by Roborock devices.
+
+    This is a subset of paho.mqtt.reasoncodes.ReasonCode where we would like
+    different error handling behavior.
+    """
+
+    RC_ERROR_UNAUTHORIZED = 135
 
 
 class RoborockMqttSession(MqttSession):
@@ -83,6 +93,10 @@ class RoborockMqttSession(MqttSession):
         self._reconnect_task = loop.create_task(self._run_reconnect_loop(start_future))
         try:
             await start_future
+        except MqttCodeError as err:
+            if err.rc == MqttReasonCode.RC_ERROR_UNAUTHORIZED:
+                raise MqttSessionUnauthorized(f"Authorization error starting MQTT session: {err}") from err
+            raise MqttSessionException(f"Error starting MQTT session: {err}") from err
         except MqttError as err:
             raise MqttSessionException(f"Error starting MQTT session: {err}") from err
         except Exception as err:
