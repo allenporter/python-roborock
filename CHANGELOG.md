@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v3.11.1 (2025-12-10)
+
+### Bug Fixes
+
+- Throw MQTT authentication errors as authentication related exceptions
+  ([#634](https://github.com/Python-roborock/python-roborock/pull/634),
+  [`4ad9bcd`](https://github.com/Python-roborock/python-roborock/commit/4ad9bcdc1eddc3a0698056fce19f33d0ea0a119b))
+
+- Update the exception handling behavior to account for ambiguity
+  ([#634](https://github.com/Python-roborock/python-roborock/pull/634),
+  [`4ad9bcd`](https://github.com/Python-roborock/python-roborock/commit/4ad9bcdc1eddc3a0698056fce19f33d0ea0a119b))
+
+
 ## v3.11.0 (2025-12-10)
 
 ### Features
