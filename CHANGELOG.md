@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v3.13.0 (2025-12-12)
+
+### Bug Fixes
+
+- Update device cache handling in cli
+  ([#660](https://github.com/Python-roborock/python-roborock/pull/660),
+  [`405a4fb`](https://github.com/Python-roborock/python-roborock/commit/405a4fba281b09269c0a065f79dedfd9dc9b5a8b))
+
+- Update device cache handling in cli.
+  ([#660](https://github.com/Python-roborock/python-roborock/pull/660),
+  [`405a4fb`](https://github.com/Python-roborock/python-roborock/commit/405a4fba281b09269c0a065f79dedfd9dc9b5a8b))
+
+### Features
+
+- Add additional fields to HomeDataDevice class
+  ([#660](https://github.com/Python-roborock/python-roborock/pull/660),
+  [`405a4fb`](https://github.com/Python-roborock/python-roborock/commit/405a4fba281b09269c0a065f79dedfd9dc9b5a8b))
+
+
 ## v3.12.2 (2025-12-10)
 
 ### Bug Fixes
