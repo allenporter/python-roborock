@@ -2,6 +2,42 @@
 
 <!-- version list -->
 
+## v3.13.1 (2025-12-12)
+
+### Bug Fixes
+
+- Clean up some naming ([#635](https://github.com/Python-roborock/python-roborock/pull/635),
+  [`9a1a360`](https://github.com/Python-roborock/python-roborock/commit/9a1a3600fb3eff612088e9203a04f795678e9da7))
+
+- Update roborock/devices/traits/b01/__init__.py
+  ([#635](https://github.com/Python-roborock/python-roborock/pull/635),
+  [`9a1a360`](https://github.com/Python-roborock/python-roborock/commit/9a1a3600fb3eff612088e9203a04f795678e9da7))
+
+- Use strip not split ([#635](https://github.com/Python-roborock/python-roborock/pull/635),
+  [`9a1a360`](https://github.com/Python-roborock/python-roborock/commit/9a1a3600fb3eff612088e9203a04f795678e9da7))
+
+### Chores
+
+- Refactor to separate b01 q7 and q10 logic
+  ([#635](https://github.com/Python-roborock/python-roborock/pull/635),
+  [`9a1a360`](https://github.com/Python-roborock/python-roborock/commit/9a1a3600fb3eff612088e9203a04f795678e9da7))
+
+- Refactor to seperate b01 ss and sc logic
+  ([#635](https://github.com/Python-roborock/python-roborock/pull/635),
+  [`9a1a360`](https://github.com/Python-roborock/python-roborock/commit/9a1a3600fb3eff612088e9203a04f795678e9da7))
+
+- Share duplicated code ([#635](https://github.com/Python-roborock/python-roborock/pull/635),
+  [`9a1a360`](https://github.com/Python-roborock/python-roborock/commit/9a1a3600fb3eff612088e9203a04f795678e9da7))
+
+- Update roborock/devices/device_manager.py
+  ([#635](https://github.com/Python-roborock/python-roborock/pull/635),
+  [`9a1a360`](https://github.com/Python-roborock/python-roborock/commit/9a1a3600fb3eff612088e9203a04f795678e9da7))
+
+- Update roborock/devices/traits/b01/q7/__init__.py
+  ([#635](https://github.com/Python-roborock/python-roborock/pull/635),
+  [`9a1a360`](https://github.com/Python-roborock/python-roborock/commit/9a1a3600fb3eff612088e9203a04f795678e9da7))
+
+
 ## v3.13.0 (2025-12-12)
 
 ### Bug Fixes
