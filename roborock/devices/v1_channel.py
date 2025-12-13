@@ -325,7 +325,7 @@ class V1Channel(Channel):
             if self._local_unsub:
                 self._local_unsub()
                 self._local_unsub = None
-            self._logger.debug("Unsubscribed from device %s", self._device_uid)
+            self._logger.debug("Unsubscribed from device")
 
         self._callback = callback
         return unsub
@@ -347,10 +347,10 @@ class V1Channel(Channel):
         except RoborockException as e:
             self._logger.debug("Error fetching network info for device")
             if device_cache_data.network_info:
-                self._logger.debug("Falling back to cached network info after error for device %s", self._device_uid)
+                self._logger.debug("Falling back to cached network info after error")
                 return device_cache_data.network_info
             raise RoborockException(f"Network info failed for device {self._device_uid}") from e
-        self._logger.debug("Network info for device %s: %s", self._device_uid, network_info)
+        self._logger.debug("Network info for device: %s", network_info)
         self._last_network_info_refresh = datetime.datetime.now(datetime.UTC)
 
         device_cache_data = await self._device_cache.get()
@@ -360,7 +360,7 @@ class V1Channel(Channel):
 
     async def _local_connect(self, *, prefer_cache: bool = True) -> None:
         """Set up local connection if possible."""
-        self._logger.debug("Attempting to connect to local channel (prefer_cache=%s)", self._device_uid, prefer_cache)
+        self._logger.debug("Attempting to connect to local channel (prefer_cache=%s)", prefer_cache)
         networking_info = await self._get_networking_info(prefer_cache=prefer_cache)
         host = networking_info.ip
         self._logger.debug("Connecting to local channel at %s", host)
