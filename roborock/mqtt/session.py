@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from roborock.diagnostics import Diagnostics
 from roborock.exceptions import RoborockException
@@ -33,7 +33,7 @@ class MqttParams:
     timeout: float = DEFAULT_TIMEOUT
     """Timeout for communications with the broker in seconds."""
 
-    diagnostics: Diagnostics = Diagnostics()
+    diagnostics: Diagnostics = field(default_factory=Diagnostics)
     """Diagnostics object for tracking MQTT session stats.
 
     This defaults to a new Diagnostics object, but the common case is the
