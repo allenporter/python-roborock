@@ -8,7 +8,7 @@ import pytest
 from syrupy import SnapshotAssertion
 
 from roborock import CleanRecord, CleanSummary, Consumable, DnDTimer, HomeData, S7MaxVStatus, UserData
-from roborock.data import RoborockBase, RoborockCategory
+from roborock.data import HomeDataDevice, RoborockBase, RoborockCategory
 from roborock.data.b01_q7 import (
     B01Fault,
     B01Props,
@@ -569,3 +569,33 @@ def test_decamelize_function(input_str: str, expected: str) -> None:
 
     assert _decamelize(input_str) == expected
     assert _camelize(expected) == input_str
+
+
+def test_offline_device() -> None:
+    """Test that a HomeDataDevice response from an offline device is handled correctly."""
+    data = {
+        "duid": "xxxxxx",
+        "name": "S6 Pure",
+        "localKey": "yyyyy",
+        "productId": "zzzzz",
+        "activeTime": 1765277892,
+        "timeZoneId": "Europe/Moscow",
+        "iconUrl": "",
+        "share": False,
+        "online": False,
+        "pv": "1.0",
+        "tuyaMigrated": False,
+        "extra": "{}",
+        "deviceStatus": {},
+        "silentOtaSwitch": False,
+        "f": False,
+    }
+    device = HomeDataDevice.from_dict(data)
+    assert device.duid == "xxxxxx"
+    assert device.name == "S6 Pure"
+    assert device.local_key == "yyyyy"
+    assert device.product_id == "zzzzz"
+    assert device.active_time == 1765277892
+    assert device.time_zone_id == "Europe/Moscow"
+    assert not device.online
+    assert device.fv is None
