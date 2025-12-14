@@ -50,7 +50,7 @@ class Diagnostics:
         return data
 
     def subkey(self, key: str) -> Diagnostics:
-        """Return sub-Diagnositics object with the specified subkey.
+        """Return sub-Diagnostics object with the specified subkey.
 
         This will create a new Diagnostics object if one does not already exist
         for the specified subkey. Stats from the sub-Diagnostics will be included
