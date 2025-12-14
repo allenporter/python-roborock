@@ -5,6 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from roborock.exceptions import RoborockException
+from roborock.mqtt.health_manager import HealthManager
 
 DEFAULT_TIMEOUT = 30.0
 
@@ -39,6 +40,11 @@ class MqttSession(ABC):
     @abstractmethod
     def connected(self) -> bool:
         """True if the session is connected to the broker."""
+
+    @property
+    @abstractmethod
+    def health_manager(self) -> HealthManager:
+        """Return the health manager for the session."""
 
     @abstractmethod
     async def subscribe(self, device_id: str, callback: Callable[[bytes], None]) -> Callable[[], None]:

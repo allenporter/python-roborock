@@ -181,7 +181,6 @@ class V1Channel(Channel):
         self._logger = RoborockLoggerAdapter(device_uid, _LOGGER)
         self._security_data = security_data
         self._mqtt_channel = mqtt_channel
-        self._mqtt_health_manager = HealthManager(self._mqtt_channel.restart)
         self._local_session = local_session
         self._local_channel: LocalChannel | None = None
         self._mqtt_unsub: Callable[[], None] | None = None
@@ -272,7 +271,7 @@ class V1Channel(Channel):
                 security_data=self._security_data,
             ),
             decoder=decoder,
-            health_manager=self._mqtt_health_manager,
+            health_manager=self._mqtt_channel.health_manager,
         )
 
     async def subscribe(self, callback: Callable[[RoborockMessage], None]) -> Callable[[], None]:

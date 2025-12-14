@@ -6,6 +6,7 @@ from collections.abc import Callable
 from roborock.callbacks import decoder_callback
 from roborock.data import HomeDataDevice, RRiot, UserData
 from roborock.exceptions import RoborockException
+from roborock.mqtt.health_manager import HealthManager
 from roborock.mqtt.session import MqttParams, MqttSession, MqttSessionException
 from roborock.protocol import create_mqtt_decoder, create_mqtt_encoder
 from roborock.roborock_message import RoborockMessage
@@ -41,6 +42,11 @@ class MqttChannel(Channel):
         This passes through the underlying MQTT session's connected state.
         """
         return self._mqtt_session.connected
+
+    @property
+    def health_manager(self) -> HealthManager:
+        """Return the health manager for the session."""
+        return self._mqtt_session.health_manager
 
     @property
     def is_local_connected(self) -> bool:
