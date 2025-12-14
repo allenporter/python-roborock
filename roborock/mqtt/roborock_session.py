@@ -240,6 +240,7 @@ class RoborockMqttSession(MqttSession):
                 async with self._client_lock:
                     self._client = client
                     for topic in self._client_subscribed_topics:
+                        self._diagnostics.increment("resubscribe")
                         _LOGGER.debug("Re-establishing subscription to topic %s", topic)
                         # TODO: If this fails it will break the whole connection. Make
                         # this retry again in the background with backoff.
@@ -321,6 +322,7 @@ class RoborockMqttSession(MqttSession):
             unsub()  # Remove the callback from CallbackMap
             # If no more callbacks for this topic, start idle timer
             if not self._listeners.get_callbacks(topic):
+                self._diagnostics.increment("unsubscribe_idle_start")
                 schedule_unsubscribe()
             else:
                 _LOGGER.debug("Unsubscribing topic %s, still have active callbacks", topic)
