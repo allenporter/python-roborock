@@ -157,10 +157,10 @@ class RoborockDevice(ABC, TraitsMixin):
                 while True:
                     try:
                         await self.connect()
-                        self._has_connected = True
-                        self._ready_callbacks(self)
                         if not start_attempt.done():
                             start_attempt.set_result(True)
+                        self._has_connected = True
+                        self._ready_callbacks(self)
                         break
                     except RoborockException as e:
                         if not start_attempt.done():
@@ -174,9 +174,10 @@ class RoborockDevice(ABC, TraitsMixin):
                         self._logger.exception("Uncaught error during connect: %s", e)
                         break
             except asyncio.CancelledError:
+                self._logger.debug("connect_loop was cancelled for device %s", self.duid)
+            finally:
                 if not start_attempt.done():
                     start_attempt.set_result(False)
-                self._logger.debug("connect_loop was cancelled for device %s", self.duid)
 
         self._connect_task = asyncio.create_task(connect_loop())
 
