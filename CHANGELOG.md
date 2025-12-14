@@ -2,6 +2,66 @@
 
 <!-- version list -->
 
+## v3.14.0 (2025-12-14)
+
+### Bug Fixes
+
+- Add device logger ([#663](https://github.com/Python-roborock/python-roborock/pull/663),
+  [`06d051c`](https://github.com/Python-roborock/python-roborock/commit/06d051c7b8203e23970d52d65abec88a2757227f))
+
+- Update roborock/devices/device.py
+  ([#664](https://github.com/Python-roborock/python-roborock/pull/664),
+  [`494c5b4`](https://github.com/Python-roborock/python-roborock/commit/494c5b4f2b447f12f5ef90167cad16e08a8230ac))
+
+### Chores
+
+- Add details about test structure
+  ([#633](https://github.com/Python-roborock/python-roborock/pull/633),
+  [`109d05b`](https://github.com/Python-roborock/python-roborock/commit/109d05ba86275f2cdd65c5cda12fc423cbfb5850))
+
+- Add more tests for already connected devices
+  ([#664](https://github.com/Python-roborock/python-roborock/pull/664),
+  [`494c5b4`](https://github.com/Python-roborock/python-roborock/commit/494c5b4f2b447f12f5ef90167cad16e08a8230ac))
+
+- Apply suggestions from code review
+  ([#663](https://github.com/Python-roborock/python-roborock/pull/663),
+  [`06d051c`](https://github.com/Python-roborock/python-roborock/commit/06d051c7b8203e23970d52d65abec88a2757227f))
+
+- Document combined mqtt channels
+  ([#633](https://github.com/Python-roborock/python-roborock/pull/633),
+  [`109d05b`](https://github.com/Python-roborock/python-roborock/commit/109d05ba86275f2cdd65c5cda12fc423cbfb5850))
+
+- Fix lint errors ([#664](https://github.com/Python-roborock/python-roborock/pull/664),
+  [`494c5b4`](https://github.com/Python-roborock/python-roborock/commit/494c5b4f2b447f12f5ef90167cad16e08a8230ac))
+
+- Fix lint errors ([#633](https://github.com/Python-roborock/python-roborock/pull/633),
+  [`109d05b`](https://github.com/Python-roborock/python-roborock/commit/109d05ba86275f2cdd65c5cda12fc423cbfb5850))
+
+- Fix lint errors in readme ([#633](https://github.com/Python-roborock/python-roborock/pull/633),
+  [`109d05b`](https://github.com/Python-roborock/python-roborock/commit/109d05ba86275f2cdd65c5cda12fc423cbfb5850))
+
+- Fix typo ([#633](https://github.com/Python-roborock/python-roborock/pull/633),
+  [`109d05b`](https://github.com/Python-roborock/python-roborock/commit/109d05ba86275f2cdd65c5cda12fc423cbfb5850))
+
+- Update device traits by protocol
+  ([#633](https://github.com/Python-roborock/python-roborock/pull/633),
+  [`109d05b`](https://github.com/Python-roborock/python-roborock/commit/109d05ba86275f2cdd65c5cda12fc423cbfb5850))
+
+- Update devices documentation with design details
+  ([#633](https://github.com/Python-roborock/python-roborock/pull/633),
+  [`109d05b`](https://github.com/Python-roborock/python-roborock/commit/109d05ba86275f2cdd65c5cda12fc423cbfb5850))
+
+- Use the existing device logger
+  ([#663](https://github.com/Python-roborock/python-roborock/pull/663),
+  [`06d051c`](https://github.com/Python-roborock/python-roborock/commit/06d051c7b8203e23970d52d65abec88a2757227f))
+
+### Features
+
+- Add ability to listen for ready devices
+  ([#664](https://github.com/Python-roborock/python-roborock/pull/664),
+  [`494c5b4`](https://github.com/Python-roborock/python-roborock/commit/494c5b4f2b447f12f5ef90167cad16e08a8230ac))
+
+
 ## v3.13.1 (2025-12-12)
 
 ### Bug Fixes
