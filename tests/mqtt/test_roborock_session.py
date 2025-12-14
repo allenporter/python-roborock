@@ -2,29 +2,16 @@
 
 import asyncio
 import datetime
-from collections.abc import AsyncGenerator, Callable, Generator
-from queue import Queue
-from typing import Any
+from collections.abc import Callable, Generator
 from unittest.mock import AsyncMock, Mock, patch
 
 import aiomqtt
-import paho.mqtt.client as mqtt
 import pytest
 
 from roborock.mqtt.roborock_session import RoborockMqttSession, create_mqtt_session
-from roborock.mqtt.session import MqttParams, MqttSessionException, MqttSessionUnauthorized
+from roborock.mqtt.session import MqttSessionException, MqttSessionUnauthorized
 from tests import mqtt_packet
-from tests.conftest import FakeSocketHandler
-
-# We mock out the connection so these params are not used/verified
-FAKE_PARAMS = MqttParams(
-    host="localhost",
-    port=1883,
-    tls=False,
-    username="username",
-    password="password",
-    timeout=10.0,
-)
+from tests.mqtt_fixtures import FAKE_PARAMS, Subscriber
 
 
 @pytest.fixture(autouse=True)
@@ -33,51 +20,13 @@ def mqtt_server_fixture(mock_create_connection: None, mock_select: None) -> None
 
 
 @pytest.fixture(autouse=True)
-async def mock_client_fixture() -> AsyncGenerator[None, None]:
-    """Fixture to patch the MQTT underlying sync client.
-
-    The tests use fake sockets, so this ensures that the async mqtt client does not
-    attempt to listen on them directly. We instead just poll the socket for
-    data ourselves.
-    """
-
-    event_loop = asyncio.get_running_loop()
-
-    orig_class = mqtt.Client
-
-    async def poll_sockets(client: mqtt.Client) -> None:
-        """Poll the mqtt client sockets in a loop to pick up new data."""
-        while True:
-            event_loop.call_soon_threadsafe(client.loop_read)
-            event_loop.call_soon_threadsafe(client.loop_write)
-            await asyncio.sleep(0.1)
-
-    task: asyncio.Task[None] | None = None
-
-    def new_client(*args: Any, **kwargs: Any) -> mqtt.Client:
-        """Create a new mqtt client and start the socket polling task."""
-        nonlocal task
-        client = orig_class(*args, **kwargs)
-        task = event_loop.create_task(poll_sockets(client))
-        return client
-
-    with (
-        patch("aiomqtt.client.Client._on_socket_open"),
-        patch("aiomqtt.client.Client._on_socket_close"),
-        patch("aiomqtt.client.Client._on_socket_register_write"),
-        patch("aiomqtt.client.Client._on_socket_unregister_write"),
-        patch("aiomqtt.client.mqtt.Client", side_effect=new_client),
-    ):
-        yield
-        if task:
-            task.cancel()
+def auto_mock_mqtt_client(mock_mqtt_client_fixture: None) -> None:
+    """Automatically use the mock mqtt client fixture."""
 
 
 @pytest.fixture(autouse=True)
-def fast_backoff_fixture() -> Generator[None, None, None]:
-    """Fixture to make backoff intervals fast."""
-    with patch("roborock.mqtt.roborock_session.MIN_BACKOFF_INTERVAL", datetime.timedelta(seconds=0.01)):
-        yield
+def auto_fast_backoff(fast_backoff_fixture: None) -> None:
+    """Automatically use the fast backoff fixture."""
 
 
 @pytest.fixture
@@ -95,40 +44,6 @@ def mock_mqtt_client() -> Generator[AsyncMock, None, None]:
 
     with patch("roborock.mqtt.roborock_session.aiomqtt.Client", mock_shim):
         yield mock_client
-
-
-@pytest.fixture
-def push_response(response_queue: Queue, fake_socket_handler: FakeSocketHandler) -> Callable[[bytes], None]:
-    """Fixtures to push messages."""
-
-    def push(message: bytes) -> None:
-        response_queue.put(message)
-        fake_socket_handler.push_response()
-
-    return push
-
-
-class Subscriber:
-    """Mock subscriber class.
-
-    This will capture messages published on the session so the tests can verify
-    they were received.
-    """
-
-    def __init__(self) -> None:
-        """Initialize the subscriber."""
-        self.messages: list[bytes] = []
-        self.event: asyncio.Event = asyncio.Event()
-
-    def append(self, message: bytes) -> None:
-        """Append a message to the subscriber."""
-        self.messages.append(message)
-        self.event.set()
-
-    async def wait(self) -> None:
-        """Wait for a message to be received."""
-        await self.event.wait()
-        self.event.clear()
 
 
 async def test_session(push_response: Callable[[bytes], None]) -> None:
