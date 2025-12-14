@@ -2,6 +2,21 @@
 
 <!-- version list -->
 
+## v3.14.3 (2025-12-14)
+
+### Bug Fixes
+
+- Allow firmware version as an optional field
+  ([#670](https://github.com/Python-roborock/python-roborock/pull/670),
+  [`0f70bf9`](https://github.com/Python-roborock/python-roborock/commit/0f70bf9dd2010c2c72b3b9543d891a1071dc22c4))
+
+### Chores
+
+- Add test for example offline device
+  ([#670](https://github.com/Python-roborock/python-roborock/pull/670),
+  [`0f70bf9`](https://github.com/Python-roborock/python-roborock/commit/0f70bf9dd2010c2c72b3b9543d891a1071dc22c4))
+
+
 ## v3.14.2 (2025-12-14)
 
 ### Bug Fixes
