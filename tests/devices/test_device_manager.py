@@ -259,7 +259,7 @@ async def test_start_connect_failure(home_data: HomeData, channel_failure: Mock,
 
 
 async def test_rediscover_devices(mock_rpc_channel: AsyncMock) -> None:
-    """Test that we can discover devices multiple times and discovery new devices."""
+    """Test that we can discover devices multiple times and discover new devices."""
     raw_devices: list[dict[str, Any]] = mock_data.HOME_DATA_RAW["devices"]
     assert len(raw_devices) > 0
     raw_device_1 = raw_devices[0]
