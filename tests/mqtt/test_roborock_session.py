@@ -368,6 +368,47 @@ async def test_idle_timeout_multiple_callbacks(mock_mqtt_client: AsyncMock) -> N
     await session.close()
 
 
+async def test_subscription_reuse(mock_mqtt_client: AsyncMock) -> None:
+    """Test that subscriptions are reused and not duplicated."""
+    session = RoborockMqttSession(FAKE_PARAMS)
+    await session.start()
+    assert session.connected
+
+    # 1. First subscription
+    cb1 = Mock()
+    unsub1 = await session.subscribe("topic1", cb1)
+
+    # Verify subscribe called
+    mock_mqtt_client.subscribe.assert_called_with("topic1")
+    mock_mqtt_client.subscribe.reset_mock()
+
+    # 2. Second subscription (same topic)
+    cb2 = Mock()
+    unsub2 = await session.subscribe("topic1", cb2)
+
+    # Verify subscribe NOT called
+    mock_mqtt_client.subscribe.assert_not_called()
+
+    # 3. Unsubscribe one
+    unsub1()
+    # Verify unsubscribe NOT called (still have cb2)
+    mock_mqtt_client.unsubscribe.assert_not_called()
+
+    # 4. Unsubscribe second (starts idle timer)
+    unsub2()
+    # Verify unsubscribe NOT called yet (idle)
+    mock_mqtt_client.unsubscribe.assert_not_called()
+
+    # 5. Resubscribe during idle
+    cb3 = Mock()
+    _ = await session.subscribe("topic1", cb3)
+
+    # Verify subscribe NOT called (reused)
+    mock_mqtt_client.subscribe.assert_not_called()
+
+    await session.close()
+
+
 @pytest.mark.parametrize(
     ("side_effect", "expected_exception", "match"),
     [
