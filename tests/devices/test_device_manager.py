@@ -320,7 +320,6 @@ async def test_rediscover_devices(mock_rpc_channel: AsyncMock) -> None:
 
         new_device = await device_manager.get_device("new_device_duid")
         assert new_device
-        assert new_device is not None
         assert new_device.name == "New Device"
 
         # Ensure closing again works without error
