@@ -19,6 +19,7 @@ from aiomqtt import MqttCodeError, MqttError, TLSParameters
 
 from roborock.callbacks import CallbackMap
 
+from .health_manager import HealthManager
 from .session import MqttParams, MqttSession, MqttSessionException, MqttSessionUnauthorized
 
 _LOGGER = logging.getLogger(__name__)
@@ -75,11 +76,17 @@ class RoborockMqttSession(MqttSession):
         self._connection_task: asyncio.Task[None] | None = None
         self._topic_idle_timeout = topic_idle_timeout
         self._idle_timers: dict[str, asyncio.Task[None]] = {}
+        self._health_manager = HealthManager(self.restart)
 
     @property
     def connected(self) -> bool:
         """True if the session is connected to the broker."""
         return self._healthy
+
+    @property
+    def health_manager(self) -> HealthManager:
+        """Return the health manager for the session."""
+        return self._health_manager
 
     async def start(self) -> None:
         """Start the MQTT session.
@@ -336,6 +343,11 @@ class LazyMqttSession(MqttSession):
     def connected(self) -> bool:
         """True if the session is connected to the broker."""
         return self._session.connected
+
+    @property
+    def health_manager(self) -> HealthManager:
+        """Return the health manager for the session."""
+        return self._session.health_manager
 
     async def _maybe_start(self) -> None:
         """Start the MQTT session if not already started."""

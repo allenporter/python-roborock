@@ -13,6 +13,7 @@ from aioresponses import aioresponses
 
 from roborock import HomeData, UserData
 from roborock.data import DeviceData
+from roborock.mqtt.health_manager import HealthManager
 from roborock.protocols.v1_protocol import LocalProtocolVersion
 from roborock.roborock_message import RoborockMessage
 from roborock.version_1_apis.roborock_local_client_v1 import RoborockLocalClientV1
@@ -364,6 +365,7 @@ class FakeChannel:
         self.close = MagicMock(side_effect=self._close)
         self.protocol_version = LocalProtocolVersion.V1
         self.restart = AsyncMock()
+        self.health_manager = HealthManager(self.restart)
 
     async def _connect(self) -> None:
         self._is_connected = True
