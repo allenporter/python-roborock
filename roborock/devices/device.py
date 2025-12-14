@@ -147,34 +147,42 @@ class RoborockDevice(ABC, TraitsMixin):
         called. The device will automatically attempt to reconnect if the connection
         is lost.
         """
-        start_attempt: asyncio.Event = asyncio.Event()
+        # We don't care about the value of the future, just that we wait long enough
+        # to let the first connection attempt happen.
+        start_attempt: asyncio.Future[bool] = asyncio.Future()
 
         async def connect_loop() -> None:
-            backoff = MIN_BACKOFF_INTERVAL
             try:
+                backoff = MIN_BACKOFF_INTERVAL
                 while True:
                     try:
                         await self.connect()
-                        start_attempt.set()
                         self._has_connected = True
                         self._ready_callbacks(self)
-                        return
+                        if not start_attempt.done():
+                            start_attempt.set_result(True)
+                        break
                     except RoborockException as e:
-                        start_attempt.set()
+                        if not start_attempt.done():
+                            start_attempt.set_result(False)
                         self._logger.info("Failed to connect (retry %s): %s", backoff.total_seconds(), e)
                         await asyncio.sleep(backoff.total_seconds())
                         backoff = min(backoff * BACKOFF_MULTIPLIER, MAX_BACKOFF_INTERVAL)
+                    except Exception as e:  # pylint: disable=broad-except
+                        if not start_attempt.done():
+                            start_attempt.set_exception(e)
+                        self._logger.exception("Unexpected error during connect: %s", e)
+                        break
             except asyncio.CancelledError:
+                if not start_attempt.done():
+                    start_attempt.set_result(False)
                 self._logger.debug("connect_loop was cancelled for device %s", self.duid)
-                # Clean exit on cancellation
-                return
-            finally:
-                start_attempt.set()
 
         self._connect_task = asyncio.create_task(connect_loop())
 
         try:
-            await asyncio.wait_for(start_attempt.wait(), timeout=START_ATTEMPT_TIMEOUT.total_seconds())
+            async with asyncio.timeout(START_ATTEMPT_TIMEOUT.total_seconds()):
+                await start_attempt
         except TimeoutError:
             self._logger.debug("Initial connection attempt took longer than expected, will keep trying in background")
 
@@ -190,6 +198,7 @@ class RoborockDevice(ABC, TraitsMixin):
             except RoborockException:
                 unsub()
                 raise
+        self._logger.info("Connected to device")
         self._unsub = unsub
 
     async def close(self) -> None:
