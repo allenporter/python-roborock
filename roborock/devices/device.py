@@ -147,8 +147,10 @@ class RoborockDevice(ABC, TraitsMixin):
         called. The device will automatically attempt to reconnect if the connection
         is lost.
         """
-        # We don't care about the value of the future, just that we wait long enough
-        # to let the first connection attempt happen.
+        # The future will be set to True if the first attempt succeeds, False if
+        # it fails, or an exception if an unexpected error occurs.
+        # We use this to wait a short time for the first attempt to complete. We
+        # don't actually care about the result, just that we waited long enough.
         start_attempt: asyncio.Future[bool] = asyncio.Future()
 
         async def connect_loop() -> None:

@@ -252,6 +252,6 @@ async def test_start_connect_failure(home_data: HomeData, channel_failure: Mock,
     ],
 )
 async def test_start_connect_unexpected_error(home_data: HomeData, channel_failure: Mock, mock_sleep: Mock) -> None:
-    """Test that some exceptions from start_connect are propagated."""
+    """Test that some unexpected errors from start_connect are propagated."""
     with pytest.raises(Exception, match="Unexpected error"):
         await create_device_manager(USER_PARAMS)
