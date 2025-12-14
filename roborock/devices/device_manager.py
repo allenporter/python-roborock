@@ -78,7 +78,7 @@ class DeviceManager:
                 cache_data.home_data = await self._web_api.get_home_data()
             except RoborockException as ex:
                 if not cache_data.home_data:
-                    raise ex
+                    raise
                 _LOGGER.debug("Failed to fetch home data, using cached data: %s", ex)
             await self._cache.set(cache_data)
         home_data = cache_data.home_data
