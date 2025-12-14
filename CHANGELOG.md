@@ -2,6 +2,40 @@
 
 <!-- version list -->
 
+## v3.15.0 (2025-12-14)
+
+### Chores
+
+- Address some comments ([#662](https://github.com/Python-roborock/python-roborock/pull/662),
+  [`b3664bc`](https://github.com/Python-roborock/python-roborock/commit/b3664bcc0764d1dfbde2af9588dc0821c3ca1317))
+
+- Apply suggestions from code review
+  ([#662](https://github.com/Python-roborock/python-roborock/pull/662),
+  [`b3664bc`](https://github.com/Python-roborock/python-roborock/commit/b3664bcc0764d1dfbde2af9588dc0821c3ca1317))
+
+- Fix test naming ([#662](https://github.com/Python-roborock/python-roborock/pull/662),
+  [`b3664bc`](https://github.com/Python-roborock/python-roborock/commit/b3664bcc0764d1dfbde2af9588dc0821c3ca1317))
+
+- Small tweaks ([#662](https://github.com/Python-roborock/python-roborock/pull/662),
+  [`b3664bc`](https://github.com/Python-roborock/python-roborock/commit/b3664bcc0764d1dfbde2af9588dc0821c3ca1317))
+
+- Update roborock/devices/b01_channel.py
+  ([#662](https://github.com/Python-roborock/python-roborock/pull/662),
+  [`b3664bc`](https://github.com/Python-roborock/python-roborock/commit/b3664bcc0764d1dfbde2af9588dc0821c3ca1317))
+
+- Update snapshot ([#662](https://github.com/Python-roborock/python-roborock/pull/662),
+  [`b3664bc`](https://github.com/Python-roborock/python-roborock/commit/b3664bcc0764d1dfbde2af9588dc0821c3ca1317))
+
+### Features
+
+- Add b01 Q7 basic getter support
+  ([#662](https://github.com/Python-roborock/python-roborock/pull/662),
+  [`b3664bc`](https://github.com/Python-roborock/python-roborock/commit/b3664bcc0764d1dfbde2af9588dc0821c3ca1317))
+
+- Add b01 Q7 support ([#662](https://github.com/Python-roborock/python-roborock/pull/662),
+  [`b3664bc`](https://github.com/Python-roborock/python-roborock/commit/b3664bcc0764d1dfbde2af9588dc0821c3ca1317))
+
+
 ## v3.14.3 (2025-12-14)
 
 ### Bug Fixes
