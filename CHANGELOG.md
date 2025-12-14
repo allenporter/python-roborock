@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v3.14.1 (2025-12-14)
+
+### Bug Fixes
+
+- Fix diagnostic data redaction to use camelized keys
+  ([#669](https://github.com/Python-roborock/python-roborock/pull/669),
+  [`6a20e27`](https://github.com/Python-roborock/python-roborock/commit/6a20e27506d01fbb30683c2d74d26ab073aa3036))
+
+### Chores
+
+- Remove redundant/broken part of the readme
+  ([#667](https://github.com/Python-roborock/python-roborock/pull/667),
+  [`b629a61`](https://github.com/Python-roborock/python-roborock/commit/b629a61f28f3bb64914a9bc461ce9f7a27a30c35))
+
+- **deps**: Bump pdoc from 15.0.4 to 16.0.0
+  ([#652](https://github.com/Python-roborock/python-roborock/pull/652),
+  [`5f4c14e`](https://github.com/Python-roborock/python-roborock/commit/5f4c14ead4eda21cd6954e3898d79a6eaa983f62))
+
+
 ## v3.14.0 (2025-12-14)
 
 ### Bug Fixes
