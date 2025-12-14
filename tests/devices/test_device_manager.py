@@ -348,3 +348,17 @@ async def test_start_connect_unexpected_error(home_data: HomeData, channel_failu
     """Test that some unexpected errors from start_connect are propagated."""
     with pytest.raises(Exception, match="Unexpected error"):
         await create_device_manager(USER_PARAMS)
+
+
+async def test_diagnostics_collection(home_data: HomeData) -> None:
+    """Test that diagnostics are collected correctly in the DeviceManager."""
+    device_manager = await create_device_manager(USER_PARAMS)
+    devices = await device_manager.get_devices()
+    assert len(devices) == 1
+
+    diagnostics = device_manager.diagnostic_data()
+    assert diagnostics is not None
+    assert diagnostics.get("discover_devices") == 1
+    assert diagnostics.get("fetch_home_data") == 1
+
+    await device_manager.close()

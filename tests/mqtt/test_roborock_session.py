@@ -1,6 +1,7 @@
 """Tests for the MQTT session module."""
 
 import asyncio
+import copy
 import datetime
 from collections.abc import AsyncGenerator, Callable, Generator
 from queue import Queue
@@ -11,6 +12,7 @@ import aiomqtt
 import paho.mqtt.client as mqtt
 import pytest
 
+from roborock.diagnostics import Diagnostics
 from roborock.mqtt.roborock_session import RoborockMqttSession, create_mqtt_session
 from roborock.mqtt.session import MqttParams, MqttSessionException, MqttSessionUnauthorized
 from tests import mqtt_packet
@@ -446,3 +448,72 @@ async def test_connect_failure(
     with patch("roborock.mqtt.roborock_session.aiomqtt.Client.__aenter__", mock_aenter):
         with pytest.raises(expected_exception, match=match):
             await create_mqtt_session(FAKE_PARAMS)
+
+
+async def test_diagnostics_data(push_response: Callable[[bytes], None]) -> None:
+    """Test the MQTT session."""
+
+    diagnostics = Diagnostics()
+
+    params = copy.deepcopy(FAKE_PARAMS)
+    params.diagnostics = diagnostics
+
+    push_response(mqtt_packet.gen_connack(rc=0, flags=2))
+    session = await create_mqtt_session(params)
+    assert session.connected
+
+    # Verify diagnostics after connection
+    data = diagnostics.as_dict()
+    assert data.get("start_attempt") == 1
+    assert data.get("start_loop") == 1
+    assert data.get("start_success") == 1
+    assert data.get("subscribe_count") is None
+    assert data.get("dispatch_message_count") is None
+    assert data.get("close") is None
+
+    push_response(mqtt_packet.gen_suback(mid=1))
+    subscriber1 = Subscriber()
+    unsub1 = await session.subscribe("topic-1", subscriber1.append)
+
+    push_response(mqtt_packet.gen_suback(mid=2))
+    subscriber2 = Subscriber()
+    await session.subscribe("topic-2", subscriber2.append)
+
+    push_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
+    await subscriber1.wait()
+    assert subscriber1.messages == [b"12345"]
+    assert not subscriber2.messages
+
+    push_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
+    await subscriber2.wait()
+    assert subscriber2.messages == [b"67890"]
+
+    push_response(mqtt_packet.gen_publish("topic-1", mid=5, payload=b"ABC"))
+    await subscriber1.wait()
+    assert subscriber1.messages == [b"12345", b"ABC"]
+    assert subscriber2.messages == [b"67890"]
+
+    # Verify diagnostics after subscribing and receiving messages
+    data = diagnostics.as_dict()
+    assert data.get("start_attempt") == 1
+    assert data.get("start_loop") == 1
+    assert data.get("subscribe_count") == 2
+    assert data.get("dispatch_message_count") == 3
+    assert data.get("close") is None
+
+    # Messages are no longer received after unsubscribing
+    unsub1()
+    push_response(mqtt_packet.gen_publish("topic-1", payload=b"ignored"))
+    assert subscriber1.messages == [b"12345", b"ABC"]
+
+    assert session.connected
+    await session.close()
+    assert not session.connected
+
+    # Verify diagnostics after closing session
+    data = diagnostics.as_dict()
+    assert data.get("start_attempt") == 1
+    assert data.get("start_loop") == 1
+    assert data.get("subscribe_count") == 2
+    assert data.get("dispatch_message_count") == 3
+    assert data.get("close") == 1
