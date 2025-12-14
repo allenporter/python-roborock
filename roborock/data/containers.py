@@ -238,8 +238,8 @@ class HomeDataDevice(RoborockBase):
     duid: str
     name: str
     local_key: str
-    fv: str
     product_id: str
+    fv: str | None = None
     attribute: Any | None = None
     active_time: int | None = None
     runtime_env: Any | None = None
