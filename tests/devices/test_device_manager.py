@@ -67,11 +67,17 @@ def mock_sleep() -> Generator[None, None, None]:
         yield
 
 
+@pytest.fixture(name="channel_exception")
+def channel_failure_exception_fixture(mock_rpc_channel: AsyncMock) -> Exception:
+    """Fixture that provides the exception to be raised by the failing channel."""
+    return RoborockException("Connection failed")
+
+
 @pytest.fixture(name="channel_failure")
-def channel_failure_fixture(mock_rpc_channel: AsyncMock) -> Generator[Mock, None, None]:
+def channel_failure_fixture(mock_rpc_channel: AsyncMock, channel_exception: Exception) -> Generator[Mock, None, None]:
     """Fixture that makes channel subscribe fail."""
     with patch("roborock.devices.device_manager.create_v1_channel") as mock_channel:
-        mock_channel.return_value.subscribe = AsyncMock(side_effect=RoborockException("Connection failed"))
+        mock_channel.return_value.subscribe = AsyncMock(side_effect=channel_exception)
         mock_channel.return_value.is_connected = False
         mock_channel.return_value.rpc_channel = mock_rpc_channel
         yield mock_channel
@@ -217,6 +223,12 @@ async def test_ready_callback(home_data: HomeData) -> None:
     await device_manager.close()
 
 
+@pytest.mark.parametrize(
+    ("channel_exception"),
+    [
+        RoborockException("Connection failed"),
+    ],
+)
 async def test_start_connect_failure(home_data: HomeData, channel_failure: Mock, mock_sleep: Mock) -> None:
     """Test that start_connect retries when connection fails."""
     ready_devices: list[RoborockDevice] = []
@@ -324,3 +336,15 @@ async def test_rediscover_devices(mock_rpc_channel: AsyncMock) -> None:
 
         # Ensure closing again works without error
         await device_manager.close()
+
+
+@pytest.mark.parametrize(
+    ("channel_exception"),
+    [
+        Exception("Unexpected error"),
+    ],
+)
+async def test_start_connect_unexpected_error(home_data: HomeData, channel_failure: Mock, mock_sleep: Mock) -> None:
+    """Test that some unexpected errors from start_connect are propagated."""
+    with pytest.raises(Exception, match="Unexpected error"):
+        await create_device_manager(USER_PARAMS)
