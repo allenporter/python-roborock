@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v3.16.1 (2025-12-14)
+
+### Bug Fixes
+
+- Share a HealthManager instance across all mqtt channels
+  ([#672](https://github.com/Python-roborock/python-roborock/pull/672),
+  [`4ad95dd`](https://github.com/Python-roborock/python-roborock/commit/4ad95ddee4d4d4cd64c7908f150c71d81f45e705))
+
+
 ## v3.16.0 (2025-12-14)
 
 ### Bug Fixes
