@@ -2,6 +2,28 @@
 
 <!-- version list -->
 
+## v3.14.2 (2025-12-14)
+
+### Bug Fixes
+
+- Additional device logging improvements
+  ([#668](https://github.com/Python-roborock/python-roborock/pull/668),
+  [`a86db71`](https://github.com/Python-roborock/python-roborock/commit/a86db717a07d24b0e6ab471ee814b0853b523918))
+
+- Improve device logging ([#668](https://github.com/Python-roborock/python-roborock/pull/668),
+  [`a86db71`](https://github.com/Python-roborock/python-roborock/commit/a86db717a07d24b0e6ab471ee814b0853b523918))
+
+### Chores
+
+- Further readability improvements to device logging
+  ([#668](https://github.com/Python-roborock/python-roborock/pull/668),
+  [`a86db71`](https://github.com/Python-roborock/python-roborock/commit/a86db717a07d24b0e6ab471ee814b0853b523918))
+
+- Improve device logging container summary string
+  ([#668](https://github.com/Python-roborock/python-roborock/pull/668),
+  [`a86db71`](https://github.com/Python-roborock/python-roborock/commit/a86db717a07d24b0e6ab471ee814b0853b523918))
+
+
 ## v3.14.1 (2025-12-14)
 
 ### Bug Fixes
