@@ -31,7 +31,7 @@ __all__ = [
 MIN_BACKOFF_INTERVAL = datetime.timedelta(seconds=10)
 MAX_BACKOFF_INTERVAL = datetime.timedelta(minutes=30)
 BACKOFF_MULTIPLIER = 1.5
-START_ATTEMPT_TIMEOUT = datetime.timedelta(seconds=10)
+START_ATTEMPT_TIMEOUT = datetime.timedelta(seconds=5)
 
 
 DeviceReadyCallback = Callable[["RoborockDevice"], None]
