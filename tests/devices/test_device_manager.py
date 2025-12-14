@@ -189,7 +189,6 @@ async def test_ready_callback(home_data: HomeData) -> None:
     assert len(more_ready_device) == 1
     assert more_ready_device[0].duid == "abc123"
 
-
     await device_manager.close()
 
 
