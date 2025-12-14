@@ -171,7 +171,7 @@ class RoborockDevice(ABC, TraitsMixin):
                     except Exception as e:  # pylint: disable=broad-except
                         if not start_attempt.done():
                             start_attempt.set_exception(e)
-                        self._logger.exception("Unexpected error during connect: %s", e)
+                        self._logger.exception("Uncaught error during connect: %s", e)
                         break
             except asyncio.CancelledError:
                 if not start_attempt.done():
