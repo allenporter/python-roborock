@@ -182,6 +182,14 @@ async def test_ready_callback(home_data: HomeData) -> None:
     device = ready_devices[0]
     assert device.duid == "abc123"
 
+    # Verify that adding a ready callback to an already connected device will
+    # invoke the callback immediately.
+    more_ready_device: list[RoborockDevice] = []
+    device.add_ready_callback(more_ready_device.append)
+    assert len(more_ready_device) == 1
+    assert more_ready_device[0].duid == "abc123"
+
+
     await device_manager.close()
 
 
