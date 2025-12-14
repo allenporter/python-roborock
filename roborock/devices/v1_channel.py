@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from typing import Any, TypeVar
 
 from roborock.data import HomeDataDevice, NetworkInfo, RoborockBase, UserData
-from roborock.devices.logger import DeviceLoggerAdapter
 from roborock.exceptions import RoborockException
 from roborock.mqtt.health_manager import HealthManager
 from roborock.mqtt.session import MqttParams, MqttSession
@@ -31,6 +30,7 @@ from roborock.protocols.v1_protocol import (
 )
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 from roborock.roborock_typing import RoborockCommand
+from roborock.util import RoborockLoggerAdapter
 
 from .cache import DeviceCache
 from .channel import Channel
@@ -71,7 +71,7 @@ class RpcStrategy:
 class RpcChannel(V1RpcChannel):
     """Provides an RPC interface around a pub/sub transport channel."""
 
-    def __init__(self, rpc_strategies_cb: Callable[[], list[RpcStrategy]], logger: DeviceLoggerAdapter) -> None:
+    def __init__(self, rpc_strategies_cb: Callable[[], list[RpcStrategy]], logger: RoborockLoggerAdapter) -> None:
         """Initialize the RpcChannel with an ordered list of strategies."""
         self._rpc_strategies_cb = rpc_strategies_cb
         self._logger = logger
@@ -110,7 +110,7 @@ class RpcChannel(V1RpcChannel):
 
     @staticmethod
     async def _send_rpc(
-        strategy: RpcStrategy, request: RequestMessage, logger: DeviceLoggerAdapter
+        strategy: RpcStrategy, request: RequestMessage, logger: RoborockLoggerAdapter
     ) -> ResponseData | bytes:
         """Send a command and return a decoded response type.
 
@@ -178,7 +178,7 @@ class V1Channel(Channel):
     ) -> None:
         """Initialize the V1Channel."""
         self._device_uid = device_uid
-        self._logger = DeviceLoggerAdapter(_LOGGER, device_uid)
+        self._logger = RoborockLoggerAdapter(device_uid, _LOGGER)
         self._security_data = security_data
         self._mqtt_channel = mqtt_channel
         self._mqtt_health_manager = HealthManager(self._mqtt_channel.restart)

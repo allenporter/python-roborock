@@ -12,9 +12,9 @@ from collections.abc import Callable, Mapping
 from typing import Any, TypeVar, cast
 
 from roborock.data import HomeDataDevice, HomeDataProduct
-from roborock.devices.logger import DeviceLoggerAdapter
 from roborock.exceptions import RoborockException
 from roborock.roborock_message import RoborockMessage
+from roborock.util import RoborockLoggerAdapter
 
 from .channel import Channel
 from .traits import Trait
@@ -60,7 +60,7 @@ class RoborockDevice(ABC, TraitsMixin):
         """
         TraitsMixin.__init__(self, trait)
         self._duid = device_info.duid
-        self._logger = DeviceLoggerAdapter(_LOGGER, self._duid)
+        self._logger = RoborockLoggerAdapter(self._duid, _LOGGER)
         self._name = device_info.name
         self._device_info = device_info
         self._product = product

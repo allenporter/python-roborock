@@ -11,9 +11,8 @@ from roborock.protocol import create_local_decoder, create_local_encoder
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 
 from ..protocols.v1_protocol import LocalProtocolVersion
-from ..util import get_next_int
+from ..util import RoborockLoggerAdapter, get_next_int
 from .channel import Channel
-from .logger import DeviceLoggerAdapter
 
 _LOGGER = logging.getLogger(__name__)
 _PORT = 58867
@@ -55,7 +54,7 @@ class LocalChannel(Channel):
 
     def __init__(self, host: str, local_key: str, device_uid: str) -> None:
         self._host = host
-        self._logger = DeviceLoggerAdapter(_LOGGER, device_uid)
+        self._logger = RoborockLoggerAdapter(device_uid, _LOGGER)
         self._transport: asyncio.Transport | None = None
         self._protocol: _LocalProtocol | None = None
         self._subscribers: CallbackList[RoborockMessage] = CallbackList(self._logger)

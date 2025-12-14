@@ -9,9 +9,9 @@ from roborock.exceptions import RoborockException
 from roborock.mqtt.session import MqttParams, MqttSession, MqttSessionException
 from roborock.protocol import create_mqtt_decoder, create_mqtt_encoder
 from roborock.roborock_message import RoborockMessage
+from roborock.util import RoborockLoggerAdapter
 
 from .channel import Channel
-from .logger import DeviceLoggerAdapter
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class MqttChannel(Channel):
     def __init__(self, mqtt_session: MqttSession, duid: str, local_key: str, rriot: RRiot, mqtt_params: MqttParams):
         self._mqtt_session = mqtt_session
         self._duid = duid
-        self._logger = DeviceLoggerAdapter(_LOGGER, duid)
+        self._logger = RoborockLoggerAdapter(duid, _LOGGER)
         self._local_key = local_key
         self._rriot = rriot
         self._mqtt_params = mqtt_params
