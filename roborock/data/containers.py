@@ -269,9 +269,7 @@ class HomeDataDevice(RoborockBase):
 
     def summary_info(self) -> str:
         """Return a string with key device information for logging purposes."""
-        return (
-            f"{self.name} (pv={self.pv}, fv={self.fv}, online={self.online})"
-        )
+        return f"{self.name} (pv={self.pv}, fv={self.fv}, online={self.online})"
 
 
 @dataclass
