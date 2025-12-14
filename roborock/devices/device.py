@@ -235,9 +235,9 @@ REDACT_KEYS = {
     "h",
     "k",
     # Large binary blobs are entirely omitted
-    "image_content",
-    "map_data",
-    "raw_api_response",
+    "imageContent",
+    "mapData",
+    "rawApiResponse",
 }
 REDACTED = "**REDACTED**"
 
