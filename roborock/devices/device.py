@@ -183,7 +183,6 @@ class RoborockDevice(ABC, TraitsMixin):
         if self._unsub:
             raise ValueError("Already connected to the device")
         unsub = await self._channel.subscribe(self._on_message)
-        self._logger.info("Connecting to device")
         if self.v1_properties is not None:
             try:
                 await self.v1_properties.discover_features()

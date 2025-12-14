@@ -179,7 +179,6 @@ class LocalChannel(Channel):
         if self._is_connected:
             self._logger.debug("Unexpected call to connect when already connected")
             return
-        self._logger.debug("Connecting to %s:%s", self._host, _PORT)
         loop = asyncio.get_running_loop()
         protocol = _LocalProtocol(self._data_received, self._connection_lost)
         try:

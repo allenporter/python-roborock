@@ -78,12 +78,13 @@ class DeviceManager:
         home_data = cache_data.home_data
 
         device_products = home_data.device_products
-        _LOGGER.debug("Discovered %d devices %s", len(device_products), home_data)
+        _LOGGER.debug("Discovered %d devices", len(device_products))
 
         # These are connected serially to avoid overwhelming the MQTT broker
         new_devices = {}
         start_tasks = []
         for duid, (device, product) in device_products.items():
+            _LOGGER.debug("[%s] Discovered device (%s, %s)", duid, product.summary_info(), device.summary_info())
             if duid in self._devices:
                 continue
             new_device = self._device_creator(home_data, device, product)

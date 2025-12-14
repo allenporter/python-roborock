@@ -228,6 +228,10 @@ class HomeDataProduct(RoborockBase):
     def product_nickname(self) -> RoborockProductNickname:
         return SHORT_MODEL_TO_ENUM.get(self.model.split(".")[-1], RoborockProductNickname.PEARLPLUS)
 
+    def summary_info(self) -> str:
+        """Return a string with key product information for logging purposes."""
+        return f"HomeDataProduct(name={self.name}, model={self.model}, category={self.category})"
+
 
 @dataclass
 class HomeDataDevice(RoborockBase):
@@ -262,6 +266,13 @@ class HomeDataDevice(RoborockBase):
     cid: str | None = None
     share_type: Any | None = None
     share_expired_time: int | None = None
+
+    def summary_info(self) -> str:
+        """Return a string with key device information for logging purposes."""
+        return (
+            f"HomeDataDevice(name={self.name}, model={self.product_id}, "
+            f"fv={self.fv}, pv={self.pv}, online={self.online})"
+        )
 
 
 @dataclass

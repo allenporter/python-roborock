@@ -373,7 +373,7 @@ class V1Channel(Channel):
         # Wire up the new channel
         self._local_channel = local_channel
         self._local_unsub = await self._local_channel.subscribe(self._on_local_message)
-        _LOGGER.info("Successfully connected to local device %s", self._device_uid)
+        self._logger.info("Connected to local channel successfully")
 
     async def _background_reconnect(self) -> None:
         """Task to run in the background to manage the local connection."""
