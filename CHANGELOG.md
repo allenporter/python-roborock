@@ -2,6 +2,47 @@
 
 <!-- version list -->
 
+## v3.16.0 (2025-12-14)
+
+### Bug Fixes
+
+- Fix bugs in the subscription idle timeout
+  ([#665](https://github.com/Python-roborock/python-roborock/pull/665),
+  [`85b7bee`](https://github.com/Python-roborock/python-roborock/commit/85b7beeb810cfb3d501658cd44f06b2c0052ca33))
+
+- Harden the device connection logic used in startup
+  ([#666](https://github.com/Python-roborock/python-roborock/pull/666),
+  [`19703f4`](https://github.com/Python-roborock/python-roborock/commit/19703f42fe692a38f8f8639b1136a7585eae76fc))
+
+- Harden the initial startup logic
+  ([#666](https://github.com/Python-roborock/python-roborock/pull/666),
+  [`19703f4`](https://github.com/Python-roborock/python-roborock/commit/19703f42fe692a38f8f8639b1136a7585eae76fc))
+
+### Chores
+
+- Apply suggestions from code review
+  ([#675](https://github.com/Python-roborock/python-roborock/pull/675),
+  [`ab2de5b`](https://github.com/Python-roborock/python-roborock/commit/ab2de5bda7b8e1ff1ad46c7f2bf3b39dc9af4ace))
+
+- Clarify comments and docstrings
+  ([#666](https://github.com/Python-roborock/python-roborock/pull/666),
+  [`19703f4`](https://github.com/Python-roborock/python-roborock/commit/19703f42fe692a38f8f8639b1136a7585eae76fc))
+
+- Fix logging ([#666](https://github.com/Python-roborock/python-roborock/pull/666),
+  [`19703f4`](https://github.com/Python-roborock/python-roborock/commit/19703f42fe692a38f8f8639b1136a7585eae76fc))
+
+- Reduce whitespace changes ([#666](https://github.com/Python-roborock/python-roborock/pull/666),
+  [`19703f4`](https://github.com/Python-roborock/python-roborock/commit/19703f42fe692a38f8f8639b1136a7585eae76fc))
+
+- Revert whitespace change ([#666](https://github.com/Python-roborock/python-roborock/pull/666),
+  [`19703f4`](https://github.com/Python-roborock/python-roborock/commit/19703f42fe692a38f8f8639b1136a7585eae76fc))
+
+### Features
+
+- Add basic schedule getting ([#675](https://github.com/Python-roborock/python-roborock/pull/675),
+  [`ab2de5b`](https://github.com/Python-roborock/python-roborock/commit/ab2de5bda7b8e1ff1ad46c7f2bf3b39dc9af4ace))
+
+
 ## v3.15.0 (2025-12-14)
 
 ### Chores
