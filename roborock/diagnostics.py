@@ -19,7 +19,7 @@ from typing import Any
 
 
 class Diagnostics:
-    """A class that holdes diagnostics information for a module.
+    """A class that holds diagnostics information for a module.
 
     You can use this class to hold counter or for recording timing information
     that can be exported as a dictionary for debugging purposes.
