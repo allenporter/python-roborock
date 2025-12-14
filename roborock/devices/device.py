@@ -140,7 +140,7 @@ class RoborockDevice(ABC, TraitsMixin):
                         await asyncio.sleep(backoff.total_seconds())
                         backoff = min(backoff * BACKOFF_MULTIPLIER, MAX_BACKOFF_INTERVAL)
             except asyncio.CancelledError:
-                self._logger.debug("connect_loop was cancelled", self.duid)
+                self._logger.debug("connect_loop was cancelled for device %s", self.duid)
                 # Clean exit on cancellation
                 return
             finally:
