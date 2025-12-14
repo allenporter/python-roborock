@@ -84,7 +84,7 @@ class DeviceManager:
         new_devices = {}
         start_tasks = []
         for duid, (device, product) in device_products.items():
-            _LOGGER.debug("[%s] Discovered device (%s, %s)", duid, product.summary_info(), device.summary_info())
+            _LOGGER.debug("[%s] Discovered device %s %s", duid, product.summary_info(), device.summary_info())
             if duid in self._devices:
                 continue
             new_device = self._device_creator(home_data, device, product)

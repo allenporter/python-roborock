@@ -230,7 +230,7 @@ class HomeDataProduct(RoborockBase):
 
     def summary_info(self) -> str:
         """Return a string with key product information for logging purposes."""
-        return f"HomeDataProduct(name={self.name}, model={self.model}, category={self.category})"
+        return f"{self.name} (model={self.model}, category={self.category})"
 
 
 @dataclass
@@ -270,8 +270,7 @@ class HomeDataDevice(RoborockBase):
     def summary_info(self) -> str:
         """Return a string with key device information for logging purposes."""
         return (
-            f"HomeDataDevice(name={self.name}, model={self.product_id}, "
-            f"fv={self.fv}, pv={self.pv}, online={self.online})"
+            f"{self.name} (pv={self.pv}, fv={self.fv}, online={self.online})"
         )
 
 
