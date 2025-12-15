@@ -53,7 +53,7 @@ async def local_channel_fixture(mock_create_local_connection: None) -> AsyncGene
     with patch(
         "roborock.devices.local_channel.get_next_int", return_value=TEST_CONNECT_NONCE, device_uid=TEST_DEVICE_UID
     ):
-        channel = LocalChannel(host=TEST_HOST, local_key=LOCAL_KEY)
+        channel = LocalChannel(host=TEST_HOST, local_key=LOCAL_KEY, device_uid=TEST_DEVICE_UID)
         yield channel
         channel.close()
 
