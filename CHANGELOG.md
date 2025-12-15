@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v3.17.0 (2025-12-15)
+
+### Chores
+
+- **deps**: Bump python-semantic-release/publish-action
+  ([#679](https://github.com/Python-roborock/python-roborock/pull/679),
+  [`3cf1a9a`](https://github.com/Python-roborock/python-roborock/commit/3cf1a9af0d65482c65a14b2d266ff3b134dcb6f8))
+
+- **deps**: Bump python-semantic-release/python-semantic-release
+  ([#680](https://github.com/Python-roborock/python-roborock/pull/680),
+  [`2afa86c`](https://github.com/Python-roborock/python-roborock/commit/2afa86cdf234ef5626dbf9f2f778d0a3b23ac5a7))
+
+- **deps-dev**: Bump mypy from 1.19.0 to 1.19.1
+  ([#683](https://github.com/Python-roborock/python-roborock/pull/683),
+  [`bfb2c63`](https://github.com/Python-roborock/python-roborock/commit/bfb2c63e85d96c2c663686e05c598d0e724685a9))
+
+- **deps-dev**: Bump ruff from 0.14.6 to 0.14.9
+  ([#682](https://github.com/Python-roborock/python-roborock/pull/682),
+  [`cfd51e4`](https://github.com/Python-roborock/python-roborock/commit/cfd51e4a75eecb66f60ac137ece36b2fa7583ea9))
+
+### Features
+
+- Improvements to B01 for HA integration
+  ([#678](https://github.com/Python-roborock/python-roborock/pull/678),
+  [`97fb0b7`](https://github.com/Python-roborock/python-roborock/commit/97fb0b75ff4aa164d81340d276991537e0c9662e))
+
+
 ## v3.16.1 (2025-12-14)
 
 ### Bug Fixes
