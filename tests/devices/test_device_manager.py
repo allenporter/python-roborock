@@ -3,6 +3,7 @@
 import asyncio
 import datetime
 from collections.abc import Generator, Iterator
+from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -149,7 +150,8 @@ async def test_create_home_data_api_exception() -> None:
             await api.get_home_data()
 
 
-async def test_cache_logic() -> None:
+@pytest.mark.parametrize(("prefer_cache", "expected_call_count"), [(True, 1), (False, 2)])
+async def test_cache_logic(prefer_cache: bool, expected_call_count: int) -> None:
     """Test that the cache logic works correctly."""
     call_count = 0
 
@@ -167,14 +169,37 @@ async def test_cache_logic() -> None:
         assert call_count == 1
 
         # Second call should use cache, not increment call_count
-        devices2 = await device_manager.discover_devices()
-        assert call_count == 1  # Should still be 1, not 2
+        devices2 = await device_manager.discover_devices(prefer_cache=prefer_cache)
+        assert call_count == expected_call_count
         assert len(devices2) == 1
 
         await device_manager.close()
         assert len(devices2) == 1
 
         # Ensure closing again works without error
+        await device_manager.close()
+
+
+async def test_home_data_api_fails_with_cache_fallback() -> None:
+    """Test that home data exceptions may still fall back to use the cache when available."""
+
+    cache = InMemoryCache()
+    cache_data = await cache.get()
+    cache_data.home_data = HomeData.from_dict(mock_data.HOME_DATA_RAW)
+    await cache.set(cache_data)
+
+    with patch(
+        "roborock.devices.device_manager.RoborockApiClient.get_home_data_v3",
+        side_effect=RoborockException("Test exception"),
+    ):
+        # This call will skip the API and use the cache
+        device_manager = await create_device_manager(USER_PARAMS, cache=cache)
+
+        # This call will hit the API since we're not preferring the cache
+        # but will fallback to the cache data on exception
+        devices2 = await device_manager.discover_devices(prefer_cache=False)
+        assert len(devices2) == 1
+
         await device_manager.close()
 
 
@@ -243,6 +268,74 @@ async def test_start_connect_failure(home_data: HomeData, channel_failure: Mock,
 
     await device_manager.close()
     assert mock_unsub.call_count == 1
+
+
+async def test_rediscover_devices(mock_rpc_channel: AsyncMock) -> None:
+    """Test that we can discover devices multiple times and discover new devices."""
+    raw_devices: list[dict[str, Any]] = mock_data.HOME_DATA_RAW["devices"]
+    assert len(raw_devices) > 0
+    raw_device_1 = raw_devices[0]
+
+    home_data_responses = [
+        HomeData.from_dict(mock_data.HOME_DATA_RAW),
+        # New device added on second call. We make a copy and updated fields to simulate
+        # a new device.
+        HomeData.from_dict(
+            {
+                **mock_data.HOME_DATA_RAW,
+                "devices": [
+                    raw_device_1,
+                    {
+                        **raw_device_1,
+                        "duid": "new_device_duid",
+                        "name": "New Device",
+                        "model": "roborock.newmodel.v1",
+                        "mac": "00:11:22:33:44:55",
+                    },
+                ],
+            }
+        ),
+    ]
+
+    mock_rpc_channel.send_command.side_effect = [
+        [mock_data.APP_GET_INIT_STATUS],
+        mock_data.STATUS,
+        # Device #2
+        [mock_data.APP_GET_INIT_STATUS],
+        mock_data.STATUS,
+    ]
+
+    async def mock_home_data_with_counter(*args, **kwargs) -> HomeData:
+        nonlocal home_data_responses
+        return home_data_responses.pop(0)
+
+    # First call happens during create_device_manager initialization
+    with patch(
+        "roborock.devices.device_manager.RoborockApiClient.get_home_data_v3",
+        side_effect=mock_home_data_with_counter,
+    ):
+        device_manager = await create_device_manager(USER_PARAMS, cache=InMemoryCache())
+        assert len(await device_manager.get_devices()) == 1
+
+        # Second call should use cache and does not add new device
+        await device_manager.discover_devices(prefer_cache=True)
+        assert len(await device_manager.get_devices()) == 1
+
+        # Third call should fetch new home data and add the new device
+        await device_manager.discover_devices(prefer_cache=False)
+        assert len(await device_manager.get_devices()) == 2
+
+        # Verify the two devices exist with correct data
+        device_1 = await device_manager.get_device("abc123")
+        assert device_1 is not None
+        assert device_1.name == "Roborock S7 MaxV"
+
+        new_device = await device_manager.get_device("new_device_duid")
+        assert new_device
+        assert new_device.name == "New Device"
+
+        # Ensure closing again works without error
+        await device_manager.close()
 
 
 @pytest.mark.parametrize(

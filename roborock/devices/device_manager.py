@@ -15,6 +15,7 @@ from roborock.data import (
     UserData,
 )
 from roborock.devices.device import DeviceReadyCallback, RoborockDevice
+from roborock.exceptions import RoborockException
 from roborock.map.map_parser import MapParserConfig
 from roborock.mqtt.roborock_session import create_lazy_mqtt_session
 from roborock.mqtt.session import MqttSession
@@ -68,12 +69,17 @@ class DeviceManager:
         self._devices: dict[str, RoborockDevice] = {}
         self._mqtt_session = mqtt_session
 
-    async def discover_devices(self) -> list[RoborockDevice]:
+    async def discover_devices(self, prefer_cache: bool = True) -> list[RoborockDevice]:
         """Discover all devices for the logged-in user."""
         cache_data = await self._cache.get()
-        if not cache_data.home_data:
-            _LOGGER.debug("No cached home data found, fetching from API")
-            cache_data.home_data = await self._web_api.get_home_data()
+        if not cache_data.home_data or not prefer_cache:
+            _LOGGER.debug("Fetching home data (prefer_cache=%s)", prefer_cache)
+            try:
+                cache_data.home_data = await self._web_api.get_home_data()
+            except RoborockException as ex:
+                if not cache_data.home_data:
+                    raise
+                _LOGGER.debug("Failed to fetch home data, using cached data: %s", ex)
             await self._cache.set(cache_data)
         home_data = cache_data.home_data
 
