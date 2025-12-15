@@ -362,3 +362,15 @@ async def test_diagnostics_collection(home_data: HomeData) -> None:
     assert diagnostics.get("fetch_home_data") == 1
 
     await device_manager.close()
+
+
+@pytest.mark.parametrize(
+    ("channel_exception"),
+    [
+        Exception("Unexpected error"),
+    ],
+)
+async def test_start_connect_unexpected_error(home_data: HomeData, channel_failure: Mock, mock_sleep: Mock) -> None:
+    """Test that some unexpected errors from start_connect are propagated."""
+    with pytest.raises(Exception, match="Unexpected error"):
+        await create_device_manager(USER_PARAMS)
