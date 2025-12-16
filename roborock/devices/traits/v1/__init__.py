@@ -2,17 +2,33 @@
 
 Traits are modular components that encapsulate specific features of a Roborock
 device. This module provides a factory function to create and initialize the
-appropriate traits for V1 devices based on their capabilities. They can also
-be considered groups of commands and parsing logic for that command.
+appropriate traits for V1 devices based on their capabilities.
 
-Traits have a `refresh()` method that can be called to update their state
-from the device. Some traits may also provide additional methods for modifying
-the device state.
+Using Traits
+------------
+Traits are accessed via the `v1_properties` attribute on a device. Each trait
+represents a specific capability, such as `status`, `consumables`, or `rooms`.
 
-The most common pattern for a trait is to subclass `V1TraitMixin` and a `RoborockBase`
-dataclass, and define a `command` class variable that specifies the `RoborockCommand`
-used to fetch the trait data from the device. See `common.py` for more details
-on common patterns used across traits.
+Traits serve two main purposes:
+1.  **State**: Traits are dataclasses that hold the current state of the device
+    feature. You can access attributes directly (e.g., `device.v1_properties.status.battery`).
+2.  **Commands**: Traits provide methods to control the device. For example,
+    `device.v1_properties.volume.set_volume()`.
+
+Additionally, the `command` trait provides a generic way to send any command to the
+device (e.g. `device.v1_properties.command.send("app_start")`). This is often used
+for basic cleaning operations like starting, stopping, or docking the vacuum.
+
+Most traits have a `refresh()` method that must be called to update their state
+from the device. The state is not updated automatically in real-time unless
+specifically implemented by the trait or via polling.
+
+Adding New Traits
+-----------------
+When adding a new trait, the most common pattern is to subclass `V1TraitMixin`
+and a `RoborockBase` dataclass. You must define a `command` class variable that
+specifies the `RoborockCommand` used to fetch the trait data from the device.
+See `common.py` for more details on common patterns used across traits.
 
 There are some additional decorators in `common.py` that can be used to specify which
 RPC channel to use for the trait (standard, MQTT/cloud, or map-specific).
@@ -43,6 +59,29 @@ from roborock.map.map_parser import MapParserConfig
 from roborock.protocols.v1_protocol import V1RpcChannel
 from roborock.web_api import UserWebApiClient
 
+from . import (
+    child_lock,
+    clean_summary,
+    command,
+    common,
+    consumeable,
+    device_features,
+    do_not_disturb,
+    dust_collection_mode,
+    flow_led_status,
+    home,
+    led_status,
+    map_content,
+    maps,
+    network_info,
+    rooms,
+    routines,
+    smart_wash_params,
+    status,
+    valley_electricity_timer,
+    volume,
+    wash_towel_mode,
+)
 from .child_lock import ChildLockTrait
 from .clean_summary import CleanSummaryTrait
 from .command import CommandTrait
@@ -71,6 +110,7 @@ __all__ = [
     "PropertiesApi",
     "child_lock",
     "clean_summary",
+    "command",
     "common",
     "consumeable",
     "device_features",
