@@ -50,7 +50,7 @@ async def main():
     devices = await device_manager.get_devices()
 
     # Get all vacuum devices. Each device generation has different capabilities
-    # and APIs available so to find vacuumes we filter by the v1 PropertiesApi.
+    # and APIs available so to find vacuums we filter by the v1 PropertiesApi.
     for device in devices:
         if not device.v1_properties:
             continue
