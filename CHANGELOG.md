@@ -2,6 +2,71 @@
 
 <!-- version list -->
 
+## v3.19.0 (2025-12-17)
+
+### Bug Fixes
+
+- Handle AppInitStatus with omitted new_feature_info_str
+  ([#688](https://github.com/Python-roborock/python-roborock/pull/688),
+  [`aaeee22`](https://github.com/Python-roborock/python-roborock/commit/aaeee224bc2a715f04ef05b20ef75eb0d2aaa0b9))
+
+### Chores
+
+- Add additional test coverage for default string value
+  ([#688](https://github.com/Python-roborock/python-roborock/pull/688),
+  [`aaeee22`](https://github.com/Python-roborock/python-roborock/commit/aaeee224bc2a715f04ef05b20ef75eb0d2aaa0b9))
+
+- Add snapshot tests for device payloads
+  ([#676](https://github.com/Python-roborock/python-roborock/pull/676),
+  [`cd7ef7c`](https://github.com/Python-roborock/python-roborock/commit/cd7ef7c96a16568efd14e29013cbbfded8fe7d86))
+
+- Add socket based tests for the new APIs
+  ([#677](https://github.com/Python-roborock/python-roborock/pull/677),
+  [`7d113db`](https://github.com/Python-roborock/python-roborock/commit/7d113db6ea75b4864b7edb1657535ad4dc2b9f8f))
+
+- Apply co-pilot suggestion for dataclass initialization
+  ([#673](https://github.com/Python-roborock/python-roborock/pull/673),
+  [`33c174b`](https://github.com/Python-roborock/python-roborock/commit/33c174b0685c4dc00df6a81437e9b9995934eb61))
+
+- Clean up tests from previous pr
+  ([#687](https://github.com/Python-roborock/python-roborock/pull/687),
+  [`211429b`](https://github.com/Python-roborock/python-roborock/commit/211429bdcf188bf248d1f28f123c6297016b458b))
+
+- Fix lint errors ([#676](https://github.com/Python-roborock/python-roborock/pull/676),
+  [`cd7ef7c`](https://github.com/Python-roborock/python-roborock/commit/cd7ef7c96a16568efd14e29013cbbfded8fe7d86))
+
+- Fix lint errors in test_device_manager.py
+  ([#673](https://github.com/Python-roborock/python-roborock/pull/673),
+  [`33c174b`](https://github.com/Python-roborock/python-roborock/commit/33c174b0685c4dc00df6a81437e9b9995934eb61))
+
+- Fix local session ([#677](https://github.com/Python-roborock/python-roborock/pull/677),
+  [`7d113db`](https://github.com/Python-roborock/python-roborock/commit/7d113db6ea75b4864b7edb1657535ad4dc2b9f8f))
+
+- Remove duplicate test ([#673](https://github.com/Python-roborock/python-roborock/pull/673),
+  [`33c174b`](https://github.com/Python-roborock/python-roborock/commit/33c174b0685c4dc00df6a81437e9b9995934eb61))
+
+- Remove unnecessary whitespace
+  ([#676](https://github.com/Python-roborock/python-roborock/pull/676),
+  [`cd7ef7c`](https://github.com/Python-roborock/python-roborock/commit/cd7ef7c96a16568efd14e29013cbbfded8fe7d86))
+
+- Update default value for new feature string to empty string
+  ([#688](https://github.com/Python-roborock/python-roborock/pull/688),
+  [`aaeee22`](https://github.com/Python-roborock/python-roborock/commit/aaeee224bc2a715f04ef05b20ef75eb0d2aaa0b9))
+
+- Update roborock/diagnostics.py
+  ([#673](https://github.com/Python-roborock/python-roborock/pull/673),
+  [`33c174b`](https://github.com/Python-roborock/python-roborock/commit/33c174b0685c4dc00df6a81437e9b9995934eb61))
+
+- Update tests/conftest.py ([#676](https://github.com/Python-roborock/python-roborock/pull/676),
+  [`cd7ef7c`](https://github.com/Python-roborock/python-roborock/commit/cd7ef7c96a16568efd14e29013cbbfded8fe7d86))
+
+### Features
+
+- Add diagnostics library for tracking stats/counters
+  ([#673](https://github.com/Python-roborock/python-roborock/pull/673),
+  [`33c174b`](https://github.com/Python-roborock/python-roborock/commit/33c174b0685c4dc00df6a81437e9b9995934eb61))
+
+
 ## v3.18.0 (2025-12-17)
 
 ### Bug Fixes
