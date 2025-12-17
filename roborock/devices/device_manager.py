@@ -3,8 +3,9 @@
 import asyncio
 import enum
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from typing import Any
 
 import aiohttp
 
@@ -15,6 +16,7 @@ from roborock.data import (
     UserData,
 )
 from roborock.devices.device import DeviceReadyCallback, RoborockDevice
+from roborock.diagnostics import Diagnostics
 from roborock.exceptions import RoborockException
 from roborock.map.map_parser import MapParserConfig
 from roborock.mqtt.roborock_session import create_lazy_mqtt_session
@@ -58,6 +60,7 @@ class DeviceManager:
         device_creator: DeviceCreator,
         mqtt_session: MqttSession,
         cache: Cache,
+        diagnostics: Diagnostics,
     ) -> None:
         """Initialize the DeviceManager with user data and optional cache storage.
 
@@ -68,12 +71,15 @@ class DeviceManager:
         self._device_creator = device_creator
         self._devices: dict[str, RoborockDevice] = {}
         self._mqtt_session = mqtt_session
+        self._diagnostics = diagnostics
 
     async def discover_devices(self, prefer_cache: bool = True) -> list[RoborockDevice]:
         """Discover all devices for the logged-in user."""
+        self._diagnostics.increment("discover_devices")
         cache_data = await self._cache.get()
         if not cache_data.home_data or not prefer_cache:
             _LOGGER.debug("Fetching home data (prefer_cache=%s)", prefer_cache)
+            self._diagnostics.increment("fetch_home_data")
             try:
                 cache_data.home_data = await self._web_api.get_home_data()
             except RoborockException as ex:
@@ -115,6 +121,10 @@ class DeviceManager:
         self._devices.clear()
         tasks.append(self._mqtt_session.close())
         await asyncio.gather(*tasks)
+
+    def diagnostic_data(self) -> Mapping[str, Any]:
+        """Return diagnostics information about the device manager."""
+        return self._diagnostics.as_dict()
 
 
 @dataclass
@@ -182,7 +192,10 @@ async def create_device_manager(
     web_api = create_web_api_wrapper(user_params, session=session, cache=cache)
     user_data = user_params.user_data
 
+    diagnostics = Diagnostics()
+
     mqtt_params = create_mqtt_params(user_data.rriot)
+    mqtt_params.diagnostics = diagnostics.subkey("mqtt_session")
     mqtt_session = await create_lazy_mqtt_session(mqtt_params)
 
     def device_creator(home_data: HomeData, device: HomeDataDevice, product: HomeDataProduct) -> RoborockDevice:
@@ -226,6 +239,6 @@ async def create_device_manager(
             dev.add_ready_callback(ready_callback)
         return dev
 
-    manager = DeviceManager(web_api, device_creator, mqtt_session=mqtt_session, cache=cache)
+    manager = DeviceManager(web_api, device_creator, mqtt_session=mqtt_session, cache=cache, diagnostics=diagnostics)
     await manager.discover_devices()
     return manager
