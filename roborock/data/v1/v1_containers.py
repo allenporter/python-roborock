@@ -585,7 +585,7 @@ class AppInitStatus(RoborockBase):
     local_info: AppInitStatusLocalInfo
     feature_info: list[int]
     new_feature_info: int
-    new_feature_info_str: str
+    new_feature_info_str: str | None = None
     new_feature_info_2: int | None = None
     carriage_type: int | None = None
     dsp_version: str | None = None

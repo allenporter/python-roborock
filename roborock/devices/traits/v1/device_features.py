@@ -44,7 +44,7 @@ class DeviceFeaturesTrait(DeviceFeatures, common.V1TraitMixin):
         app_status = AppInitStatus.from_dict(response[0])
         return DeviceFeatures.from_feature_flags(
             new_feature_info=app_status.new_feature_info,
-            new_feature_info_str=app_status.new_feature_info_str,
+            new_feature_info_str=app_status.new_feature_info_str or "",
             feature_info=app_status.feature_info,
             product_nickname=self._nickname,
         )
