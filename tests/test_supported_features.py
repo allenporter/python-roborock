@@ -59,3 +59,17 @@ def test_device_feature_serialization(snapshot: SnapshotAssertion) -> None:
     serialized = device_features.as_dict()
     deserialized = DeviceFeatures.from_dict(serialized)
     assert deserialized == device_features
+
+
+def test_new_feature_str_missing():
+    """Ensure that DeviceFeatures missing fields can still be created."""
+    device_features = DeviceFeatures.from_feature_flags(
+        new_feature_info=0,
+        new_feature_info_str="",
+        feature_info=[],
+        product_nickname=None,
+    )
+    # Check arbitrary fields that are false by default
+    assert not device_features.is_dust_collection_setting_supported
+    assert not device_features.is_hot_wash_towel_supported
+    assert not device_features.is_show_clean_finish_reason_supported
