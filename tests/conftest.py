@@ -20,6 +20,11 @@ from roborock.version_1_apis.roborock_local_client_v1 import RoborockLocalClient
 from roborock.version_1_apis.roborock_mqtt_client_v1 import RoborockMqttClientV1
 from tests.mock_data import HOME_DATA_RAW, HOME_DATA_SCENES_RAW, TEST_LOCAL_API_HOST, USER_DATA
 
+# Fixtures for the newer APIs in subdirectories
+pytest_plugins = [
+    "tests.mqtt_fixtures",
+]
+
 _LOGGER = logging.getLogger(__name__)
 
 
