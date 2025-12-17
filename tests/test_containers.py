@@ -646,3 +646,4 @@ def test_partial_app_init_status() -> None:
     )
     assert app_init_status.local_info.name == "custom_A.03.0096_FCC"
     assert app_init_status.feature_info == [111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125]
+    assert app_init_status.new_feature_info_str == ""
