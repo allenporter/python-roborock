@@ -4,7 +4,19 @@ The devices module provides functionality to discover Roborock devices on the
 network. This section documents the full lifecycle of device discovery across
 Cloud and Network.
 
-## Quick Start: Understanding Device Protocols
+## Usage TL;DR
+
+*   **Discovery**: Use `roborock.devices.device_manager.DeviceManager` to get device instances.
+    *   Call `create_device_manager(user_params)` then `await device_manager.get_devices()`.
+*   **Control**:
+    *   **Vacuums (V1)**: Use `device.v1_properties` to access traits like `status` or `consumables`.
+        *   Call `await trait.refresh()` to update state.
+        *   Use `device.v1_properties.command.send()` for raw commands (start/stop).
+    *   **Washers (A01)**: Use `device.a01_properties` for Dyad/Zeo devices.
+        *   Use `await device.a01_properties.query_values([...])` to get state.
+        *   Use `await device.a01_properties.set_value(protocol, value)` to control.
+
+## Background: Understanding Device Protocols
 
 **The library supports three device protocol versions, each with different capabilities:**
 
@@ -18,7 +30,7 @@ Cloud and Network.
 
 **Key Point:** The `DeviceManager` automatically detects the protocol version and creates the appropriate channel type. You don't need to handle this manually.
 
-## Architecture Overview
+## Internal Architecture
 
 The library is organized into distinct layers, each with a specific responsibility. **Different device protocols use different channel implementations:**
 
@@ -138,7 +150,7 @@ graph TB
 | **A01** (`pv=A01`) | `MqttChannel` + helpers | ❌ No | Direct MQTT | Dyad, Zeo washers |
 | **B01** (`pv=B01`) | `MqttChannel` + helpers | ❌ No | Direct MQTT | Some newer models |
 
-## Init account setup
+## Account Setup Internals
 
 ### Login
 
@@ -151,7 +163,7 @@ graph TB
   - This contains information used to connect to MQTT
   - You get an `-eu` suffix in the API URLs if you are in the eu and `-us` if you are in the us
 
-## Home Data
+## Home Data Internals
 
 The `HomeData` includes information about the various devices in the home. We use `v3`
 and it is notable that if devices don't show up in the `home_data` response it is likely
@@ -174,7 +186,7 @@ that a newer version of the API should be used.
   - There is another REST request `get_rooms` that will do the same thing.
   - Note: If we cache home_data, we likely need to use `get_rooms` to get rooms fresh
 
-## Device Connections
+## Connection Implementation
 
 ### Connection Flow by Protocol
 
@@ -343,7 +355,7 @@ graph LR
 3. **Timeout Handling**: Commands timeout after 10 seconds if no response is received
 4. **Multiple Strategies**: `V1Channel` tries local first, then falls back to MQTT if local fails
 
-## Design
+## Class Design & Components
 
 ### Current Architecture
 

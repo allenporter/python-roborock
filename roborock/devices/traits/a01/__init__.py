@@ -1,3 +1,24 @@
+"""Create traits for A01 devices.
+
+This module provides the API implementations for A01 protocol devices, which include
+Dyad (Wet/Dry Vacuums) and Zeo (Washing Machines).
+
+Using A01 APIs
+--------------
+A01 devices expose a single API object that handles all device interactions. This API is
+available on the device instance (typically via `device.a01_properties`).
+
+The API provides two main methods:
+1.  **query_values(protocols)**: Fetches current state for specific data points.
+    You must pass a list of protocol enums (e.g. `RoborockDyadDataProtocol` or
+    `RoborockZeoProtocol`) to request specific data.
+2.  **set_value(protocol, value)**: Sends a command to the device to change a setting
+    or perform an action.
+
+Note that these APIs fetch data directly from the device upon request and do not
+cache state internally.
+"""
+
 import json
 from collections.abc import Callable
 from datetime import time
