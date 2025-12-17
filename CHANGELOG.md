@@ -2,6 +2,53 @@
 
 <!-- version list -->
 
+## v3.18.0 (2025-12-17)
+
+### Bug Fixes
+
+- Use value instead of name to get lower cased
+  ([#686](https://github.com/Python-roborock/python-roborock/pull/686),
+  [`728e53a`](https://github.com/Python-roborock/python-roborock/commit/728e53a44949c9044fc64e53725fe0103b43b4a8))
+
+### Chores
+
+- Fix pydoc string ([#674](https://github.com/Python-roborock/python-roborock/pull/674),
+  [`c576d5f`](https://github.com/Python-roborock/python-roborock/commit/c576d5ff1e1247c20a1b1c0f4895b8870f929734))
+
+- Fix typo in README.md ([#685](https://github.com/Python-roborock/python-roborock/pull/685),
+  [`d01287a`](https://github.com/Python-roborock/python-roborock/commit/d01287a3a9883ee9698fbe6ad9bd95e4e8779b5e))
+
+- Improve library user documentation
+  ([#685](https://github.com/Python-roborock/python-roborock/pull/685),
+  [`d01287a`](https://github.com/Python-roborock/python-roborock/commit/d01287a3a9883ee9698fbe6ad9bd95e4e8779b5e))
+
+- Remove unnecessary assert in test
+  ([#674](https://github.com/Python-roborock/python-roborock/pull/674),
+  [`c576d5f`](https://github.com/Python-roborock/python-roborock/commit/c576d5ff1e1247c20a1b1c0f4895b8870f929734))
+
+- Style cleanup re-raising a bare exception
+  ([#674](https://github.com/Python-roborock/python-roborock/pull/674),
+  [`c576d5f`](https://github.com/Python-roborock/python-roborock/commit/c576d5ff1e1247c20a1b1c0f4895b8870f929734))
+
+- Update roborock/data/code_mappings.py
+  ([#686](https://github.com/Python-roborock/python-roborock/pull/686),
+  [`728e53a`](https://github.com/Python-roborock/python-roborock/commit/728e53a44949c9044fc64e53725fe0103b43b4a8))
+
+- **deps-dev**: Bump pytest from 8.4.2 to 9.0.2
+  ([#681](https://github.com/Python-roborock/python-roborock/pull/681),
+  [`5520a56`](https://github.com/Python-roborock/python-roborock/commit/5520a562f1913e11dea6a007b4b2accb3d30d222))
+
+### Features
+
+- Allow device manager to perform rediscovery of devices
+  ([#674](https://github.com/Python-roborock/python-roborock/pull/674),
+  [`c576d5f`](https://github.com/Python-roborock/python-roborock/commit/c576d5ff1e1247c20a1b1c0f4895b8870f929734))
+
+- Improvements to B01 for HA integration
+  ([#686](https://github.com/Python-roborock/python-roborock/pull/686),
+  [`728e53a`](https://github.com/Python-roborock/python-roborock/commit/728e53a44949c9044fc64e53725fe0103b43b4a8))
+
+
 ## v3.17.0 (2025-12-15)
 
 ### Chores
