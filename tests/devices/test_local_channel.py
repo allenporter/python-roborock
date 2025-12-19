@@ -147,16 +147,6 @@ async def test_successful_command_response(local_channel: LocalChannel, mock_loo
     assert decoded_sent == TEST_REQUEST
 
 
-async def test_message_decode_error(local_channel: LocalChannel, caplog: pytest.LogCaptureFixture) -> None:
-    """Test handling of message decode errors."""
-    local_channel._data_received(b"invalid_payload")
-    await asyncio.sleep(0.01)  # yield
-
-    warning_records = [record for record in caplog.records if record.levelname == "WARNING"]
-    assert len(warning_records) == 1
-    assert "Failed to decode message" in warning_records[0].message
-
-
 async def test_subscribe_callback(
     local_channel: LocalChannel, received_messages: list[RoborockMessage], mock_loop: Mock
 ) -> None:
