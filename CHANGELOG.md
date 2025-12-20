@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v3.19.1 (2025-12-20)
+
+### Bug Fixes
+
+- Revert A01 padding ([#694](https://github.com/Python-roborock/python-roborock/pull/694),
+  [`ac622cc`](https://github.com/Python-roborock/python-roborock/commit/ac622cc07b497b03981fadd97c039555c31a0bae))
+
+### Chores
+
+- Update snapshot ([#694](https://github.com/Python-roborock/python-roborock/pull/694),
+  [`ac622cc`](https://github.com/Python-roborock/python-roborock/commit/ac622cc07b497b03981fadd97c039555c31a0bae))
+
+
 ## v3.19.0 (2025-12-17)
 
 ### Bug Fixes
