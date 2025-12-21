@@ -4,6 +4,7 @@ import asyncio
 import copy
 import datetime
 from collections.abc import Callable, Generator
+from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
 
 import aiomqtt
@@ -42,20 +43,65 @@ def auto_fast_backoff(fast_backoff_fixture: None) -> None:
     """Automatically use the fast backoff fixture."""
 
 
-@pytest.fixture(name="mqtt_client_lite")
-def mqtt_client_lite_fixture() -> Generator[AsyncMock, None, None]:
+class FakeAsyncIterator:
+    """Fake async iterator that waits for messages to arrive, but they never do.
+
+    This is used for testing exceptions in other client functions.
+    """
+
+    def __init__(self) -> None:
+        self.loop = True
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self) -> None:
+        """Iterator that does not generate any messages."""
+        while self.loop:
+            await asyncio.sleep(0.01)
+
+
+@pytest.fixture(name="message_iterator")
+def message_iterator_fixture() -> FakeAsyncIterator:
+    """Fixture to provide a side effect for creating the MQTT client."""
+    return FakeAsyncIterator()
+
+
+@pytest.fixture(name="mock_client")
+def mock_client_fixture(message_iterator: FakeAsyncIterator) -> Generator[AsyncMock, None, None]:
     """A fixture that provides a mocked aiomqtt Client.
 
     This is lighter weight that `mock_aiomqtt_client` that uses real sockets.
     """
     mock_client = AsyncMock()
-    mock_client.messages = FakeAsyncIterator()
+    mock_client.messages = message_iterator
+    return mock_client
 
+
+@pytest.fixture(name="create_client_side_effect")
+def create_client_side_effect_fixture() -> Exception | None:
+    """Fixture to provide a side effect for creating the MQTT client."""
+    return None
+
+
+@pytest.fixture(name="mock_aenter_client")
+def mock_aenter_client_fixture(mock_client: AsyncMock, create_client_side_effect: Exception | None) -> AsyncMock:
+    """Fixture to provide a side effect for creating the MQTT client."""
     mock_aenter = AsyncMock()
     mock_aenter.return_value = mock_client
+    mock_aenter.side_effect = create_client_side_effect
+    return mock_aenter
+
+
+@pytest.fixture(name="mqtt_client_lite")
+def mqtt_client_lite_fixture(
+    mock_client: AsyncMock,
+    mock_aenter_client: AsyncMock,
+) -> Generator[AsyncMock, None, None]:
+    """Fixture to create a mock MQTT client with patched aiomqtt.Client."""
 
     mock_shim = Mock()
-    mock_shim.return_value.__aenter__ = mock_aenter
+    mock_shim.return_value.__aenter__ = mock_aenter_client
     mock_shim.return_value.__aexit__ = AsyncMock()
 
     with patch("roborock.mqtt.roborock_session.aiomqtt.Client", mock_shim):
@@ -126,21 +172,6 @@ async def test_publish_command(push_mqtt_response: Callable[[bytes], None]) -> N
     assert session.connected
     await session.close()
     assert not session.connected
-
-
-class FakeAsyncIterator:
-    """Fake async iterator that waits for messages to arrive, but they never do.
-
-    This is used for testing exceptions in other client functions.
-    """
-
-    def __aiter__(self):
-        return self
-
-    async def __anext__(self) -> None:
-        """Iterator that does not generate any messages."""
-        while True:
-            await asyncio.sleep(1)
 
 
 async def test_publish_failure(mqtt_client_lite: AsyncMock) -> None:
@@ -446,3 +477,64 @@ async def test_diagnostics_data(push_mqtt_response: Callable[[bytes], None]) -> 
     assert data.get("subscribe_count") == 2
     assert data.get("dispatch_message_count") == 3
     assert data.get("close") == 1
+
+
+@pytest.mark.parametrize(
+    ("create_client_side_effect"),
+    [
+        # Unauthorized
+        aiomqtt.MqttCodeError(rc=135),
+    ],
+)
+async def test_session_unauthorized_hook(mqtt_client_lite: AsyncMock) -> None:
+    """Test the MQTT session."""
+
+    unauthorized = asyncio.Event()
+
+    params = copy.deepcopy(FAKE_PARAMS)
+    params.unauthorized_hook = unauthorized.set
+
+    with pytest.raises(MqttSessionUnauthorized):
+        await create_mqtt_session(params)
+
+    assert unauthorized.is_set()
+
+
+async def test_session_unauthorized_after_start(
+    mock_aenter_client: AsyncMock,
+    message_iterator: FakeAsyncIterator,
+    mqtt_client_lite: AsyncMock,
+    push_mqtt_response: Callable[[bytes], None],
+) -> None:
+    """Test the MQTT session."""
+
+    # Configure a hook that is notified of unauthorized errors
+    unauthorized = asyncio.Event()
+    params = copy.deepcopy(FAKE_PARAMS)
+    params.unauthorized_hook = unauthorized.set
+
+    # The client will succeed on first connection attempt, then fail with
+    # unauthorized messages on all future attempts.
+    request_count = 0
+
+    def succeed_then_fail_unauthorized() -> Any:
+        nonlocal request_count
+        request_count += 1
+        if request_count == 1:
+            return mqtt_client_lite
+        raise aiomqtt.MqttCodeError(rc=135)
+
+    mock_aenter_client.side_effect = succeed_then_fail_unauthorized
+    # Don't produce messages, just exit and restart to reconnect
+    message_iterator.loop = False
+
+    push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
+
+    session = await create_mqtt_session(params)
+    assert session.connected
+
+    try:
+        async with asyncio.timeout(10):
+            assert await unauthorized.wait()
+    finally:
+        await session.close()

@@ -20,7 +20,7 @@ from roborock.diagnostics import Diagnostics
 from roborock.exceptions import RoborockException
 from roborock.map.map_parser import MapParserConfig
 from roborock.mqtt.roborock_session import create_lazy_mqtt_session
-from roborock.mqtt.session import MqttSession
+from roborock.mqtt.session import MqttSession, SessionUnauthorizedHook
 from roborock.protocol import create_mqtt_params
 from roborock.web_api import RoborockApiClient, UserWebApiClient
 
@@ -173,6 +173,7 @@ async def create_device_manager(
     map_parser_config: MapParserConfig | None = None,
     session: aiohttp.ClientSession | None = None,
     ready_callback: DeviceReadyCallback | None = None,
+    mqtt_session_unauthorized_hook: SessionUnauthorizedHook | None = None,
 ) -> DeviceManager:
     """Convenience function to create and initialize a DeviceManager.
 
@@ -196,6 +197,7 @@ async def create_device_manager(
 
     mqtt_params = create_mqtt_params(user_data.rriot)
     mqtt_params.diagnostics = diagnostics.subkey("mqtt_session")
+    mqtt_params.unauthorized_hook = mqtt_session_unauthorized_hook
     mqtt_session = await create_lazy_mqtt_session(mqtt_params)
 
     def device_creator(home_data: HomeData, device: HomeDataDevice, product: HomeDataProduct) -> RoborockDevice:
