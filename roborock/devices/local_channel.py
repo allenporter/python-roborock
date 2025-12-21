@@ -54,7 +54,7 @@ class LocalChannel(Channel):
 
     def __init__(self, host: str, local_key: str, device_uid: str) -> None:
         self._host = host
-        self._logger = RoborockLoggerAdapter(device_uid, _LOGGER)
+        self._logger = RoborockLoggerAdapter(duid=device_uid, logger=_LOGGER)
         self._transport: asyncio.Transport | None = None
         self._protocol: _LocalProtocol | None = None
         self._subscribers: CallbackList[RoborockMessage] = CallbackList(self._logger)

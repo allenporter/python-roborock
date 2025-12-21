@@ -37,7 +37,7 @@ class RoborockMqttClientA01(RoborockMqttClient, RoborockClientA01):
         RoborockMqttClient.__init__(self, user_data, device_info)
         RoborockClientA01.__init__(self, device_info, category)
         self.queue_timeout = queue_timeout
-        self._logger = RoborockLoggerAdapter(device_info.device.name, _LOGGER)
+        self._logger = RoborockLoggerAdapter(name=device_info.device.name, logger=_LOGGER)
 
     async def _send_message(self, roborock_message: RoborockMessage):
         await self._validate_connection()

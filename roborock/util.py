@@ -10,6 +10,7 @@ from collections.abc import Callable, Coroutine, MutableMapping
 from typing import Any, TypeVar
 
 from roborock import RoborockException
+from roborock.diagnostics import redact_device_uid
 
 T = TypeVar("T")
 DEFAULT_TIME_ZONE: datetime.tzinfo | None = datetime.datetime.now().astimezone().tzinfo
@@ -81,9 +82,19 @@ class RepeatableTask:
 
 
 class RoborockLoggerAdapter(logging.LoggerAdapter):
-    def __init__(self, prefix: str, logger: logging.Logger) -> None:
-        super().__init__(logger, {})
-        self.prefix = prefix
+    def __init__(
+        self,
+        duid: str | None = None,
+        name: str | None = None,
+        logger: logging.Logger | None = None,
+    ) -> None:
+        super().__init__(logger or logging.getLogger(__name__), {})
+        if name is not None:
+            self.prefix = name
+        elif duid is not None:
+            self.prefix = redact_device_uid(duid)
+        else:
+            raise ValueError("Either duid or name must be provided")
 
     def process(self, msg: str, kwargs: MutableMapping[str, Any]) -> tuple[str, MutableMapping[str, Any]]:
         return f"[{self.prefix}] {msg}", kwargs

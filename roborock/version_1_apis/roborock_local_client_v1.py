@@ -58,7 +58,7 @@ class RoborockLocalClientV1(RoborockClientV1, RoborockClient):
         self._ack_nonce: int | None = None
         self._set_encoder_decoder()
         self.queue_timeout = queue_timeout
-        self._logger = RoborockLoggerAdapter(device_data.device.name, _LOGGER)
+        self._logger = RoborockLoggerAdapter(name=device_data.device.name, logger=_LOGGER)
 
     @property
     def local_protocol_version(self) -> LocalProtocolVersion:
