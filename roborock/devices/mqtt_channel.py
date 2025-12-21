@@ -87,7 +87,7 @@ class MqttChannel(Channel):
         try:
             return await self._mqtt_session.publish(self._publish_topic, encoded_msg)
         except MqttSessionException as e:
-            self._logger.exception("Error publishing MQTT message: %s", e)
+            self._logger.debug("Error publishing MQTT message: %s", e)
             raise RoborockException(f"Failed to publish MQTT message: {e}") from e
 
     async def restart(self) -> None:
