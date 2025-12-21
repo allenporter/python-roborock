@@ -45,7 +45,7 @@ class MqttParams:
 
     unauthorized_hook: SessionUnauthorizedHook | None = None
     """Optional hook invoked when an unauthorized error is received.
-    
+
     This may be invoked by the background reconnect logic when an
     unauthorized error is received from the broker. The caller may use
     this hook to refresh credentials or take other actions as needed.

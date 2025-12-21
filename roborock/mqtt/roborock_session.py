@@ -220,7 +220,7 @@ class RoborockMqttSession(MqttSession):
             else:
                 _LOGGER.info("MQTT error: %s", err)
             raise
-        except (RuntimeError, Exception) as err:
+        except Exception as err:
             self._diagnostics.increment("connect_failure:uncaught")
             # This error is thrown when the MQTT loop is cancelled
             # and the generator is not stopped.

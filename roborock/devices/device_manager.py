@@ -183,6 +183,9 @@ async def create_device_manager(
         map_parser_config: Optional configuration for parsing maps.
         session: Optional aiohttp ClientSession to use for HTTP requests.
         ready_callback: Optional callback to be notified when a device is ready.
+        mqtt_session_unauthorized_hook: Optional hook for MQTT session unauthorized
+          events which may indicate rate limiting or revoked credentials. The
+          caller may use this to refresh authentication tokens as needed.
 
     Returns:
         An initialized DeviceManager with discovered devices.
