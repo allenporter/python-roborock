@@ -2,7 +2,6 @@
 
 import asyncio
 import json
-import logging
 from collections.abc import Generator
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -148,7 +147,9 @@ async def test_successful_command_response(local_channel: LocalChannel, mock_loo
     assert decoded_sent == TEST_REQUEST
 
 
-async def test_message_decode_error(local_channel: LocalChannel, caplog: pytest.LogCaptureFixture, received_messages: list[RoborockMessage]) -> None:
+async def test_message_decode_error(
+    local_channel: LocalChannel, caplog: pytest.LogCaptureFixture, received_messages: list[RoborockMessage]
+) -> None:
     """Test handling of message decode errors."""
     local_channel._data_received(b"invalid_payload")
     await asyncio.sleep(0.01)  # yield
