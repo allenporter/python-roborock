@@ -3,11 +3,11 @@
 import asyncio
 import json
 import logging
+import warnings
 from collections.abc import AsyncGenerator, Callable, Generator
 from queue import Queue
 from typing import Any
 from unittest.mock import Mock, patch
-import warnings
 
 import pytest
 import syrupy
