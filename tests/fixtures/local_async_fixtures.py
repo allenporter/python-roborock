@@ -1,9 +1,13 @@
 import asyncio
+import logging
+import warnings
 from collections.abc import Awaitable, Callable, Generator
 from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
+
+_LOGGER = logging.getLogger(__name__)
 
 AsyncLocalRequestHandler = Callable[[bytes], Awaitable[bytes | None]]
 
@@ -16,10 +20,11 @@ def received_requests_fixture() -> asyncio.Queue[bytes]:
 
 @pytest.fixture(name="local_response_queue")
 def response_queue_fixture() -> Generator[asyncio.Queue[bytes], None, None]:
-    """Fixture that provides access to the received requests."""
+    """Fixture that provides a queue of responses to be sent to the client."""
     response_queue: asyncio.Queue[bytes] = asyncio.Queue()
     yield response_queue
-    # assert response_queue.empty(), "Not all fake responses were consumed"
+    if not response_queue.empty():
+        warnings.warn("Some enqueued local device responses were not consumed during the test")
 
 
 @pytest.fixture(name="local_async_request_handler")

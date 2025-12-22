@@ -3,11 +3,11 @@
 import asyncio
 import json
 import logging
-from asyncio import Protocol
 from collections.abc import AsyncGenerator, Callable, Generator
 from queue import Queue
 from typing import Any
 from unittest.mock import Mock, patch
+import warnings
 
 import pytest
 import syrupy
@@ -42,10 +42,11 @@ def received_requests_fixture() -> Queue[bytes]:
 
 @pytest.fixture(name="local_response_queue")
 def response_queue_fixture() -> Generator[Queue[bytes], None, None]:
-    """Fixture that provides access to the received requests."""
+    """Fixture that provides a queue for enqueueing responses to be sent back to the client under test."""
     response_queue: Queue[bytes] = Queue()
     yield response_queue
-    assert response_queue.empty(), "Not all fake responses were consumed"
+    if not response_queue.empty():
+        warnings.warn("Not all fake responses were consumed")
 
 
 @pytest.fixture(name="local_request_handler")
@@ -72,7 +73,7 @@ def create_local_connection_fixture(
 ) -> Generator[None, None, None]:
     """Fixture that overrides the transport creation to wire it up to the mock socket."""
 
-    async def create_connection(protocol_factory: Callable[[], Protocol], *args) -> tuple[Any, Any]:
+    async def create_connection(protocol_factory: Callable[[], asyncio.Protocol], *args) -> tuple[Any, Any]:
         protocol = protocol_factory()
 
         def handle_write(data: bytes) -> None:

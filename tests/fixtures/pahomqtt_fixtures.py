@@ -73,7 +73,7 @@ def received_requests_fixture() -> Queue[bytes]:
 
 @pytest.fixture(name="mqtt_response_queue")
 def response_queue_fixture() -> Generator[Queue[bytes], None, None]:
-    """Fixture that provides access to the received requests."""
+    """Fixture that provides a queue for enqueueing responses to be sent to the client under test."""
     response_queue: Queue[bytes] = Queue()
     yield response_queue
     assert response_queue.empty(), "Not all fake responses were consumed"
