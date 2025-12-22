@@ -2,6 +2,61 @@
 
 <!-- version list -->
 
+## v3.20.0 (2025-12-22)
+
+### Bug Fixes
+
+- Catch broad exception ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+- Lower log level for mqtt channel publish exceptions
+  ([#696](https://github.com/Python-roborock/python-roborock/pull/696),
+  [`642004a`](https://github.com/Python-roborock/python-roborock/commit/642004a3d7f439f7d614aa439e6705377c626a11))
+
+- Reduce log level of decode errors
+  ([#691](https://github.com/Python-roborock/python-roborock/pull/691),
+  [`98d89f0`](https://github.com/Python-roborock/python-roborock/commit/98d89f027c57195869b65123c8396a20e7a7d648))
+
+- Try to fix fan setting ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+### Chores
+
+- Add self.send ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+- Add testing ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+- Address PR comments ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+- Change typing ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+- Fix tests ([#691](https://github.com/Python-roborock/python-roborock/pull/691),
+  [`98d89f0`](https://github.com/Python-roborock/python-roborock/commit/98d89f027c57195869b65123c8396a20e7a7d648))
+
+- More debug logs and error handling
+  ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+- Move send and add docs ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+- Update tests ([#691](https://github.com/Python-roborock/python-roborock/pull/691),
+  [`98d89f0`](https://github.com/Python-roborock/python-roborock/commit/98d89f027c57195869b65123c8396a20e7a7d648))
+
+### Features
+
+- Add some basic setters for q7
+  ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+- Add some more actions ([#690](https://github.com/Python-roborock/python-roborock/pull/690),
+  [`f9f8e43`](https://github.com/Python-roborock/python-roborock/commit/f9f8e43ca97f1136191db92174e937fc1906822d))
+
+
 ## v3.19.1 (2025-12-20)
 
 ### Bug Fixes
