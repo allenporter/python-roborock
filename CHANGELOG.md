@@ -2,6 +2,20 @@
 
 <!-- version list -->
 
+## v3.20.1 (2025-12-22)
+
+### Bug Fixes
+
+- Improve debug logs redaction ([#698](https://github.com/Python-roborock/python-roborock/pull/698),
+  [`067794c`](https://github.com/Python-roborock/python-roborock/commit/067794c0b24847520b423fdaacda679aab550cbd))
+
+### Chores
+
+- Address co-pilot readability comments
+  ([#698](https://github.com/Python-roborock/python-roborock/pull/698),
+  [`067794c`](https://github.com/Python-roborock/python-roborock/commit/067794c0b24847520b423fdaacda679aab550cbd))
+
+
 ## v3.20.0 (2025-12-22)
 
 ### Bug Fixes
