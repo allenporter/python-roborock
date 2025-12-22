@@ -32,7 +32,7 @@ class RoborockMqttClientV1(RoborockMqttClient, RoborockClientV1):
         security_data = create_security_data(rriot)
         RoborockClientV1.__init__(self, device_info, security_data=security_data)
         self.queue_timeout = queue_timeout
-        self._logger = RoborockLoggerAdapter(device_info.device.name, _LOGGER)
+        self._logger = RoborockLoggerAdapter(name=device_info.device.name, logger=_LOGGER)
         self._security_data = security_data
 
     async def _send_command(
