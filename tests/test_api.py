@@ -23,6 +23,7 @@ from roborock.protocol import MessageParser
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 from roborock.version_1_apis import RoborockMqttClientV1
 from roborock.web_api import PreparedRequest, RoborockApiClient
+from tests.fixtures.logging import CapturedRequestLog
 from tests.mock_data import (
     BASE_URL_REQUEST,
     GET_CODE_RESPONSE,
@@ -34,7 +35,33 @@ from tests.mock_data import (
 )
 
 from . import mqtt_packet
-from .conftest import CapturedRequestLog
+
+QUEUE_TIMEOUT = 10
+
+pytest_plugins = [
+    "tests.fixtures.pahomqtt_fixtures",
+]
+
+
+@pytest.fixture(name="mqtt_client")
+async def mqtt_client(
+    mock_paho_mqtt_create_connection: None, mock_paho_mqtt_select: None
+) -> AsyncGenerator[RoborockMqttClientV1, None]:
+    user_data = UserData.from_dict(USER_DATA)
+    home_data = HomeData.from_dict(HOME_DATA_RAW)
+    device_info = DeviceData(
+        device=home_data.devices[0],
+        model=home_data.products[0].model,
+    )
+    client = RoborockMqttClientV1(user_data, device_info, queue_timeout=QUEUE_TIMEOUT)
+    try:
+        yield client
+    finally:
+        if not client.is_connected():
+            try:
+                await client.async_release()
+            except Exception:
+                pass
 
 
 def test_can_create_prepared_request():
@@ -143,10 +170,10 @@ async def test_get_prop():
 
 @pytest.fixture(name="connected_mqtt_client")
 async def connected_mqtt_client_fixture(
-    response_queue: Queue, mqtt_client: RoborockMqttClientV1
+    mqtt_response_queue: Queue, mqtt_client: RoborockMqttClientV1
 ) -> AsyncGenerator[RoborockMqttClientV1, None]:
-    response_queue.put(mqtt_packet.gen_connack(rc=0, flags=2))
-    response_queue.put(mqtt_packet.gen_suback(1, 0))
+    mqtt_response_queue.put(mqtt_packet.gen_connack(rc=0, flags=2))
+    mqtt_response_queue.put(mqtt_packet.gen_suback(1, 0))
     await mqtt_client.async_connect()
     yield mqtt_client
     if mqtt_client.is_connected():
@@ -156,7 +183,7 @@ async def connected_mqtt_client_fixture(
             pass
 
 
-async def test_async_connect(received_requests: Queue, connected_mqtt_client: RoborockMqttClientV1) -> None:
+async def test_async_connect(mqtt_received_requests: Queue, connected_mqtt_client: RoborockMqttClientV1) -> None:
     """Test connecting to the MQTT broker."""
 
     assert connected_mqtt_client.is_connected()
@@ -169,20 +196,20 @@ async def test_async_connect(received_requests: Queue, connected_mqtt_client: Ro
 
     # Broker received a connect and subscribe. Disconnect packet is not
     # guaranteed to be captured by the time the async_disconnect returns
-    assert received_requests.qsize() >= 2  # Connect and Subscribe
+    assert mqtt_received_requests.qsize() >= 2  # Connect and Subscribe
 
 
 async def test_connect_failure_response(
-    received_requests: Queue, response_queue: Queue, mqtt_client: RoborockMqttClientV1
+    mqtt_received_requests: Queue, mqtt_response_queue: Queue, mqtt_client: RoborockMqttClientV1
 ) -> None:
     """Test the broker responding with a connect failure."""
 
-    response_queue.put(mqtt_packet.gen_connack(rc=1))
+    mqtt_response_queue.put(mqtt_packet.gen_connack(rc=1))
 
     with pytest.raises(RoborockException, match="Failed to connect"):
         await mqtt_client.async_connect()
     assert not mqtt_client.is_connected()
-    assert received_requests.qsize() == 1  # Connect attempt
+    assert mqtt_received_requests.qsize() == 1  # Connect attempt
 
 
 async def test_disconnect_already_disconnected(connected_mqtt_client: RoborockMqttClientV1) -> None:
@@ -209,8 +236,8 @@ async def test_disconnect_failure(connected_mqtt_client: RoborockMqttClientV1) -
 
 
 async def test_disconnect_failure_response(
-    received_requests: Queue,
-    response_queue: Queue,
+    mqtt_received_requests: Queue,
+    mqtt_response_queue: Queue,
     connected_mqtt_client: RoborockMqttClientV1,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
@@ -218,7 +245,7 @@ async def test_disconnect_failure_response(
 
     # Enqueue a failed message -- however, the client does not process any
     # further messages and there is no parsing error, and no failed log messages.
-    response_queue.put(mqtt_packet.gen_disconnect(reason_code=1))
+    mqtt_response_queue.put(mqtt_packet.gen_disconnect(reason_code=1))
     assert connected_mqtt_client.is_connected()
     with caplog.at_level(logging.ERROR):
         await connected_mqtt_client.async_disconnect()
@@ -233,19 +260,18 @@ async def test_async_release(connected_mqtt_client: RoborockMqttClientV1) -> Non
 
 
 async def test_subscribe_failure(
-    received_requests: Queue, response_queue: Queue, mqtt_client: RoborockMqttClientV1
+    mqtt_received_requests: Queue, mqtt_response_queue: Queue, mqtt_client: RoborockMqttClientV1
 ) -> None:
     """Test the broker responding with the wrong message type on subscribe."""
 
-    response_queue.put(mqtt_packet.gen_connack(rc=0, flags=2))
-
+    mqtt_response_queue.put(mqtt_packet.gen_connack(rc=0, flags=2))
     with (
         patch("roborock.cloud_api.mqtt.Client.subscribe", return_value=(mqtt.MQTT_ERR_NO_CONN, None)),
         pytest.raises(RoborockException, match="Failed to subscribe"),
     ):
         await mqtt_client.async_connect()
 
-    assert received_requests.qsize() == 1  # Connect attempt
+    assert mqtt_received_requests.qsize() == 1  # Connect attempt
 
     # NOTE: The client is "connected" but not "subscribed" and cannot recover
     # from this state without disconnecting first. This can likely be improved.
@@ -254,7 +280,7 @@ async def test_subscribe_failure(
     # Attempting to reconnect is a no-op since the client already thinks it is connected
     await mqtt_client.async_connect()
     assert mqtt_client.is_connected()
-    assert received_requests.qsize() == 1
+    assert mqtt_received_requests.qsize() == 1
 
 
 def build_rpc_response(message: dict[str, Any]) -> bytes:
@@ -276,8 +302,8 @@ def build_rpc_response(message: dict[str, Any]) -> bytes:
 
 
 async def test_get_room_mapping(
-    received_requests: Queue,
-    response_queue: Queue,
+    mqtt_received_requests: Queue,
+    mqtt_response_queue: Queue,
     connected_mqtt_client: RoborockMqttClientV1,
     snapshot: syrupy.SnapshotAssertion,
     log: CapturedRequestLog,
@@ -291,7 +317,7 @@ async def test_get_room_mapping(
             "result": [[16, "2362048"], [17, "2362044"]],
         }
     )
-    response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
+    mqtt_response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
 
     with patch("roborock.protocols.v1_protocol.get_next_int", return_value=test_request_id):
         room_mapping = await connected_mqtt_client.get_room_mapping()

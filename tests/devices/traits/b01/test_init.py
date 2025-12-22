@@ -12,7 +12,7 @@ from roborock.devices.traits.b01.q7 import Q7PropertiesApi
 from roborock.exceptions import RoborockException
 from roborock.protocols.b01_protocol import B01_VERSION
 from roborock.roborock_message import RoborockB01Props, RoborockMessage, RoborockMessageProtocol
-from tests.conftest import FakeChannel
+from tests.fixtures.channel_fixtures import FakeChannel
 
 
 def build_b01_message(message: dict[Any, Any], msg_id: str = "123456789", seq: int = 2020) -> RoborockMessage:

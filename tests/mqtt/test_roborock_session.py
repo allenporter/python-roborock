@@ -13,16 +13,27 @@ from roborock.diagnostics import Diagnostics
 from roborock.mqtt.roborock_session import RoborockMqttSession, create_mqtt_session
 from roborock.mqtt.session import MqttSessionException, MqttSessionUnauthorized
 from tests import mqtt_packet
-from tests.mqtt_fixtures import FAKE_PARAMS, Subscriber
+from tests.fixtures.mqtt import FAKE_PARAMS, Subscriber
+
+pytest_plugins = [
+    "tests.fixtures.logging_fixtures",
+    "tests.fixtures.pahomqtt_fixtures",
+    "tests.fixtures.aiomqtt_fixtures",
+]
 
 
 @pytest.fixture(autouse=True)
-def mqtt_server_fixture(mock_create_connection: None, mock_select: None) -> None:
+def mqtt_server_fixture(
+    mock_paho_mqtt_create_connection: None,
+    mock_paho_mqtt_select: None,
+) -> None:
     """Fixture to prepare a fake MQTT server."""
 
 
 @pytest.fixture(autouse=True)
-def auto_mock_mqtt_client(mock_mqtt_client_fixture: None) -> None:
+def auto_mock_aiomqtt_client(
+    mock_aiomqtt_client: None,
+) -> None:
     """Automatically use the mock mqtt client fixture."""
 
 
@@ -31,9 +42,12 @@ def auto_fast_backoff(fast_backoff_fixture: None) -> None:
     """Automatically use the fast backoff fixture."""
 
 
-@pytest.fixture
-def mock_mqtt_client() -> Generator[AsyncMock, None, None]:
-    """Fixture to create a mock MQTT client with patched aiomqtt.Client."""
+@pytest.fixture(name="mqtt_client_lite")
+def mqtt_client_lite_fixture() -> Generator[AsyncMock, None, None]:
+    """A fixture that provides a mocked aiomqtt Client.
+
+    This is lighter weight that `mock_aiomqtt_client` that uses real sockets.
+    """
     mock_client = AsyncMock()
     mock_client.messages = FakeAsyncIterator()
 
@@ -48,38 +62,38 @@ def mock_mqtt_client() -> Generator[AsyncMock, None, None]:
         yield mock_client
 
 
-async def test_session(push_response: Callable[[bytes], None]) -> None:
+async def test_session(push_mqtt_response: Callable[[bytes], None]) -> None:
     """Test the MQTT session."""
 
-    push_response(mqtt_packet.gen_connack(rc=0, flags=2))
+    push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
     session = await create_mqtt_session(FAKE_PARAMS)
     assert session.connected
 
-    push_response(mqtt_packet.gen_suback(mid=1))
+    push_mqtt_response(mqtt_packet.gen_suback(mid=1))
     subscriber1 = Subscriber()
     unsub1 = await session.subscribe("topic-1", subscriber1.append)
 
-    push_response(mqtt_packet.gen_suback(mid=2))
+    push_mqtt_response(mqtt_packet.gen_suback(mid=2))
     subscriber2 = Subscriber()
     await session.subscribe("topic-2", subscriber2.append)
 
-    push_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
     await subscriber1.wait()
     assert subscriber1.messages == [b"12345"]
     assert not subscriber2.messages
 
-    push_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
     await subscriber2.wait()
     assert subscriber2.messages == [b"67890"]
 
-    push_response(mqtt_packet.gen_publish("topic-1", mid=5, payload=b"ABC"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=5, payload=b"ABC"))
     await subscriber1.wait()
     assert subscriber1.messages == [b"12345", b"ABC"]
     assert subscriber2.messages == [b"67890"]
 
     # Messages are no longer received after unsubscribing
     unsub1()
-    push_response(mqtt_packet.gen_publish("topic-1", payload=b"ignored"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", payload=b"ignored"))
     assert subscriber1.messages == [b"12345", b"ABC"]
 
     assert session.connected
@@ -87,12 +101,12 @@ async def test_session(push_response: Callable[[bytes], None]) -> None:
     assert not session.connected
 
 
-async def test_session_no_subscribers(push_response: Callable[[bytes], None]) -> None:
+async def test_session_no_subscribers(push_mqtt_response: Callable[[bytes], None]) -> None:
     """Test the MQTT session."""
 
-    push_response(mqtt_packet.gen_connack(rc=0, flags=2))
-    push_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
-    push_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
+    push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
     session = await create_mqtt_session(FAKE_PARAMS)
     assert session.connected
 
@@ -100,13 +114,13 @@ async def test_session_no_subscribers(push_response: Callable[[bytes], None]) ->
     assert not session.connected
 
 
-async def test_publish_command(push_response: Callable[[bytes], None]) -> None:
+async def test_publish_command(push_mqtt_response: Callable[[bytes], None]) -> None:
     """Test publishing during an MQTT session."""
 
-    push_response(mqtt_packet.gen_connack(rc=0, flags=2))
+    push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
     session = await create_mqtt_session(FAKE_PARAMS)
 
-    push_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
     await session.publish("topic-1", message=b"payload")
 
     assert session.connected
@@ -129,13 +143,13 @@ class FakeAsyncIterator:
             await asyncio.sleep(1)
 
 
-async def test_publish_failure(mock_mqtt_client: AsyncMock) -> None:
+async def test_publish_failure(mqtt_client_lite: AsyncMock) -> None:
     """Test an MQTT error is received when publishing a message."""
 
     session = await create_mqtt_session(FAKE_PARAMS)
     assert session.connected
 
-    mock_mqtt_client.publish.side_effect = aiomqtt.MqttError
+    mqtt_client_lite.publish.side_effect = aiomqtt.MqttError
 
     with pytest.raises(MqttSessionException, match="Error publishing message"):
         await session.publish("topic-1", message=b"payload")
@@ -143,13 +157,13 @@ async def test_publish_failure(mock_mqtt_client: AsyncMock) -> None:
     await session.close()
 
 
-async def test_subscribe_failure(mock_mqtt_client: AsyncMock) -> None:
+async def test_subscribe_failure(mqtt_client_lite: AsyncMock) -> None:
     """Test an MQTT error while subscribing."""
 
     session = await create_mqtt_session(FAKE_PARAMS)
     assert session.connected
 
-    mock_mqtt_client.subscribe.side_effect = aiomqtt.MqttError
+    mqtt_client_lite.subscribe.side_effect = aiomqtt.MqttError
 
     subscriber1 = Subscriber()
     with pytest.raises(MqttSessionException, match="Error subscribing to topic"):
@@ -159,20 +173,20 @@ async def test_subscribe_failure(mock_mqtt_client: AsyncMock) -> None:
     await session.close()
 
 
-async def test_restart(push_response: Callable[[bytes], None]) -> None:
+async def test_restart(push_mqtt_response: Callable[[bytes], None]) -> None:
     """Test restarting the MQTT session."""
 
-    push_response(mqtt_packet.gen_connack(rc=0, flags=2))
+    push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
     session = await create_mqtt_session(FAKE_PARAMS)
     assert session.connected
 
     # Subscribe to a topic
-    push_response(mqtt_packet.gen_suback(mid=1))
+    push_mqtt_response(mqtt_packet.gen_suback(mid=1))
     subscriber = Subscriber()
     await session.subscribe("topic-1", subscriber.append)
 
     # Verify we can receive messages
-    push_response(mqtt_packet.gen_publish("topic-1", mid=2, payload=b"12345"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=2, payload=b"12345"))
     await subscriber.wait()
     assert subscriber.messages == [b"12345"]
 
@@ -184,20 +198,20 @@ async def test_restart(push_response: Callable[[bytes], None]) -> None:
         await asyncio.sleep(0.01)
 
     # We need to queue up a new connack for the reconnection
-    push_response(mqtt_packet.gen_connack(rc=0, flags=2))
+    push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
 
     # And a suback for the resubscription. Since we created a new client,
     # the message ID resets to 1.
-    push_response(mqtt_packet.gen_suback(mid=1))
+    push_mqtt_response(mqtt_packet.gen_suback(mid=1))
 
-    push_response(mqtt_packet.gen_publish("topic-1", mid=4, payload=b"67890"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=4, payload=b"67890"))
     await subscriber.wait()
     assert subscriber.messages == [b"12345", b"67890"]
 
     await session.close()
 
 
-async def test_idle_timeout_resubscribe(mock_mqtt_client: AsyncMock) -> None:
+async def test_idle_timeout_resubscribe(mqtt_client_lite: AsyncMock) -> None:
     """Test that resubscribing before idle timeout cancels the unsubscribe."""
 
     # Create session with idle timeout
@@ -220,12 +234,12 @@ async def test_idle_timeout_resubscribe(mock_mqtt_client: AsyncMock) -> None:
     await asyncio.sleep(0.01)
 
     # unsubscribe should NOT have been called because we resubscribed
-    mock_mqtt_client.unsubscribe.assert_not_called()
+    mqtt_client_lite.unsubscribe.assert_not_called()
 
     await session.close()
 
 
-async def test_idle_timeout_unsubscribe(mock_mqtt_client: AsyncMock) -> None:
+async def test_idle_timeout_unsubscribe(mqtt_client_lite: AsyncMock) -> None:
     """Test that unsubscribe happens after idle timeout expires."""
 
     # Create session with very short idle timeout for fast test
@@ -244,12 +258,12 @@ async def test_idle_timeout_unsubscribe(mock_mqtt_client: AsyncMock) -> None:
     await asyncio.sleep(0.1)
 
     # unsubscribe should have been called after idle timeout
-    mock_mqtt_client.unsubscribe.assert_called_once_with(topic)
+    mqtt_client_lite.unsubscribe.assert_called_once_with(topic)
 
     await session.close()
 
 
-async def test_idle_timeout_multiple_callbacks(mock_mqtt_client: AsyncMock) -> None:
+async def test_idle_timeout_multiple_callbacks(mqtt_client_lite: AsyncMock) -> None:
     """Test that unsubscribe is delayed when multiple subscribers exist."""
 
     # Create session with very short idle timeout for fast test
@@ -271,7 +285,7 @@ async def test_idle_timeout_multiple_callbacks(mock_mqtt_client: AsyncMock) -> N
     await asyncio.sleep(0.1)
 
     # unsubscribe should NOT have been called because subscriber2 is still active
-    mock_mqtt_client.unsubscribe.assert_not_called()
+    mqtt_client_lite.unsubscribe.assert_not_called()
 
     # Unsubscribe second callback (NOW timer should start)
     unsub2()
@@ -280,12 +294,12 @@ async def test_idle_timeout_multiple_callbacks(mock_mqtt_client: AsyncMock) -> N
     await asyncio.sleep(0.1)
 
     # Now unsubscribe should have been called
-    mock_mqtt_client.unsubscribe.assert_called_once_with(topic)
+    mqtt_client_lite.unsubscribe.assert_called_once_with(topic)
 
     await session.close()
 
 
-async def test_subscription_reuse(mock_mqtt_client: AsyncMock) -> None:
+async def test_subscription_reuse(mqtt_client_lite: AsyncMock) -> None:
     """Test that subscriptions are reused and not duplicated."""
     session = RoborockMqttSession(FAKE_PARAMS)
     await session.start()
@@ -296,32 +310,32 @@ async def test_subscription_reuse(mock_mqtt_client: AsyncMock) -> None:
     unsub1 = await session.subscribe("topic1", cb1)
 
     # Verify subscribe called
-    mock_mqtt_client.subscribe.assert_called_with("topic1")
-    mock_mqtt_client.subscribe.reset_mock()
+    mqtt_client_lite.subscribe.assert_called_with("topic1")
+    mqtt_client_lite.subscribe.reset_mock()
 
     # 2. Second subscription (same topic)
     cb2 = Mock()
     unsub2 = await session.subscribe("topic1", cb2)
 
     # Verify subscribe NOT called
-    mock_mqtt_client.subscribe.assert_not_called()
+    mqtt_client_lite.subscribe.assert_not_called()
 
     # 3. Unsubscribe one
     unsub1()
     # Verify unsubscribe NOT called (still have cb2)
-    mock_mqtt_client.unsubscribe.assert_not_called()
+    mqtt_client_lite.unsubscribe.assert_not_called()
 
     # 4. Unsubscribe second (starts idle timer)
     unsub2()
     # Verify unsubscribe NOT called yet (idle)
-    mock_mqtt_client.unsubscribe.assert_not_called()
+    mqtt_client_lite.unsubscribe.assert_not_called()
 
     # 5. Resubscribe during idle
     cb3 = Mock()
     _ = await session.subscribe("topic1", cb3)
 
     # Verify subscribe NOT called (reused)
-    mock_mqtt_client.subscribe.assert_not_called()
+    mqtt_client_lite.subscribe.assert_not_called()
 
     await session.close()
 
@@ -365,7 +379,7 @@ async def test_connect_failure(
             await create_mqtt_session(FAKE_PARAMS)
 
 
-async def test_diagnostics_data(push_response: Callable[[bytes], None]) -> None:
+async def test_diagnostics_data(push_mqtt_response: Callable[[bytes], None]) -> None:
     """Test the MQTT session."""
 
     diagnostics = Diagnostics()
@@ -373,7 +387,7 @@ async def test_diagnostics_data(push_response: Callable[[bytes], None]) -> None:
     params = copy.deepcopy(FAKE_PARAMS)
     params.diagnostics = diagnostics
 
-    push_response(mqtt_packet.gen_connack(rc=0, flags=2))
+    push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
     session = await create_mqtt_session(params)
     assert session.connected
 
@@ -386,24 +400,24 @@ async def test_diagnostics_data(push_response: Callable[[bytes], None]) -> None:
     assert data.get("dispatch_message_count") is None
     assert data.get("close") is None
 
-    push_response(mqtt_packet.gen_suback(mid=1))
+    push_mqtt_response(mqtt_packet.gen_suback(mid=1))
     subscriber1 = Subscriber()
     unsub1 = await session.subscribe("topic-1", subscriber1.append)
 
-    push_response(mqtt_packet.gen_suback(mid=2))
+    push_mqtt_response(mqtt_packet.gen_suback(mid=2))
     subscriber2 = Subscriber()
     await session.subscribe("topic-2", subscriber2.append)
 
-    push_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
     await subscriber1.wait()
     assert subscriber1.messages == [b"12345"]
     assert not subscriber2.messages
 
-    push_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
     await subscriber2.wait()
     assert subscriber2.messages == [b"67890"]
 
-    push_response(mqtt_packet.gen_publish("topic-1", mid=5, payload=b"ABC"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=5, payload=b"ABC"))
     await subscriber1.wait()
     assert subscriber1.messages == [b"12345", b"ABC"]
     assert subscriber2.messages == [b"67890"]
@@ -418,7 +432,7 @@ async def test_diagnostics_data(push_response: Callable[[bytes], None]) -> None:
 
     # Messages are no longer received after unsubscribing
     unsub1()
-    push_response(mqtt_packet.gen_publish("topic-1", payload=b"ignored"))
+    push_mqtt_response(mqtt_packet.gen_publish("topic-1", payload=b"ignored"))
     assert subscriber1.messages == [b"12345", b"ABC"]
 
     assert session.connected
