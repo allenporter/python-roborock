@@ -90,8 +90,8 @@ def test_redact_topic_name(topic: str, expected: str) -> None:
     "duid,expected",
     [
         ("3zQRtuIfY14BrRTivxxcMd", "******xxcMd"),
-        ("3zQ", "*****"),
-        ("", "*****"),
+        ("3zQ", "******3zQ"),
+        ("", "******"),
     ],
 )
 def test_redact_device(duid: str, expected: str) -> None:

@@ -18,7 +18,7 @@ import aiomqtt
 from aiomqtt import MqttCodeError, MqttError, TLSParameters
 
 from roborock.callbacks import CallbackMap
-from roborock.diagnostics import Diagnostics
+from roborock.diagnostics import Diagnostics, redact_topic_name
 
 from .health_manager import HealthManager
 from .session import MqttParams, MqttSession, MqttSessionException, MqttSessionUnauthorized
@@ -241,7 +241,7 @@ class RoborockMqttSession(MqttSession):
                     self._client = client
                     for topic in self._client_subscribed_topics:
                         self._diagnostics.increment("resubscribe")
-                        _LOGGER.debug("Re-establishing subscription to topic %s", topic)
+                        _LOGGER.debug("Re-establishing subscription to topic %s", redact_topic_name(topic))
                         # TODO: If this fails it will break the whole connection. Make
                         # this retry again in the background with backoff.
                         await client.subscribe(topic)
@@ -261,13 +261,13 @@ class RoborockMqttSession(MqttSession):
         unsubscription for the idle timeout period. If a new subscription comes in during the
         timeout, the timer is cancelled and the subscription is reused.
         """
-        _LOGGER.debug("Subscribing to topic %s", topic)
+        _LOGGER.debug("Subscribing to topic %s", redact_topic_name(topic))
 
         # If there is an idle timer for this topic, cancel it (reuse subscription)
         if idle_timer := self._idle_timers.pop(topic, None):
             self._diagnostics.increment("unsubscribe_idle_cancel")
             idle_timer.cancel()
-            _LOGGER.debug("Cancelled idle timer for topic %s (reused subscription)", topic)
+            _LOGGER.debug("Cancelled idle timer for topic %s (reused subscription)", redact_topic_name(topic))
 
         unsub = self._listeners.add_callback(topic, callback)
 

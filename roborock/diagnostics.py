@@ -132,9 +132,6 @@ def redact_device_data(data: T) -> T | dict[str, Any]:
 def redact_topic_name(topic: str) -> str:
     """Redact potentially identifying information from a topic name."""
     parts = topic.split("/")
-    if len(parts) < 5:
-        return topic
-
     redacted_parts = parts[:4]
     for part in parts[4:]:
         if len(part) <= 5:
@@ -146,6 +143,4 @@ def redact_topic_name(topic: str) -> str:
 
 def redact_device_uid(duid: str) -> str:
     """Redact a device UID to hide identifying information."""
-    if len(duid) <= 5:
-        return "*****"
     return "******" + duid[-5:]
