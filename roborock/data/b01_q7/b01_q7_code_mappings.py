@@ -24,7 +24,6 @@ class SCWindMapping(RoborockModeEnum):
     STANDARD = ("balanced", 1)
     STRONG = ("turbo", 2)
     SUPER_STRONG = ("max", 3)
-    MAX = ("max_plus", 4)
 
 
 class WaterLevelMapping(RoborockModeEnum):
@@ -48,6 +47,14 @@ class CleanRepeatMapping(RoborockModeEnum):
 
     ONCE = ("once", 0)
     TWICE = ("twice", 1)
+
+
+class SCDeviceCleanParam(RoborockModeEnum):
+    """Maps the control values for cleaning tasks."""
+
+    STOP = ("stop", 0)
+    START = ("start", 1)
+    PAUSE = ("pause", 2)
 
 
 class WorkModeMapping(RoborockModeEnum):
