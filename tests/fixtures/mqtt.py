@@ -46,7 +46,6 @@ class FakeMqttSocketHandler:
         self.response_buf.seek(0)
         data = self.response_buf.read(read_size)
         _LOGGER.debug("Response: 0x%s", data.hex())
-
         # Consume the rest of the data in the buffer
         remaining_data = self.response_buf.read()
         self.response_buf = io.BytesIO(remaining_data)
