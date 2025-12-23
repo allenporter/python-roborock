@@ -20,9 +20,10 @@ from roborock.roborock_message import (
     RoborockZeoProtocol,
 )
 from roborock.version_a01_apis import RoborockMqttClientA01
+from tests.fixtures.logging import CapturedRequestLog
+from tests.protocols.common import build_a01_message
 
 from . import mqtt_packet
-from .conftest import QUEUE_TIMEOUT, CapturedRequestLog
 from .mock_data import (
     HOME_DATA_RAW,
     LOCAL_KEY,
@@ -31,9 +32,14 @@ from .mock_data import (
     WASHER_PRODUCT,
     ZEO_ONE_DEVICE,
 )
-from .protocols.common import build_a01_message
 
+QUEUE_TIMEOUT = 10
 RELEASE_TIMEOUT = 2
+
+
+pytest_plugins = [
+    "tests.fixtures.pahomqtt_fixtures",
+]
 
 
 @pytest.fixture(name="category")
@@ -43,8 +49,8 @@ def category_fixture() -> RoborockCategory:
 
 @pytest.fixture(name="a01_mqtt_client")
 async def a01_mqtt_client_fixture(
-    mock_create_connection: None,
-    mock_select: None,
+    mock_paho_mqtt_create_connection: None,
+    mock_paho_mqtt_select: None,
     category: RoborockCategory,
 ) -> AsyncGenerator[RoborockMqttClientA01, None]:
     user_data = UserData.from_dict(USER_DATA)
@@ -74,15 +80,15 @@ async def a01_mqtt_client_fixture(
 
 @pytest.fixture(name="connected_a01_mqtt_client")
 async def connected_a01_mqtt_client_fixture(
-    response_queue: Queue, a01_mqtt_client: RoborockMqttClientA01
+    mqtt_response_queue: Queue, a01_mqtt_client: RoborockMqttClientA01
 ) -> AsyncGenerator[RoborockMqttClientA01, None]:
-    response_queue.put(mqtt_packet.gen_connack(rc=0, flags=2))
-    response_queue.put(mqtt_packet.gen_suback(1, 0))
+    mqtt_response_queue.put(mqtt_packet.gen_connack(rc=0, flags=2))
+    mqtt_response_queue.put(mqtt_packet.gen_suback(1, 0))
     await a01_mqtt_client.async_connect()
     yield a01_mqtt_client
 
 
-async def test_async_connect(received_requests: Queue, connected_a01_mqtt_client: RoborockMqttClientA01) -> None:
+async def test_async_connect(mqtt_received_requests: Queue, connected_a01_mqtt_client: RoborockMqttClientA01) -> None:
     """Test connecting to the MQTT broker."""
 
     assert connected_a01_mqtt_client.is_connected()
@@ -95,20 +101,20 @@ async def test_async_connect(received_requests: Queue, connected_a01_mqtt_client
 
     # Broker received a connect and subscribe. Disconnect packet is not
     # guaranteed to be captured by the time the async_disconnect returns
-    assert received_requests.qsize() >= 2  # Connect and Subscribe
+    assert mqtt_received_requests.qsize() >= 2  # Connect and Subscribe
 
 
 async def test_connect_failure(
-    received_requests: Queue, response_queue: Queue, a01_mqtt_client: RoborockMqttClientA01
+    mqtt_received_requests: Queue, mqtt_response_queue: Queue, a01_mqtt_client: RoborockMqttClientA01
 ) -> None:
     """Test the broker responding with a connect failure."""
 
-    response_queue.put(mqtt_packet.gen_connack(rc=1))
+    mqtt_response_queue.put(mqtt_packet.gen_connack(rc=1))
 
     with pytest.raises(RoborockException, match="Failed to connect"):
         await a01_mqtt_client.async_connect()
     assert not a01_mqtt_client.is_connected()
-    assert received_requests.qsize() == 1  # Connect attempt
+    assert mqtt_received_requests.qsize() == 1  # Connect attempt
 
 
 async def test_disconnect_already_disconnected(connected_a01_mqtt_client: RoborockMqttClientA01) -> None:
@@ -141,11 +147,11 @@ async def test_async_release(connected_a01_mqtt_client: RoborockMqttClientA01) -
 
 
 async def test_subscribe_failure(
-    received_requests: Queue, response_queue: Queue, a01_mqtt_client: RoborockMqttClientA01
+    mqtt_received_requests: Queue, mqtt_response_queue: Queue, a01_mqtt_client: RoborockMqttClientA01
 ) -> None:
     """Test the broker responding with the wrong message type on subscribe."""
 
-    response_queue.put(mqtt_packet.gen_connack(rc=0, flags=2))
+    mqtt_response_queue.put(mqtt_packet.gen_connack(rc=0, flags=2))
 
     with (
         patch("roborock.cloud_api.mqtt.Client.subscribe", return_value=(mqtt.MQTT_ERR_NO_CONN, None)),
@@ -153,7 +159,7 @@ async def test_subscribe_failure(
     ):
         await a01_mqtt_client.async_connect()
 
-    assert received_requests.qsize() == 1  # Connect attempt
+    assert mqtt_received_requests.qsize() == 1  # Connect attempt
 
     # NOTE: The client is "connected" but not "subscribed" and cannot recover
     # from this state without disconnecting first. This can likely be improved.
@@ -162,7 +168,7 @@ async def test_subscribe_failure(
     # Attempting to reconnect is a no-op since the client already thinks it is connected
     await a01_mqtt_client.async_connect()
     assert a01_mqtt_client.is_connected()
-    assert received_requests.qsize() == 1
+    assert mqtt_received_requests.qsize() == 1
 
 
 def build_rpc_response(message: dict[Any, Any]) -> bytes:
@@ -171,8 +177,8 @@ def build_rpc_response(message: dict[Any, Any]) -> bytes:
 
 
 async def test_update_zeo_values(
-    received_requests: Queue,
-    response_queue: Queue,
+    mqtt_received_requests: Queue,
+    mqtt_response_queue: Queue,
     connected_a01_mqtt_client: RoborockMqttClientA01,
     snapshot: syrupy.SnapshotAssertion,
     log: CapturedRequestLog,
@@ -189,7 +195,7 @@ async def test_update_zeo_values(
             218: 0,  # Washing left. Testing zero int value
         }
     )
-    response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
+    mqtt_response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
 
     data = await connected_a01_mqtt_client.update_values(
         [
@@ -214,8 +220,8 @@ async def test_update_zeo_values(
 
 @pytest.mark.parametrize("category", [RoborockCategory.WET_DRY_VAC])
 async def test_update_dyad_values(
-    received_requests: Queue,
-    response_queue: Queue,
+    mqtt_received_requests: Queue,
+    mqtt_response_queue: Queue,
     connected_a01_mqtt_client: RoborockMqttClientA01,
     snapshot: syrupy.SnapshotAssertion,
     log: CapturedRequestLog,
@@ -231,7 +237,7 @@ async def test_update_dyad_values(
             224: 0,  # AUTO_DRY_MODE off
         }
     )
-    response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
+    mqtt_response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
 
     data = await connected_a01_mqtt_client.update_values(
         [
@@ -253,25 +259,25 @@ async def test_update_dyad_values(
 
 
 async def test_set_value(
-    received_requests: Queue,
-    response_queue: Queue,
+    mqtt_received_requests: Queue,
+    mqtt_response_queue: Queue,
     connected_a01_mqtt_client: RoborockMqttClientA01,
     snapshot: syrupy.SnapshotAssertion,
     log: CapturedRequestLog,
 ) -> None:
     """Test sending an arbitrary MQTT message and parsing the response."""
     # Clear existing messages received during setup
-    assert received_requests.qsize() == 2
-    assert received_requests.get(block=True, timeout=QUEUE_TIMEOUT)
-    assert received_requests.get(block=True, timeout=QUEUE_TIMEOUT)
-    assert received_requests.empty()
+    assert mqtt_received_requests.qsize() == 2
+    assert mqtt_received_requests.get(block=True, timeout=QUEUE_TIMEOUT)
+    assert mqtt_received_requests.get(block=True, timeout=QUEUE_TIMEOUT)
+    assert mqtt_received_requests.empty()
 
     # Prepare the response message
     message = build_rpc_response({})
-    response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
+    mqtt_response_queue.put(mqtt_packet.gen_publish(MQTT_PUBLISH_TOPIC, payload=message))
 
     await connected_a01_mqtt_client.set_value(RoborockZeoProtocol.STATE, "spinning")
-    assert received_requests.get(block=True)
+    assert mqtt_received_requests.get(block=True)
 
     assert snapshot == log
 
