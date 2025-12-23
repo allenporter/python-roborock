@@ -46,7 +46,7 @@ class FakeMqttSocketHandler:
         self.response_buf.seek(0)
         data = self.response_buf.read(read_size)
         _LOGGER.debug("Response: 0x%s", data.hex())
-        self.log.add_log_entry("[mqtt <]", data)
+        
         # Consume the rest of the data in the buffer
         remaining_data = self.response_buf.read()
         self.response_buf = io.BytesIO(remaining_data)
@@ -61,6 +61,7 @@ class FakeMqttSocketHandler:
             # Enqueue a response to be sent back to the client in the buffer.
             # The buffer will be emptied when the client calls recv() on the socket
             _LOGGER.debug("Queued: 0x%s", response.hex())
+            self.log.add_log_entry("[mqtt <]", response)
             self.response_buf.write(response)
         return len(client_request)
 
@@ -71,6 +72,7 @@ class FakeMqttSocketHandler:
             # Enqueue a response to be sent back to the client in the buffer.
             # The buffer will be emptied when the client calls recv() on the socket
             _LOGGER.debug("Queued: 0x%s", response.hex())
+            self.log.add_log_entry("[mqtt <]", response)
             self.response_buf.write(response)
 
 

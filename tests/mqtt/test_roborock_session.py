@@ -151,8 +151,6 @@ async def test_session_no_subscribers(push_mqtt_response: Callable[[bytes], None
     """Test the MQTT session."""
 
     push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
-    push_mqtt_response(mqtt_packet.gen_publish("topic-1", mid=3, payload=b"12345"))
-    push_mqtt_response(mqtt_packet.gen_publish("topic-2", mid=4, payload=b"67890"))
     session = await create_mqtt_session(FAKE_PARAMS)
     assert session.connected
 
@@ -527,8 +525,6 @@ async def test_session_unauthorized_after_start(
     mock_aenter_client.side_effect = succeed_then_fail_unauthorized
     # Don't produce messages, just exit and restart to reconnect
     message_iterator.loop = False
-
-    push_mqtt_response(mqtt_packet.gen_connack(rc=0, flags=2))
 
     session = await create_mqtt_session(params)
     assert session.connected

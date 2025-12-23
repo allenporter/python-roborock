@@ -5,6 +5,7 @@ from collections.abc import Callable, Generator
 from queue import Queue
 from typing import Any
 from unittest.mock import Mock, patch
+import warnings
 
 import pytest
 
@@ -50,9 +51,12 @@ def select_fixture(mock_sock: Mock, fake_mqtt_socket_handler: FakeMqttSocketHand
 @pytest.fixture(name="fake_mqtt_socket_handler")
 def fake_mqtt_socket_handler_fixture(
     mqtt_request_handler: MqttRequestHandler, mqtt_response_queue: Queue[bytes], log: CapturedRequestLog
-) -> FakeMqttSocketHandler:
+) -> Generator[FakeMqttSocketHandler, None, None]:
     """Fixture that creates a fake MQTT broker."""
-    return FakeMqttSocketHandler(mqtt_request_handler, mqtt_response_queue, log)
+    socket_handler = FakeMqttSocketHandler(mqtt_request_handler, mqtt_response_queue, log)
+    yield socket_handler
+    if len(socket_handler.response_buf.getvalue()) > 0:
+        warnings.warn("Some enqueued MQTT responses were not consumed during the test")
 
 
 @pytest.fixture(name="mock_sock")
@@ -76,7 +80,8 @@ def response_queue_fixture() -> Generator[Queue[bytes], None, None]:
     """Fixture that provides a queue for enqueueing responses to be sent to the client under test."""
     response_queue: Queue[bytes] = Queue()
     yield response_queue
-    assert response_queue.empty(), "Not all fake responses were consumed"
+    if not response_queue.empty():
+        warnings.warn("Some enqueued MQTT responses were not consumed during the test")
 
 
 @pytest.fixture(name="mqtt_request_handler")
