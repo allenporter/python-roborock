@@ -1,11 +1,11 @@
 """Common code for MQTT tests."""
 
 import logging
+import warnings
 from collections.abc import Callable, Generator
 from queue import Queue
 from typing import Any
 from unittest.mock import Mock, patch
-import warnings
 
 import pytest
 
