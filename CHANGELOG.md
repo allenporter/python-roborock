@@ -2,6 +2,91 @@
 
 <!-- version list -->
 
+## v3.21.0 (2025-12-23)
+
+### Bug Fixes
+
+- Add a hook for handling background rate limit errors
+  ([#695](https://github.com/Python-roborock/python-roborock/pull/695),
+  [`e38bc9f`](https://github.com/Python-roborock/python-roborock/commit/e38bc9f10bad27b9622d1f6216339426e00d239d))
+
+### Chores
+
+- Add protocol snapshot tests for the mqtt and local e2e tests
+  ([#697](https://github.com/Python-roborock/python-roborock/pull/697),
+  [`6293a67`](https://github.com/Python-roborock/python-roborock/commit/6293a676e508cb42acf17852c37bf6f69547636a))
+
+- Add protocol snapshot tests for the mqtt and local e2e tests.
+  ([#697](https://github.com/Python-roborock/python-roborock/pull/697),
+  [`6293a67`](https://github.com/Python-roborock/python-roborock/commit/6293a676e508cb42acf17852c37bf6f69547636a))
+
+- Address co-pilot review feedback
+  ([#699](https://github.com/Python-roborock/python-roborock/pull/699),
+  [`c317f8e`](https://github.com/Python-roborock/python-roborock/commit/c317f8e4e6d4deda755b511f0c382db7fd68b911))
+
+- Fix lint ([#697](https://github.com/Python-roborock/python-roborock/pull/697),
+  [`6293a67`](https://github.com/Python-roborock/python-roborock/commit/6293a676e508cb42acf17852c37bf6f69547636a))
+
+- Fix lint errors ([#704](https://github.com/Python-roborock/python-roborock/pull/704),
+  [`b9a241c`](https://github.com/Python-roborock/python-roborock/commit/b9a241c9274a9a204ac5e7c3854e239f64c819c0))
+
+- Fix lint errors ([#697](https://github.com/Python-roborock/python-roborock/pull/697),
+  [`6293a67`](https://github.com/Python-roborock/python-roborock/commit/6293a676e508cb42acf17852c37bf6f69547636a))
+
+- Fix lint errors ([#695](https://github.com/Python-roborock/python-roborock/pull/695),
+  [`e38bc9f`](https://github.com/Python-roborock/python-roborock/commit/e38bc9f10bad27b9622d1f6216339426e00d239d))
+
+- Fix lint errors ([#699](https://github.com/Python-roborock/python-roborock/pull/699),
+  [`c317f8e`](https://github.com/Python-roborock/python-roborock/commit/c317f8e4e6d4deda755b511f0c382db7fd68b911))
+
+- Fix merge conflicts ([#697](https://github.com/Python-roborock/python-roborock/pull/697),
+  [`6293a67`](https://github.com/Python-roborock/python-roborock/commit/6293a676e508cb42acf17852c37bf6f69547636a))
+
+- Organize test fixtures ([#699](https://github.com/Python-roborock/python-roborock/pull/699),
+  [`c317f8e`](https://github.com/Python-roborock/python-roborock/commit/c317f8e4e6d4deda755b511f0c382db7fd68b911))
+
+- Remove duplicate captured request log
+  ([#699](https://github.com/Python-roborock/python-roborock/pull/699),
+  [`c317f8e`](https://github.com/Python-roborock/python-roborock/commit/c317f8e4e6d4deda755b511f0c382db7fd68b911))
+
+- Remove duplicate params ([#697](https://github.com/Python-roborock/python-roborock/pull/697),
+  [`6293a67`](https://github.com/Python-roborock/python-roborock/commit/6293a676e508cb42acf17852c37bf6f69547636a))
+
+- Remove unnecessary whitespace
+  ([#697](https://github.com/Python-roborock/python-roborock/pull/697),
+  [`6293a67`](https://github.com/Python-roborock/python-roborock/commit/6293a676e508cb42acf17852c37bf6f69547636a))
+
+- Resolving merge conflict ([#697](https://github.com/Python-roborock/python-roborock/pull/697),
+  [`6293a67`](https://github.com/Python-roborock/python-roborock/commit/6293a676e508cb42acf17852c37bf6f69547636a))
+
+- Small tweaks to test fixtures
+  ([#704](https://github.com/Python-roborock/python-roborock/pull/704),
+  [`b9a241c`](https://github.com/Python-roborock/python-roborock/commit/b9a241c9274a9a204ac5e7c3854e239f64c819c0))
+
+- Update device test snapshots ([#704](https://github.com/Python-roborock/python-roborock/pull/704),
+  [`b9a241c`](https://github.com/Python-roborock/python-roborock/commit/b9a241c9274a9a204ac5e7c3854e239f64c819c0))
+
+- Update test fixtures ([#704](https://github.com/Python-roborock/python-roborock/pull/704),
+  [`b9a241c`](https://github.com/Python-roborock/python-roborock/commit/b9a241c9274a9a204ac5e7c3854e239f64c819c0))
+
+- **deps-dev**: Bump pre-commit from 4.5.0 to 4.5.1
+  ([#701](https://github.com/Python-roborock/python-roborock/pull/701),
+  [`8cd51cc`](https://github.com/Python-roborock/python-roborock/commit/8cd51cce07a244813f26b169f6f97b457c6a629f))
+
+- **deps-dev**: Bump ruff from 0.14.9 to 0.14.10
+  ([#700](https://github.com/Python-roborock/python-roborock/pull/700),
+  [`942d3a1`](https://github.com/Python-roborock/python-roborock/commit/942d3a1acc335726405decc3a7fc7b7b2fd6e698))
+
+### Features
+
+- Revert whitespace change. ([#704](https://github.com/Python-roborock/python-roborock/pull/704),
+  [`b9a241c`](https://github.com/Python-roborock/python-roborock/commit/b9a241c9274a9a204ac5e7c3854e239f64c819c0))
+
+- Small tweaks to test fixtures
+  ([#704](https://github.com/Python-roborock/python-roborock/pull/704),
+  [`b9a241c`](https://github.com/Python-roborock/python-roborock/commit/b9a241c9274a9a204ac5e7c3854e239f64c819c0))
+
+
 ## v3.20.1 (2025-12-22)
 
 ### Bug Fixes
