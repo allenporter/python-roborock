@@ -45,6 +45,11 @@ class _LocalProtocol(asyncio.Protocol):
         self.connection_lost_cb(exc)
 
 
+def get_running_loop() -> asyncio.AbstractEventLoop:
+    """Get the running event loop, extracted for mocking purposes."""
+    return asyncio.get_running_loop()
+
+
 class LocalChannel(Channel):
     """Simple RPC-style channel for communicating with a device over a local network.
 
@@ -179,7 +184,7 @@ class LocalChannel(Channel):
         if self._is_connected:
             self._logger.debug("Unexpected call to connect when already connected")
             return
-        loop = asyncio.get_running_loop()
+        loop = get_running_loop()
         protocol = _LocalProtocol(self._data_received, self._connection_lost)
         try:
             self._transport, self._protocol = await loop.create_connection(lambda: protocol, self._host, _PORT)

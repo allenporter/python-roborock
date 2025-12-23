@@ -52,7 +52,7 @@ def setup_mock_loop(mock_transport: Mock) -> Generator[Mock, None, None]:
     loop = Mock()
     loop.create_connection = AsyncMock(return_value=(mock_transport, Mock()))
 
-    with patch("asyncio.get_running_loop", return_value=loop):
+    with patch("roborock.devices.local_channel.get_running_loop", return_value=loop):
         yield loop
 
 

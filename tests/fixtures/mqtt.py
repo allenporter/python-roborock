@@ -32,6 +32,7 @@ class FakeMqttSocketHandler:
         self.handle_request = handle_request
         self.response_queue = response_queue
         self.log = log
+        self.client_connected = False
 
     def pending(self) -> int:
         """Return the number of bytes in the response buffer."""
@@ -52,6 +53,7 @@ class FakeMqttSocketHandler:
 
     def handle_socket_send(self, client_request: bytes) -> int:
         """Receive an incoming request from the client."""
+        self.client_connected = True
         _LOGGER.debug("Request: 0x%s", client_request.hex())
         self.log.add_log_entry("[mqtt >]", client_request)
         if (response := self.handle_request(client_request)) is not None:
@@ -64,7 +66,7 @@ class FakeMqttSocketHandler:
 
     def push_response(self) -> None:
         """Push a response to the client."""
-        if not self.response_queue.empty():
+        if not self.response_queue.empty() and self.client_connected:
             response = self.response_queue.get()
             # Enqueue a response to be sent back to the client in the buffer.
             # The buffer will be emptied when the client calls recv() on the socket

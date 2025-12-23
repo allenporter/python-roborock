@@ -28,10 +28,13 @@ async def mock_aiomqtt_client_fixture() -> AsyncGenerator[None, None]:
 
     async def poll_sockets(client: mqtt.Client) -> None:
         """Poll the mqtt client sockets in a loop to pick up new data."""
-        while True:
-            event_loop.call_soon_threadsafe(client.loop_read)
-            event_loop.call_soon_threadsafe(client.loop_write)
-            await asyncio.sleep(0.01)
+        try:
+            while True:
+                event_loop.call_soon_threadsafe(client.loop_read)
+                event_loop.call_soon_threadsafe(client.loop_write)
+                await asyncio.sleep(0.01)
+        except asyncio.CancelledError:
+            pass
 
     task: asyncio.Task[None] | None = None
 
@@ -52,6 +55,7 @@ async def mock_aiomqtt_client_fixture() -> AsyncGenerator[None, None]:
         yield
         if task:
             task.cancel()
+            await task
 
 
 @pytest.fixture
