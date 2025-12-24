@@ -109,9 +109,9 @@ class DeviceManager:
                 new_device = self._device_creator(home_data, device, product)
             except UnsupportedDeviceError:
                 _LOGGER.info("Skipping unsupported device %s %s", product.summary_info(), device.summary_info())
-                unsupported_devices_counter.increment(device.pv)
+                unsupported_devices_counter.increment(device.pv or "unknown")
                 continue
-            supported_devices_counter.increment(device.pv)
+            supported_devices_counter.increment(device.pv or "unknown")
             start_tasks.append(new_device.start_connect())
             new_devices[duid] = new_device
 
@@ -241,7 +241,7 @@ async def create_device_manager(
                 model_part = product.model.split(".")[-1]
                 if "ss" in model_part:
                     raise UnsupportedDeviceError(
-                        f"Device {device.name} has unsupported version B01_{model_part}"
+                        f"Device {device.name} has unsupported version B01 product model {product.model}"
                     )
                 elif "sc" in model_part:
                     # Q7 devices start with 'sc' in their model naming.
@@ -249,7 +249,9 @@ async def create_device_manager(
                 else:
                     raise UnsupportedDeviceError(f"Device {device.name} has unsupported B01 model: {product.model}")
             case _:
-                raise UnsupportedDeviceError(f"Device {device.name} has unsupported version {device.pv}")
+                raise UnsupportedDeviceError(
+                    f"Device {device.name} has unsupported version {device.pv} {product.model}"
+                )
 
         dev = RoborockDevice(device, product, channel, trait)
         if ready_callback:
