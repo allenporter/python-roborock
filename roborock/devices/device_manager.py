@@ -241,7 +241,7 @@ async def create_device_manager(
                 model_part = product.model.split(".")[-1]
                 if "ss" in model_part:
                     raise UnsupportedDeviceError(
-                        f"Device {device.name} has unsupported version B01_{product.model.strip('.')[-1]}"
+                        f"Device {device.name} has unsupported version B01_{model_part}"
                     )
                 elif "sc" in model_part:
                     # Q7 devices start with 'sc' in their model naming.

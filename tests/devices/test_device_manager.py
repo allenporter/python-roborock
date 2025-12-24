@@ -9,7 +9,6 @@ from unittest.mock import AsyncMock, Mock, patch
 import pytest
 
 from roborock.data import HomeData, UserData
-from roborock.data.containers import HomeDataDevice
 from roborock.devices.cache import InMemoryCache
 from roborock.devices.device import RoborockDevice
 from roborock.devices.device_manager import UserParams, create_device_manager, create_web_api_wrapper
@@ -365,7 +364,7 @@ async def test_diagnostics_collection(home_data: HomeData) -> None:
     await device_manager.close()
 
 
-async def test_unsupported_protocol_versio() -> None:
+async def test_unsupported_protocol_version() -> None:
     """Test the DeviceManager with some supported and unsupported product IDs."""
     with patch("roborock.devices.device_manager.UserWebApiClient.get_home_data") as mock_home_data:
         home_data = HomeData.from_dict({
@@ -405,7 +404,6 @@ async def test_unsupported_protocol_versio() -> None:
         mock_home_data.return_value = home_data
 
         device_manager = await create_device_manager(USER_PARAMS)
-    
         # Only the supported device should be created. The other device is ignored
         devices = await device_manager.get_devices()
         assert [device.duid for device in devices] == ["device-uid-1"]
