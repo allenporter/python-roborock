@@ -16,6 +16,7 @@ from typing import Any
 import pytest
 import syrupy
 
+from roborock.devices.cache import Cache, InMemoryCache
 from roborock.devices.device_manager import DeviceManager, UserParams, create_device_manager
 from roborock.protocol import MessageParser
 from roborock.protocols.v1_protocol import LocalProtocolVersion
@@ -56,14 +57,8 @@ def auto_fast_backoff(fast_backoff_fixture: None) -> None:
 def mqtt_server_fixture(mock_paho_mqtt_create_connection: None, mock_paho_mqtt_select: None) -> None:
     """Fixture to mock the MQTT connection.
 
-    This is here to pull in the mock socket pixtures into all tests used here.
+    This is here to pull in the mock socket fixtures into all tests used here.
     """
-
-
-@pytest.fixture
-def auto_deterministic_message_fixtures(deterministic_message_fixtures: None) -> None:
-    """Auto-use deterministic message fixtures for all tests in this module."""
-    pass
 
 
 @pytest.fixture(autouse=True)
@@ -76,10 +71,11 @@ async def device_manager_factory_fixture() -> AsyncGenerator[Callable[[UserParam
     """Fixture to create a device manager and handle auto shutdown on test failure."""
 
     cleanup_tasks: list[Callable[[], Awaitable[None]]] = []
+    cache: Cache = InMemoryCache()
 
     async def factory(user_params: UserParams) -> DeviceManager:
         """Create a device manager and auto cleanup."""
-        device_manager = await create_device_manager(user_params)
+        device_manager = await create_device_manager(user_params, cache=cache)
         cleanup_tasks.append(device_manager.close)
         return device_manager
 
@@ -219,5 +215,56 @@ async def test_device_manager(
     assert device.v1_properties.device_features.is_show_clean_finish_reason_supported
     assert device.v1_properties.device_features.is_customized_clean_supported
     assert not device.v1_properties.device_features.is_matter_supported
+
+    # Close the device manager. We will test re-connecting and reusing the network
+    # information and device discovery information from the cache.
+    await device_manager.close()
+
+    mqtt_responses = [
+        # MQTT connection response
+        mqtt_packet.gen_connack(rc=0, flags=2),
+        # ACK the request to subscribe to the topic
+        mqtt_packet.gen_suback(mid=1),
+        # No network info call this time since it should be cached
+    ]
+    for response in mqtt_responses:
+        push_mqtt_response(response)
+
+    # Prepare local device responses.
+    local_response_queue.put_nowait(
+        response_builder.build(protocol=RoborockMessageProtocol.HELLO_RESPONSE, seq=1, payload=b"ok")
+    )
+
+    device_manager = await device_manager_factory(user_params)
+
+    # The mocked Home Data API returns a single v1 device
+    devices = await device_manager.get_devices()
+    assert len(devices) == 1
+    device = devices[0]
+    assert device.duid == "abc123"
+    assert device.name == "Roborock S7 MaxV"
+    assert device.is_connected
+    assert device.is_local_connected
+
+    # Verify arbitrary device features from cache
+    assert device.v1_properties
+    assert device.v1_properties.device_features
+    assert device.v1_properties.device_features.is_show_clean_finish_reason_supported
+    assert device.v1_properties.device_features.is_customized_clean_supported
+    assert not device.v1_properties.device_features.is_matter_supported
+
+    # In the previous test, the dock information is fetched and has the side effect of
+    # populating the status trait. This test gets dock information from the cache so
+    # we have to manually refresh status the first time (like other traits).
+    assert device.v1_properties
+    assert device.v1_properties.status
+    assert device.v1_properties.status.state_name is None
+
+    # Exercise a GET_STATUS call. id is deterministic based on deterministic_message_fixtures
+    local_response_queue.put_nowait(response_builder.build_rpc(data={"id": 9101, "result": [mock_data.STATUS]}))
+
+    # Verify GET_STATUS response
+    await device.v1_properties.status.refresh()
+    assert device.v1_properties.status.state_name == "charging"
 
     assert snapshot == log
