@@ -51,6 +51,10 @@ class DeviceVersion(enum.StrEnum):
     UNKNOWN = "unknown"
 
 
+class UnsupportedDeviceError(RoborockException):
+    """Exception raised when a device is unsupported."""
+
+
 class DeviceManager:
     """Central manager for Roborock device discovery and connections."""
 
@@ -95,11 +99,19 @@ class DeviceManager:
         # These are connected serially to avoid overwhelming the MQTT broker
         new_devices = {}
         start_tasks = []
+        supported_devices_counter = self._diagnostics.subkey("supported_devices")
+        unsupported_devices_counter = self._diagnostics.subkey("unsupported_devices")
         for duid, (device, product) in device_products.items():
             _LOGGER.debug("[%s] Discovered device %s %s", duid, product.summary_info(), device.summary_info())
             if duid in self._devices:
                 continue
-            new_device = self._device_creator(home_data, device, product)
+            try:
+                new_device = self._device_creator(home_data, device, product)
+            except UnsupportedDeviceError:
+                _LOGGER.info("Skipping unsupported device %s %s", product.summary_info(), device.summary_info())
+                unsupported_devices_counter.increment(device.pv or "unknown")
+                continue
+            supported_devices_counter.increment(device.pv or "unknown")
             start_tasks.append(new_device.start_connect())
             new_devices[duid] = new_device
 
@@ -228,16 +240,18 @@ async def create_device_manager(
                 channel = create_mqtt_channel(user_data, mqtt_params, mqtt_session, device)
                 model_part = product.model.split(".")[-1]
                 if "ss" in model_part:
-                    raise NotImplementedError(
-                        f"Device {device.name} has unsupported version B01_{product.model.strip('.')[-1]}"
+                    raise UnsupportedDeviceError(
+                        f"Device {device.name} has unsupported version B01 product model {product.model}"
                     )
                 elif "sc" in model_part:
                     # Q7 devices start with 'sc' in their model naming.
                     trait = b01.q7.create(channel)
                 else:
-                    raise NotImplementedError(f"Device {device.name} has unsupported B01 model: {product.model}")
+                    raise UnsupportedDeviceError(f"Device {device.name} has unsupported B01 model: {product.model}")
             case _:
-                raise NotImplementedError(f"Device {device.name} has unsupported version {device.pv}")
+                raise UnsupportedDeviceError(
+                    f"Device {device.name} has unsupported version {device.pv} {product.model}"
+                )
 
         dev = RoborockDevice(device, product, channel, trait)
         if ready_callback:
