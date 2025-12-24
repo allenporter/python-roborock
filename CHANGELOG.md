@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v3.21.1 (2025-12-24)
+
+### Bug Fixes
+
+- Fix typing for send() for q7 ([#706](https://github.com/Python-roborock/python-roborock/pull/706),
+  [`1d32f2e`](https://github.com/Python-roborock/python-roborock/commit/1d32f2ef438f34286bb0ed1714d0e7479851a8a8))
+
+
 ## v3.21.0 (2025-12-23)
 
 ### Bug Fixes
