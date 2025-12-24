@@ -367,40 +367,42 @@ async def test_diagnostics_collection(home_data: HomeData) -> None:
 async def test_unsupported_protocol_version() -> None:
     """Test the DeviceManager with some supported and unsupported product IDs."""
     with patch("roborock.devices.device_manager.UserWebApiClient.get_home_data") as mock_home_data:
-        home_data = HomeData.from_dict({
-            "id": 1,
-            "name": "Test Home",
-            "devices": [
-                {
-                    "duid": "device-uid-1",
-                    "name": "Device 1",
-                    "pv": "1.0",
-                    "productId": "product-id-1",
-                    "localKey": mock_data.LOCAL_KEY,
-                },
-                {
-                    "duid": "device-uid-2",
-                    "name": "Device 2",
-                    "pv": "unknown-pv",   # Fake new protocol version we've never seen
-                    "productId": "product-id-2",
-                    "localKey": mock_data.LOCAL_KEY,
-                },
-            ],
-            "products": [
-                {
-                    "id": "product-id-1",
-                    "name": "Roborock S7 MaxV",
-                    "model": "roborock.vacuum.a27",
-                    "category": "robot.vacuum.cleaner",
-                },
-                {
-                    "id": "product-id-2",
-                    "name": "New Roborock Model",
-                    "model": "roborock.vacuum.newmodel",
-                    "category": "robot.vacuum.cleaner",
-                },
-            ],
-        })
+        home_data = HomeData.from_dict(
+            {
+                "id": 1,
+                "name": "Test Home",
+                "devices": [
+                    {
+                        "duid": "device-uid-1",
+                        "name": "Device 1",
+                        "pv": "1.0",
+                        "productId": "product-id-1",
+                        "localKey": mock_data.LOCAL_KEY,
+                    },
+                    {
+                        "duid": "device-uid-2",
+                        "name": "Device 2",
+                        "pv": "unknown-pv",  # Fake new protocol version we've never seen
+                        "productId": "product-id-2",
+                        "localKey": mock_data.LOCAL_KEY,
+                    },
+                ],
+                "products": [
+                    {
+                        "id": "product-id-1",
+                        "name": "Roborock S7 MaxV",
+                        "model": "roborock.vacuum.a27",
+                        "category": "robot.vacuum.cleaner",
+                    },
+                    {
+                        "id": "product-id-2",
+                        "name": "New Roborock Model",
+                        "model": "roborock.vacuum.newmodel",
+                        "category": "robot.vacuum.cleaner",
+                    },
+                ],
+            }
+        )
         mock_home_data.return_value = home_data
 
         device_manager = await create_device_manager(USER_PARAMS)
