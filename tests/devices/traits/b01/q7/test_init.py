@@ -33,20 +33,17 @@ class B01MessageBuilder:
 
     def build(self, data: dict[str, Any] | str, code: int | None = None) -> RoborockMessage:
         """Build an encoded B01 RPC response message."""
-        message = {
+        message: dict[str, Any] = {
             "msgId": str(self.msg_id),
             "data": data,
         }
         if code is not None:
             message["code"] = code
         return self._build_dps(message)
-    
-    
+
     def _build_dps(self, message: dict[str, Any] | str) -> RoborockMessage:
         """Build an encoded B01 RPC response message."""
-        dps_payload = {
-            "dps": { "10000": json.dumps(message) }
-        }
+        dps_payload = {"dps": {"10000": json.dumps(message)}}
         self.seq += 1
         return RoborockMessage(
             protocol=RoborockMessageProtocol.RPC_RESPONSE,
@@ -187,7 +184,7 @@ async def test_send_decoded_command_error_code(fake_channel: FakeChannel, messag
     message = message_builder.build({}, code=5001)
     fake_channel.response_queue.append(message)
 
-    with pytest.raises(RoborockException, match=f"B01 command failed with code 5001"):
+    with pytest.raises(RoborockException, match="B01 command failed with code 5001"):
         await send_decoded_command(fake_channel, Q7RequestMessage(dps=10000, command="prop.get", params=[]))  # type: ignore[arg-type]
 
 
