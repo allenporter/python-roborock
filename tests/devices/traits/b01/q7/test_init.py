@@ -31,17 +31,21 @@ class B01MessageBuilder:
         self.msg_id = 123456789
         self.seq = 2020
 
-    def build(self, message: dict[str, Any] | str) -> RoborockMessage:
+    def build(self, data: dict[str, Any] | str, code: int | None = None) -> RoborockMessage:
+        """Build an encoded B01 RPC response message."""
+        message = {
+            "msgId": str(self.msg_id),
+            "data": data,
+        }
+        if code is not None:
+            message["code"] = code
+        return self._build_dps(message)
+    
+    
+    def _build_dps(self, message: dict[str, Any] | str) -> RoborockMessage:
         """Build an encoded B01 RPC response message."""
         dps_payload = {
-            "dps": {
-                "10000": json.dumps(
-                    {
-                        "msgId": str(self.msg_id),
-                        "data": message,
-                    }
-                )
-            }
+            "dps": { "10000": json.dumps(message) }
         }
         self.seq += 1
         return RoborockMessage(
@@ -180,32 +184,10 @@ async def test_send_decoded_command_non_dict_response(fake_channel: FakeChannel,
 
 async def test_send_decoded_command_error_code(fake_channel: FakeChannel, message_builder: B01MessageBuilder):
     """Test that non-zero error codes from device are properly handled."""
-    error_code = 5001
-
-    dps_payload = {
-        "dps": {
-            "10000": json.dumps(
-                {
-                    "msgId": str(message_builder.msg_id),
-                    "code": error_code,
-                    "data": {},
-                }
-            )
-        }
-    }
-    message = RoborockMessage(
-        protocol=RoborockMessageProtocol.RPC_RESPONSE,
-        payload=pad(
-            json.dumps(dps_payload).encode(),
-            AES.block_size,
-        ),
-        version=b"B01",
-        seq=2022,
-    )
-
+    message = message_builder.build({}, code=5001)
     fake_channel.response_queue.append(message)
 
-    with pytest.raises(RoborockException, match=f"B01 command failed with code {error_code}"):
+    with pytest.raises(RoborockException, match=f"B01 command failed with code 5001"):
         await send_decoded_command(fake_channel, Q7RequestMessage(dps=10000, command="prop.get", params=[]))  # type: ignore[arg-type]
 
 
