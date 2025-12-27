@@ -76,7 +76,7 @@ class MqttChannel(Channel):
 
     async def subscribe_stream(self) -> AsyncGenerator[RoborockMessage, None]:
         """Subscribe to the device's message stream.
-        
+
         This is useful for processing all incoming messages in an async for loop,
         when they are not necessarily associated with a specific request.
         """
