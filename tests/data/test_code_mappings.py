@@ -16,7 +16,7 @@ def test_from_code() -> None:
 
 def test_invalid_from_code() -> None:
     """Test invalid from_code method."""
-    with pytest.raises(ValueError, match="999999 is not a valid code for B01_Q10_DP") as ex:
+    with pytest.raises(ValueError, match="999999 is not a valid code for B01_Q10_DP"):
         B01_Q10_DP.from_code(999999)
 
 
@@ -29,7 +29,7 @@ def test_from_name() -> None:
 
 def test_invalid_from_name() -> None:
     """Test invalid from_name method."""
-    with pytest.raises(ValueError, match="INVALID_NAME is not a valid name for B01_Q10_DP") as ex:
+    with pytest.raises(ValueError, match="INVALID_NAME is not a valid name for B01_Q10_DP"):
         B01_Q10_DP.from_name("INVALID_NAME")
 
 
@@ -42,5 +42,5 @@ def test_from_value() -> None:
 
 def test_invalid_from_value() -> None:
     """Test invalid from_value method."""
-    with pytest.raises(ValueError, match="invalid_value is not a valid value for B01_Q10_DP") as ex:
+    with pytest.raises(ValueError, match="invalid_value is not a valid value for B01_Q10_DP"):
         B01_Q10_DP.from_value("invalid_value")
