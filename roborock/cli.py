@@ -97,7 +97,8 @@ def async_command(func):
                 _LOGGER.exception("Uncaught exception in command")
                 click.echo(f"Error: {sys.exc_info()[1]}", err=True)
             finally:
-                await context.cleanup()
+                if not context.is_session_mode():
+                    await context.cleanup()
 
         if context.is_session_mode():
             # Session mode - run in the persistent loop
