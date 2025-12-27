@@ -36,7 +36,7 @@ class Q10PropertiesApi(Trait):
             try:
                 await self._task
             except asyncio.CancelledError:
-                pass
+                pass  # ignore cancellation errors
             self._task = None
 
     async def start_clean(self) -> None:
