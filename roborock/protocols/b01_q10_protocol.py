@@ -36,9 +36,11 @@ def _convert_datapoints(datapoints: dict[str, Any], message: RoborockMessage) ->
     """Convert the 'dps' dictionary keys from strings to B01_Q10_DP enums."""
     result = {}
     for key, value in datapoints.items():
-        if not isinstance(key, str):
-            raise RoborockException(f"Invalid B01 message format: 'dps' keys should be strings for {message.payload!r}")
-        dps = B01_Q10_DP.from_code(int(key))
+        try:
+            code = int(key)
+        except ValueError as e:
+            raise ValueError(f"dps key is not a valid integer: {e} for {message.payload!r}") from e
+        dps = B01_Q10_DP.from_code(code)
         result[dps] = value
     return result
 
@@ -49,16 +51,29 @@ def decode_rpc_response(message: RoborockMessage) -> dict[B01_Q10_DP, Any]:
         raise RoborockException("Invalid B01 message format: missing payload")
     try:
         payload = json.loads(message.payload.decode())
-    except (json.JSONDecodeError, TypeError, UnicodeDecodeError) as e:
-        raise RoborockException(f"Invalid B01 message payload: {e} for {message.payload!r}") from e
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raise RoborockException(f"Invalid B01 json payload: {e} for {message.payload!r}") from e
 
-    datapoints = payload.get("dps", {})
+    if (datapoints := payload.get("dps")) is None:
+        raise RoborockException(f"Invalid B01 json payload: missing 'dps' for {message.payload!r}")
     if not isinstance(datapoints, dict):
         raise RoborockException(f"Invalid B01 message format: 'dps' should be a dictionary for {message.payload!r}")
 
-    result = _convert_datapoints(datapoints, message)
-    # The COMMON response contains nested datapoints that also need conversion
+    try:
+        result = _convert_datapoints(datapoints, message)
+    except ValueError as e:
+        raise RoborockException(f"Invalid B01 message format: {e}") from e
+
+    # The COMMON response contains nested datapoints that also need conversion.
+    # We will parse that here for now, but may move elsewhere as we add more
+    # complex response parsing.
     if common_result := result.get(B01_Q10_DP.COMMON):
-        common_dps_result = _convert_datapoints(common_result, message)
+        if not isinstance(common_result, dict):
+            raise RoborockException(f"Invalid dpCommon format: expected dict, got {type(common_result).__name__}")
+        try:
+            common_dps_result = _convert_datapoints(common_result, message)
+        except ValueError as e:
+            raise RoborockException(f"Invalid dpCommon format: {e}") from e
         result[B01_Q10_DP.COMMON] = common_dps_result
+
     return result

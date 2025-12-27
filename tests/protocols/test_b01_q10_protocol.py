@@ -6,12 +6,11 @@ from collections.abc import Generator
 from typing import Any
 
 import pytest
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
 from freezegun import freeze_time
 from syrupy import SnapshotAssertion
 
 from roborock.data.b01_q10.b01_q10_code_mappings import B01_Q10_DP
+from roborock.exceptions import RoborockException
 from roborock.protocols.b01_q10_protocol import (
     decode_rpc_response,
     encode_mqtt_payload,
@@ -50,6 +49,32 @@ def test_decode_rpc_payload(filename: str, snapshot: SnapshotAssertion) -> None:
 
 
 @pytest.mark.parametrize(
+    ("payload", "expected_error_message"),
+    [
+        (b"", "missing payload"),
+        (b"n", "Invalid B01 json payload"),
+        (b"{}", "missing 'dps'"),
+        (b'{"dps": []}', "'dps' should be a dictionary"),
+        (b'{"dps": {"not_a_number": 123}}', "dps key is not a valid integer"),
+        (b'{"dps": {"101": 123}}', "Invalid dpCommon format: expected dict"),
+        (b'{"dps": {"101": {"not_a_number": 123}}}', "Invalid dpCommon format: dps key is not a valid intege"),
+    ],
+)
+def test_decode_invalid_rpc_payload(payload: bytes, expected_error_message: str) -> None:
+    """Test decoding a B01 RPC response protocol message."""
+    message = RoborockMessage(
+        protocol=RoborockMessageProtocol.RPC_RESPONSE,
+        payload=payload,
+        seq=12750,
+        version=b"B01",
+        random=97431,
+        timestamp=1652547161,
+    )
+    with pytest.raises(RoborockException, match=expected_error_message):
+        decode_rpc_response(message)
+
+
+@pytest.mark.parametrize(
     ("command", "params"),
     [
         (B01_Q10_DP.REQUETDPS, {}),
@@ -63,7 +88,6 @@ def test_encode_mqtt_payload(command: B01_Q10_DP, params: dict[str, Any]) -> Non
     assert message.protocol == RoborockMessageProtocol.RPC_REQUEST
     assert message.version == b"B01"
     assert message.payload is not None
-    unpadded = unpad(message.payload, AES.block_size)
-    decoded_json = json.loads(unpadded.decode("utf-8"))
+    decoded_json = json.loads(message.payload.decode("utf-8"))
 
     assert decoded_json == {"dps": {"102": {}}}
