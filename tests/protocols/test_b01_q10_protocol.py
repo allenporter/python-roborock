@@ -58,6 +58,7 @@ def test_decode_rpc_payload(filename: str, snapshot: SnapshotAssertion) -> None:
         (b'{"dps": {"not_a_number": 123}}', "dps key is not a valid integer"),
         (b'{"dps": {"101": 123}}', "Invalid dpCommon format: expected dict"),
         (b'{"dps": {"101": {"not_a_number": 123}}}', "Invalid dpCommon format: dps key is not a valid intege"),
+        (b'{"dps": {"909090": 123}}', "dps key is not a valid B01_Q10_DP"),
     ],
 )
 def test_decode_invalid_rpc_payload(payload: bytes, expected_error_message: str) -> None:
