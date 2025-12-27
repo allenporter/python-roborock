@@ -21,7 +21,6 @@ from roborock.protocols.v1_protocol import (
 )
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 from roborock.roborock_typing import RoborockCommand
-
 from tests import mock_data
 
 USER_DATA = UserData.from_dict(mock_data.USER_DATA)

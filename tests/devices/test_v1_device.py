@@ -15,7 +15,6 @@ from roborock.devices.traits import v1
 from roborock.devices.traits.v1.common import V1TraitMixin
 from roborock.protocols.v1_protocol import decode_rpc_response
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
-
 from tests import mock_data
 
 USER_DATA = UserData.from_dict(mock_data.USER_DATA)

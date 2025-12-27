@@ -13,7 +13,6 @@ from roborock.data.v1 import (
     RoborockStateCode,
 )
 from roborock.data.v1.v1_containers import AppInitStatus, CleanRecord, CleanSummary, Consumable, DnDTimer, S7MaxVStatus
-
 from tests.mock_data import (
     CLEAN_RECORD,
     CLEAN_SUMMARY,

@@ -8,7 +8,6 @@ from roborock.data import HomeData, RoborockDockTypeCode, S7MaxVStatus, UserData
 from roborock.devices.cache import Cache, DeviceCache, InMemoryCache
 from roborock.devices.device import RoborockDevice
 from roborock.devices.traits import v1
-
 from tests import mock_data
 
 USER_DATA = UserData.from_dict(mock_data.USER_DATA)

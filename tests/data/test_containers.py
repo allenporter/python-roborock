@@ -15,7 +15,6 @@ from roborock.data.containers import (
     _camelize,
     _decamelize,
 )
-
 from tests.mock_data import (
     HOME_DATA_RAW,
     K_VALUE,
