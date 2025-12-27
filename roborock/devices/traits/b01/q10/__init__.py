@@ -45,7 +45,7 @@ class Q10PropertiesApi(Trait):
             command=B01_Q10_DP.START_CLEAN,
             # TODO: figure out other commands
             # 1 = start cleaning
-            # 2 = electoral clean, also has "clean_paramters"
+            # 2 = "electoral" clean, also has "clean_parameters"
             # 4 = fast create map
             params={"cmd": 1},
         )
@@ -58,7 +58,7 @@ class Q10PropertiesApi(Trait):
         )
 
     async def resume_clean(self) -> None:
-        """Pause cleaning."""
+        """Resume cleaning."""
         await self.send(
             command=B01_Q10_DP.RESUME,
             params={},

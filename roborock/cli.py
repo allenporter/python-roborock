@@ -97,7 +97,8 @@ def async_command(func):
             except Exception:
                 _LOGGER.exception("Uncaught exception in command")
                 click.echo(f"Error: {sys.exc_info()[1]}", err=True)
-            await context.cleanup()
+            finally:
+                await context.cleanup()
 
         if context.is_session_mode():
             # Session mode - run in the persistent loop
@@ -775,7 +776,7 @@ async def command(ctx, cmd, device_id, params):
         if (cmd_value := _parse_b01_q10_command(cmd)) is None:
             raise RoborockException(f"Invalid command {cmd} for B01_Q10 device")
         await device.b01_q10_properties.send(cmd_value, json.loads(params) if params is not None else {})
-        # B10 Commands don't have a specific time to respond, so wait a bit
+        # Q10 commands don't have a specific time to respond, so wait a bit
         await asyncio.sleep(5)
     else:
         raise RoborockException(f"Device {device.name} does not support sending raw commands")
