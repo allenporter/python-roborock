@@ -3,6 +3,7 @@
 import json
 import pathlib
 from collections.abc import Generator
+from typing import Any
 
 import pytest
 from Crypto.Cipher import AES
@@ -10,13 +11,14 @@ from Crypto.Util.Padding import unpad
 from freezegun import freeze_time
 from syrupy import SnapshotAssertion
 
-from roborock.protocols.b01_q7_protocol import (
+from roborock.data.b01_q10.b01_q10_code_mappings import B01_Q10_DP
+from roborock.protocols.b01_q10_protocol import (
     decode_rpc_response,
     encode_mqtt_payload,
 )
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 
-TESTDATA_PATH = pathlib.Path("tests/protocols/testdata/b01_protocol/q7")
+TESTDATA_PATH = pathlib.Path("tests/protocols/testdata/b01_protocol/q10")
 TESTDATA_FILES = list(TESTDATA_PATH.glob("*.json"))
 TESTDATA_IDS = [x.stem for x in TESTDATA_FILES]
 
@@ -48,20 +50,15 @@ def test_decode_rpc_payload(filename: str, snapshot: SnapshotAssertion) -> None:
 
 
 @pytest.mark.parametrize(
-    ("dps", "command", "params", "msg_id"),
+    ("command", "params"),
     [
-        (
-            10000,
-            "prop.get",
-            {"property": ["status", "fault"]},
-            "123456789",
-        ),
+        (B01_Q10_DP.REQUETDPS, {}),
     ],
 )
-def test_encode_mqtt_payload(dps: int, command: str, params: dict[str, list[str]], msg_id: str) -> None:
+def test_encode_mqtt_payload(command: B01_Q10_DP, params: dict[str, Any]) -> None:
     """Test encoding of MQTT payload for B01 commands."""
 
-    message = encode_mqtt_payload(dps, command, params, msg_id)
+    message = encode_mqtt_payload(command, params)
     assert isinstance(message, RoborockMessage)
     assert message.protocol == RoborockMessageProtocol.RPC_REQUEST
     assert message.version == b"B01"
@@ -69,6 +66,4 @@ def test_encode_mqtt_payload(dps: int, command: str, params: dict[str, list[str]
     unpadded = unpad(message.payload, AES.block_size)
     decoded_json = json.loads(unpadded.decode("utf-8"))
 
-    assert decoded_json["dps"][str(dps)]["method"] == command
-    assert decoded_json["dps"][str(dps)]["msgId"] == msg_id
-    assert decoded_json["dps"][str(dps)]["params"] == params
+    assert decoded_json == {"dps": {"102": {}}}
