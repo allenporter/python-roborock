@@ -13,7 +13,7 @@ from syrupy import SnapshotAssertion
 from roborock.protocols.b01_q7_protocol import Q7RequestMessage, decode_rpc_response, encode_mqtt_payload
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 
-TESTDATA_PATH = pathlib.Path("tests/protocols/testdata/b01_protocol/q7")
+TESTDATA_PATH = pathlib.Path("tests/protocols/testdata/b01_q7_protocol")
 TESTDATA_FILES = list(TESTDATA_PATH.glob("*.json"))
 TESTDATA_IDS = [x.stem for x in TESTDATA_FILES]
 
