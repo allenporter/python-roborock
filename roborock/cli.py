@@ -93,9 +93,9 @@ def async_command(func):
         async def run():
             try:
                 await func(*args, **kwargs)
-            except Exception:
+            except Exception as err:
                 _LOGGER.exception("Uncaught exception in command")
-                click.echo(f"Error: {sys.exc_info()[1]}", err=True)
+                click.echo(f"Error: {err}", err=True)
             finally:
                 if not context.is_session_mode():
                     await context.cleanup()
