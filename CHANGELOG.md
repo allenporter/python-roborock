@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v4.0.2 (2025-12-29)
+
+### Bug Fixes
+
+- Add b01 q10 protocol encoding/decoding and tests
+  ([#718](https://github.com/Python-roborock/python-roborock/pull/718),
+  [`656f715`](https://github.com/Python-roborock/python-roborock/commit/656f715807c7605e9b0ce674c12b4fd0ad4a549f))
+
+- Support unknown q10 DPS enum codes
+  ([#718](https://github.com/Python-roborock/python-roborock/pull/718),
+  [`656f715`](https://github.com/Python-roborock/python-roborock/commit/656f715807c7605e9b0ce674c12b4fd0ad4a549f))
+
+
 ## v4.0.1 (2025-12-29)
 
 ### Bug Fixes
