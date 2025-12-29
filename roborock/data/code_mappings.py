@@ -55,6 +55,7 @@ class RoborockModeEnum(StrEnum):
     """A custom StrEnum that also stores an integer code for each member."""
 
     code: int
+    """The integer code associated with the enum member."""
 
     def __new__(cls, value: str, code: int) -> RoborockModeEnum:
         """Creates a new enum member."""
@@ -68,7 +69,18 @@ class RoborockModeEnum(StrEnum):
         for member in cls:
             if member.code == code:
                 return member
-        raise ValueError(f"{code} is not a valid code for {cls.__name__}")
+        message = f"{code} is not a valid code for {cls.__name__}"
+        if message not in completed_warnings:
+            completed_warnings.add(message)
+            _LOGGER.warning(message)
+        raise ValueError(message)
+
+    @classmethod
+    def from_code_optional(cls, code: int) -> RoborockModeEnum | None:
+        try:
+            return cls.from_code(code)
+        except ValueError:
+            return None
 
     @classmethod
     def from_value(cls, value: str) -> RoborockModeEnum:

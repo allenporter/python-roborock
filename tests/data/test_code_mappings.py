@@ -20,6 +20,11 @@ def test_invalid_from_code() -> None:
         B01_Q10_DP.from_code(999999)
 
 
+def test_invalid_from_code_optional() -> None:
+    """Test invalid from_code_optional method."""
+    assert B01_Q10_DP.from_code_optional(999999) is None
+
+
 def test_from_name() -> None:
     """Test from_name method."""
     assert B01_Q10_DP.START_CLEAN == B01_Q10_DP.from_name("START_CLEAN")
