@@ -2,6 +2,20 @@
 
 <!-- version list -->
 
+## v4.1.1 (2025-12-29)
+
+### Bug Fixes
+
+- Fix CLI to no longer depend on old API
+  ([#717](https://github.com/Python-roborock/python-roborock/pull/717),
+  [`a4fde4a`](https://github.com/Python-roborock/python-roborock/commit/a4fde4a1756dee6d631a1eab24e0a57bf68af6e6))
+
+### Chores
+
+- Fix cli lint errors ([#717](https://github.com/Python-roborock/python-roborock/pull/717),
+  [`a4fde4a`](https://github.com/Python-roborock/python-roborock/commit/a4fde4a1756dee6d631a1eab24e0a57bf68af6e6))
+
+
 ## v4.1.0 (2025-12-29)
 
 ### Bug Fixes
