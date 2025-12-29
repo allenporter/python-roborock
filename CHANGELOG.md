@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v4.0.1 (2025-12-29)
+
+### Bug Fixes
+
+- Fix wind and water mappings for Q7
+  ([#716](https://github.com/Python-roborock/python-roborock/pull/716),
+  [`421a9c4`](https://github.com/Python-roborock/python-roborock/commit/421a9c4970e8dc8e30552025ad37326d318476fe))
+
+- Fix wind and water mappings for Q7 (#715)
+  ([#716](https://github.com/Python-roborock/python-roborock/pull/716),
+  [`421a9c4`](https://github.com/Python-roborock/python-roborock/commit/421a9c4970e8dc8e30552025ad37326d318476fe))
+
+- Improve device startup connection reliability for L01 devices
+  ([#708](https://github.com/Python-roborock/python-roborock/pull/708),
+  [`9cf83a4`](https://github.com/Python-roborock/python-roborock/commit/9cf83a4a762e03e70ed59fb5b1c1982ff52b43b2))
+
+- Update device startup connection behavior
+  ([#708](https://github.com/Python-roborock/python-roborock/pull/708),
+  [`9cf83a4`](https://github.com/Python-roborock/python-roborock/commit/9cf83a4a762e03e70ed59fb5b1c1982ff52b43b2))
+
+### Chores
+
+- Update tests/e2e/test_device_manager.py
+  ([#708](https://github.com/Python-roborock/python-roborock/pull/708),
+  [`9cf83a4`](https://github.com/Python-roborock/python-roborock/commit/9cf83a4a762e03e70ed59fb5b1c1982ff52b43b2))
+
+
 ## v4.0.0 (2025-12-29)
 
 ### Bug Fixes
