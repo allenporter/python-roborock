@@ -41,8 +41,8 @@ from pyshark import FileCapture  # type: ignore
 from pyshark.capture.live_capture import LiveCapture, UnknownInterfaceException  # type: ignore
 from pyshark.packet.packet import Packet  # type: ignore
 
-from roborock import SHORT_MODEL_TO_ENUM, RoborockCommand
-from roborock.data import DeviceData, RoborockBase, UserData
+from roborock import RoborockCommand
+from roborock.data import RoborockBase, UserData
 from roborock.device_features import DeviceFeatures
 from roborock.devices.cache import Cache, CacheData
 from roborock.devices.device import RoborockDevice
@@ -821,10 +821,6 @@ async def get_device_info(ctx: click.Context):
     """
     click.echo("Discovering devices...")
     context: RoborockContext = ctx.obj
-    connection_cache = await context.get_devices()
-
-    home_data = connection_cache.cache_data.home_data
-
     device_connection_manager = await context.get_device_manager()
     device_manager = await device_connection_manager.ensure_device_manager()
     devices = await device_manager.get_devices()
@@ -849,17 +845,21 @@ async def get_device_info(ctx: click.Context):
         }
         if device.v1_properties is not None:
             try:
-                result: list[dict[str, Any]] = await device.v1_properties.command.send(RoborockCommand.APP_GET_INIT_STATUS)
+                result: list[dict[str, Any]] = await device.v1_properties.command.send(
+                    RoborockCommand.APP_GET_INIT_STATUS
+                )
             except Exception as e:
                 click.echo(f"    - Error processing device {device.name}: {e}", err=True)
                 continue
             init_status_result = result[0] if result else {}
-            current_product_data.update({
-                "New Feature Info": init_status_result.get("new_feature_info"),
-                "New Feature Info Str": init_status_result.get("new_feature_info_str"),
-                "Feature Info": init_status_result.get("feature_info"),
-            })
-    
+            current_product_data.update(
+                {
+                    "New Feature Info": init_status_result.get("new_feature_info"),
+                    "New Feature Info Str": init_status_result.get("new_feature_info_str"),
+                    "Feature Info": init_status_result.get("feature_info"),
+                }
+            )
+
         all_products_data[device.product.model] = current_product_data
 
     if all_products_data:
