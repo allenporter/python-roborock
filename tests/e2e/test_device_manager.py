@@ -4,7 +4,7 @@ These tests use a fake MQTT broker to verify the session implementation. We
 mock out the lower level socket connections to simulate a broker which gets us
 close to an "end to end" test without needing an actual MQTT broker server.
 
-These are higher level tests that the similar tests in tests/mqtt/test_roborock_session.py
+These are higher level tests than the similar tests in tests/mqtt/test_roborock_session.py
 which use mocks to verify specific behaviors.
 """
 
@@ -16,6 +16,7 @@ from typing import Any
 import pytest
 import syrupy
 
+from roborock.data.containers import UserData
 from roborock.devices.cache import Cache, InMemoryCache
 from roborock.devices.device_manager import DeviceManager, UserParams, create_device_manager
 from roborock.protocol import MessageParser
@@ -104,14 +105,10 @@ class ResponseBuilder:
     def build(
         self,
         payload: bytes,
-        seq: int | None = None,
         protocol: RoborockMessageProtocol | None = None,
     ) -> bytes:
         """Build an encoded response message."""
-        if seq is not None:
-            self.seq_counter = seq
-        else:
-            self.seq_counter += 1
+        self.seq_counter += 1
         return MessageParser.build(
             RoborockMessage(
                 protocol=protocol if protocol is not None else self.protocol,
@@ -145,7 +142,7 @@ class ResponseBuilder:
         )
 
 
-async def test_device_manager(
+async def test_v1_device(
     mock_rest: Any,
     push_mqtt_response: Callable[[bytes], None],
     local_response_queue: asyncio.Queue[bytes],
@@ -154,7 +151,7 @@ async def test_device_manager(
     snapshot: syrupy.SnapshotAssertion,
     device_manager_factory: Callable[[UserParams], Awaitable[DeviceManager]],
 ) -> None:
-    """Test the device manager end to end flow."""
+    """Test the device manager end to end flow with a v1 device."""
 
     # Simulate the login flow to get user params
     web_api = RoborockApiClient(username=TEST_USERNAME)
@@ -177,9 +174,10 @@ async def test_device_manager(
         push_mqtt_response(response)
 
     # Prepare local device responses. The ids are deterministic based on deterministic_message_fixtures
+    response_builder.seq_counter = 0
     local_responses: list[bytes] = [
         # Queue HELLO response
-        response_builder.build(protocol=RoborockMessageProtocol.HELLO_RESPONSE, seq=1, payload=b"ok"),
+        response_builder.build(protocol=RoborockMessageProtocol.HELLO_RESPONSE, payload=b"ok"),
         # Feature discovery part 1 & 2
         response_builder.build_rpc(data={"id": 9094, "result": [mock_data.APP_GET_INIT_STATUS]}),
         response_builder.build_rpc(data={"id": 9097, "result": [mock_data.STATUS]}),
@@ -231,8 +229,9 @@ async def test_device_manager(
         push_mqtt_response(response)
 
     # Prepare local device responses.
+    response_builder.seq_counter = 0
     local_response_queue.put_nowait(
-        response_builder.build(protocol=RoborockMessageProtocol.HELLO_RESPONSE, seq=1, payload=b"ok")
+        response_builder.build(protocol=RoborockMessageProtocol.HELLO_RESPONSE, payload=b"ok")
     )
 
     device_manager = await device_manager_factory(user_params)
@@ -266,5 +265,83 @@ async def test_device_manager(
     # Verify GET_STATUS response
     await device.v1_properties.status.refresh()
     assert device.v1_properties.status.state_name == "charging"
+
+    assert snapshot == log
+
+
+async def test_l01_device(
+    mock_rest: Any,
+    push_mqtt_response: Callable[[bytes], None],
+    local_response_queue: asyncio.Queue[bytes],
+    local_received_requests: asyncio.Queue[bytes],
+    log: CapturedRequestLog,
+    snapshot: syrupy.SnapshotAssertion,
+    device_manager_factory: Callable[[UserParams], Awaitable[DeviceManager]],
+) -> None:
+    """Test the device manager end to end flow with a l01 device."""
+    # Prepare MQTT requests
+    mqtt_response_builder = ResponseBuilder()
+    mqtt_responses: list[bytes] = [
+        # MQTT connection response
+        mqtt_packet.gen_connack(rc=0, flags=2),
+        # ACK the request to subscribe to the topic
+        mqtt_packet.gen_suback(mid=1),
+        # ACK the GET_NETWORK_INFO call. id is deterministic based on deterministic_message_fixtures
+        mqtt_packet.gen_publish(
+            TEST_TOPIC, mid=2, payload=mqtt_response_builder.build_rpc(data={"id": 9090, "result": NETWORK_INFO})
+        ),
+    ]
+    for response in mqtt_responses:
+        push_mqtt_response(response)
+
+    # Prepare local device responses. The ids are deterministic based on deterministic_message_fixtures
+    local_response_builder = ResponseBuilder()
+    local_response_builder.version = LocalProtocolVersion.L01
+    local_response_builder.connect_nonce = 9093
+    local_responses: list[bytes] = [
+        # Initial V01 Hello request will fail and cause a retry with L01
+        b"\x00",
+        # Queue HELLO response with L01
+        local_response_builder.build(protocol=RoborockMessageProtocol.HELLO_RESPONSE, payload=b"ok"),
+    ]
+    # Feature discovery requests are sent with an ack nonce based on the random sent in HELLO_RESPONSE
+    local_response_builder.ack_nonce = TEST_RANDOM
+    local_responses.extend(
+        [
+            local_response_builder.build_rpc(data={"id": 9094, "result": [mock_data.APP_GET_INIT_STATUS]}),
+            local_response_builder.build_rpc(data={"id": 9097, "result": [mock_data.STATUS]}),
+        ]
+    )
+    for payload in local_responses:
+        local_response_queue.put_nowait(payload)
+
+    # Create the device manager
+    user_params = UserParams(
+        username=TEST_USERNAME,
+        user_data=UserData.from_dict(mock_data.USER_DATA),
+        base_url=mock_data.BASE_URL,
+    )
+    device_manager = await device_manager_factory(user_params)
+
+    # The mocked Home Data API returns a single v1 device
+    devices = await device_manager.get_devices()
+    assert len(devices) == 1
+    device = devices[0]
+    assert device.duid == "abc123"
+    assert device.name == "Roborock S7 MaxV"
+    assert device.is_connected
+    assert device.is_local_connected
+
+    # Verify GET_STATUS response based on mock_data.STATUS
+    assert device.v1_properties
+    assert device.v1_properties.status
+    assert device.v1_properties.status.state_name == "charging"
+    assert device.v1_properties.status.battery == 100
+    assert device.v1_properties.status.clean_time == 1176
+
+    # Verify arbitrary device features
+    assert device.v1_properties.device_features.is_show_clean_finish_reason_supported
+    assert device.v1_properties.device_features.is_customized_clean_supported
+    assert not device.v1_properties.device_features.is_matter_supported
 
     assert snapshot == log
