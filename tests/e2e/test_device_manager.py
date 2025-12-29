@@ -4,7 +4,7 @@ These tests use a fake MQTT broker to verify the session implementation. We
 mock out the lower level socket connections to simulate a broker which gets us
 close to an "end to end" test without needing an actual MQTT broker server.
 
-These are higher level tests that the similar tests in tests/mqtt/test_roborock_session.py
+These are higher level tests than the similar tests in tests/mqtt/test_roborock_session.py
 which use mocks to verify specific behaviors.
 """
 
