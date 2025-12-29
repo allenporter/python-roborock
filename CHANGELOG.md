@@ -2,6 +2,21 @@
 
 <!-- version list -->
 
+## v4.1.0 (2025-12-29)
+
+### Bug Fixes
+
+- Return self for classmethods of roborockmodeenum
+  ([#720](https://github.com/Python-roborock/python-roborock/pull/720),
+  [`0cc41e8`](https://github.com/Python-roborock/python-roborock/commit/0cc41e8127740b5f763d7dd2735e7427e4ae9afe))
+
+### Features
+
+- Expose prefer-cache to create_device_manager caller
+  ([#719](https://github.com/Python-roborock/python-roborock/pull/719),
+  [`1d098d6`](https://github.com/Python-roborock/python-roborock/commit/1d098d6775d86a8ffd425d42bf2a6f8cd8bcc9a7))
+
+
 ## v4.0.2 (2025-12-29)
 
 ### Bug Fixes
