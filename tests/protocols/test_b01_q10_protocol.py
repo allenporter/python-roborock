@@ -58,7 +58,6 @@ def test_decode_rpc_payload(filename: str, snapshot: SnapshotAssertion) -> None:
         (b'{"dps": {"not_a_number": 123}}', "dps key is not a valid integer"),
         (b'{"dps": {"101": 123}}', "Invalid dpCommon format: expected dict"),
         (b'{"dps": {"101": {"not_a_number": 123}}}', "Invalid dpCommon format: dps key is not a valid intege"),
-        (b'{"dps": {"909090": 123}}', "dps key is not a valid B01_Q10_DP"),
     ],
 )
 def test_decode_invalid_rpc_payload(payload: bytes, expected_error_message: str) -> None:
@@ -73,6 +72,23 @@ def test_decode_invalid_rpc_payload(payload: bytes, expected_error_message: str)
     )
     with pytest.raises(RoborockException, match=expected_error_message):
         decode_rpc_response(message)
+
+
+def test_decode_unknown_dps_code() -> None:
+    """Test decoding a B01 RPC response protocol message."""
+    message = RoborockMessage(
+        protocol=RoborockMessageProtocol.RPC_RESPONSE,
+        payload=b'{"dps": {"909090": 123, "122":100}}',
+        seq=12750,
+        version=b"B01",
+        random=97431,
+        timestamp=1652547161,
+    )
+
+    decoded_message = decode_rpc_response(message)
+    assert decoded_message == {
+        B01_Q10_DP.BATTERY: 100,
+    }
 
 
 @pytest.mark.parametrize(

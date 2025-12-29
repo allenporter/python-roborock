@@ -44,12 +44,9 @@ def _convert_datapoints(datapoints: dict[str, Any], message: RoborockMessage) ->
             code = int(key)
         except ValueError as e:
             raise ValueError(f"dps key is not a valid integer: {e} for {message.payload!r}") from e
-        try:
-            dps = B01_Q10_DP.from_code(code)
-        except ValueError as e:
-            raise ValueError(f"dps key is not a valid B01_Q10_DP: {e} for {message.payload!r}") from e
-        # Update from_code to use `Self` on newer python version to remove this type ignore
-        result[dps] = value  # type: ignore[index]
+        if (dps := B01_Q10_DP.from_code_optional(code)) is not None:
+            # Update from_code to use `Self` on newer python version to remove this type ignore
+            result[dps] = value  # type: ignore[index]
     return result
 
 
