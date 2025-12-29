@@ -2,6 +2,89 @@
 
 <!-- version list -->
 
+## v4.0.0 (2025-12-29)
+
+### Bug Fixes
+
+- Allow startup with unsupported devices
+  ([#707](https://github.com/Python-roborock/python-roborock/pull/707),
+  [`7e40857`](https://github.com/Python-roborock/python-roborock/commit/7e40857d0e723f73e4501e7be6068ffa12ebd086))
+
+- Properly shutdown the context in the CLI
+  ([#710](https://github.com/Python-roborock/python-roborock/pull/710),
+  [`bf31b9b`](https://github.com/Python-roborock/python-roborock/commit/bf31b9b5e7bc22b04e15791cbbcca47e08bcef34))
+
+### Chores
+
+- Add an end to end device manager test
+  ([#705](https://github.com/Python-roborock/python-roborock/pull/705),
+  [`5e5b9d3`](https://github.com/Python-roborock/python-roborock/commit/5e5b9d38a542a34b486edd21a0fc27fbea9221ef))
+
+- Add end to end tests of the device cache
+  ([#705](https://github.com/Python-roborock/python-roborock/pull/705),
+  [`5e5b9d3`](https://github.com/Python-roborock/python-roborock/commit/5e5b9d38a542a34b486edd21a0fc27fbea9221ef))
+
+- Add explicit Q7 request message handling code
+  ([#712](https://github.com/Python-roborock/python-roborock/pull/712),
+  [`a0aee33`](https://github.com/Python-roborock/python-roborock/commit/a0aee338539a060b31b156d607afa9d476e31f95))
+
+- Apply suggestions from code review
+  ([#707](https://github.com/Python-roborock/python-roborock/pull/707),
+  [`7e40857`](https://github.com/Python-roborock/python-roborock/commit/7e40857d0e723f73e4501e7be6068ffa12ebd086))
+
+- Fix exception catching ([#710](https://github.com/Python-roborock/python-roborock/pull/710),
+  [`bf31b9b`](https://github.com/Python-roborock/python-roborock/commit/bf31b9b5e7bc22b04e15791cbbcca47e08bcef34))
+
+- Fix formatting in tests. ([#714](https://github.com/Python-roborock/python-roborock/pull/714),
+  [`e00ce88`](https://github.com/Python-roborock/python-roborock/commit/e00ce886ba8012189c88e3f3a01b8f5d8cb4124e))
+
+- Fix lint errors in code mappings test
+  ([#711](https://github.com/Python-roborock/python-roborock/pull/711),
+  [`4725574`](https://github.com/Python-roborock/python-roborock/commit/4725574cb8f14c13e5b66e5051da83d6f2670456))
+
+- Fix lint errors in q7 protocol tests
+  ([#712](https://github.com/Python-roborock/python-roborock/pull/712),
+  [`a0aee33`](https://github.com/Python-roborock/python-roborock/commit/a0aee338539a060b31b156d607afa9d476e31f95))
+
+- Fix lint formatting ([#707](https://github.com/Python-roborock/python-roborock/pull/707),
+  [`7e40857`](https://github.com/Python-roborock/python-roborock/commit/7e40857d0e723f73e4501e7be6068ffa12ebd086))
+
+- Fix protocol test paths ([#712](https://github.com/Python-roborock/python-roborock/pull/712),
+  [`a0aee33`](https://github.com/Python-roborock/python-roborock/commit/a0aee338539a060b31b156d607afa9d476e31f95))
+
+- Improve error handling for session loop
+  ([#710](https://github.com/Python-roborock/python-roborock/pull/710),
+  [`bf31b9b`](https://github.com/Python-roborock/python-roborock/commit/bf31b9b5e7bc22b04e15791cbbcca47e08bcef34))
+
+- Split up test_containers.py into data subdirectories
+  ([#714](https://github.com/Python-roborock/python-roborock/pull/714),
+  [`e00ce88`](https://github.com/Python-roborock/python-roborock/commit/e00ce886ba8012189c88e3f3a01b8f5d8cb4124e))
+
+- Update diagnostics counters ([#707](https://github.com/Python-roborock/python-roborock/pull/707),
+  [`7e40857`](https://github.com/Python-roborock/python-roborock/commit/7e40857d0e723f73e4501e7be6068ffa12ebd086))
+
+- Update error building tests ([#712](https://github.com/Python-roborock/python-roborock/pull/712),
+  [`a0aee33`](https://github.com/Python-roborock/python-roborock/commit/a0aee338539a060b31b156d607afa9d476e31f95))
+
+### Features
+
+- Allow RoborockModeEnum parsing by either enum name, value name, or code
+  ([#711](https://github.com/Python-roborock/python-roborock/pull/711),
+  [`4725574`](https://github.com/Python-roborock/python-roborock/commit/4725574cb8f14c13e5b66e5051da83d6f2670456))
+
+- Allow RoborockModeEnum parsing by either enum name, value name, or code.
+  ([#711](https://github.com/Python-roborock/python-roborock/pull/711),
+  [`4725574`](https://github.com/Python-roborock/python-roborock/commit/4725574cb8f14c13e5b66e5051da83d6f2670456))
+
+- **api**: Remove original Cloud and Local APIs
+  ([#713](https://github.com/Python-roborock/python-roborock/pull/713),
+  [`557810f`](https://github.com/Python-roborock/python-roborock/commit/557810f2d7ad4f56c94d6a981223f90bafdd0b5a))
+
+### Breaking Changes
+
+- **api**: Removes older cloud and local APIs.
+
+
 ## v3.21.1 (2025-12-24)
 
 ### Bug Fixes
