@@ -556,8 +556,6 @@ The new design:
 - Clear separation of concerns through layers
 - Users work with devices, not raw clients
 
-**Note**: Legacy APIs in `version_1_apis/` and `version_a01_apis/` are deprecated and will be removed.
-
 
 ## Implementation Details
 
