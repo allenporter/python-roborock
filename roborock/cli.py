@@ -43,6 +43,7 @@ from pyshark.packet.packet import Packet  # type: ignore
 
 from roborock import RoborockCommand
 from roborock.data import RoborockBase, UserData
+from roborock.data.b01_q10.b01_q10_code_mappings import B01_Q10_DP
 from roborock.device_features import DeviceFeatures
 from roborock.devices.cache import Cache, CacheData
 from roborock.devices.device import RoborockDevice
@@ -745,6 +746,21 @@ async def network_info(ctx, device_id: str):
     await _display_v1_trait(context, device_id, lambda v1: v1.network_info)
 
 
+def _parse_b01_q10_command(cmd: str) -> B01_Q10_DP:
+    """Parse B01_Q10 command from either enum name or value."""
+    try:
+        return B01_Q10_DP(int(cmd))
+    except ValueError:
+        try:
+            return B01_Q10_DP.from_name(cmd)
+        except ValueError:
+            try:
+                return B01_Q10_DP.from_value(cmd)
+            except ValueError:
+                pass
+    raise RoborockException(f"Invalid command {cmd} for B01_Q10 device")
+
+
 @click.command()
 @click.option("--device_id", required=True)
 @click.option("--cmd", required=True)
@@ -755,12 +771,18 @@ async def command(ctx, cmd, device_id, params):
     context: RoborockContext = ctx.obj
     device_manager = await context.get_device_manager()
     device = await device_manager.get_device(device_id)
-    if device.v1_properties is None:
-        raise RoborockException(f"Device {device.name} does not support V1 protocol")
-    command_trait: Trait = device.v1_properties.command
-    result = await command_trait.send(cmd, json.loads(params) if params is not None else None)
-    if result:
-        click.echo(dump_json(result))
+    if device.v1_properties is not None:
+        command_trait: Trait = device.v1_properties.command
+        result = await command_trait.send(cmd, json.loads(params) if params is not None else None)
+        if result:
+            click.echo(dump_json(result))
+    elif device.b01_q10_properties is not None:
+        cmd_value = _parse_b01_q10_command(cmd)
+        command_trait: Trait = device.b01_q10_properties.command
+        await command_trait.send(cmd_value, json.loads(params) if params is not None else None)
+        click.echo("Command sent successfully; Enable debug logging (-d) to see responses.")
+        # Q10 commands don't have a specific time to respond, so wait a bit and log
+        await asyncio.sleep(5)
 
 
 @click.command()

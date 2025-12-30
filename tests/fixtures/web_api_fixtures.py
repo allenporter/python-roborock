@@ -19,8 +19,14 @@ def skip_rate_limit() -> Generator[None, None, None]:
         yield
 
 
+@pytest.fixture(name="home_data")
+def home_data_fixture() -> dict[str, Any]:
+    """Fixture to provide HomeData instance for tests."""
+    return HOME_DATA_RAW
+
+
 @pytest.fixture(name="mock_rest")
-def mock_rest_fixture(skip_rate_limit: Any) -> aioresponses:
+def mock_rest_fixture(skip_rate_limit: Any, home_data: dict[str, Any]) -> aioresponses:
     """Mock all rest endpoints so they won't hit real endpoints"""
     with aioresponses() as mocked:
         # Match the base URL and allow any query params
@@ -60,12 +66,12 @@ def mock_rest_fixture(skip_rate_limit: Any) -> aioresponses:
         mocked.get(
             re.compile(r"https://api-.*\.roborock\.com/v2/user/homes*"),
             status=200,
-            payload={"api": None, "code": 200, "result": HOME_DATA_RAW, "status": "ok", "success": True},
+            payload={"api": None, "code": 200, "result": home_data, "status": "ok", "success": True},
         )
         mocked.get(
             re.compile(r"https://api-.*\.roborock\.com/v3/user/homes*"),
             status=200,
-            payload={"api": None, "code": 200, "result": HOME_DATA_RAW, "status": "ok", "success": True},
+            payload={"api": None, "code": 200, "result": home_data, "status": "ok", "success": True},
         )
         mocked.post(
             re.compile(r"https://api-.*\.roborock\.com/nc/prepare"),

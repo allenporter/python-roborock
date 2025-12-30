@@ -1,4 +1,4 @@
-"""Thin wrapper around the MQTT channel for Roborock B01 devices."""
+"""Thin wrapper around the MQTT channel for Roborock B01 Q7 devices."""
 
 from __future__ import annotations
 

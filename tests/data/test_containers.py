@@ -19,7 +19,6 @@ from tests.mock_data import (
     HOME_DATA_RAW,
     K_VALUE,
     LOCAL_KEY,
-    PRODUCT_ID,
     USER_DATA,
 )
 
@@ -180,7 +179,7 @@ def test_home_data():
     assert hd.lat is None
     assert hd.geo_name is None
     product = hd.products[0]
-    assert product.id == PRODUCT_ID
+    assert product.id == "product-id-s7-maxv"
     assert product.name == "Roborock S7 MaxV"
     assert product.code == "a27"
     assert product.model == "roborock.vacuum.a27"
@@ -205,7 +204,7 @@ def test_home_data():
     assert device.runtime_env is None
     assert device.time_zone_id == "America/Los_Angeles"
     assert device.icon_url == "no_url"
-    assert device.product_id == "product-id-123"
+    assert device.product_id == "product-id-s7-maxv"
     assert device.lon is None
     assert device.lat is None
     assert not device.share
