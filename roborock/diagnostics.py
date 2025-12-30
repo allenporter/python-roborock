@@ -101,6 +101,16 @@ REDACT_KEYS = {
     "imageContent",
     "mapData",
     "rawApiResponse",
+    # Home data
+    "id",
+    "name",
+    "productId",
+    "ipAddress",
+    "mac",
+    "wifiName",
+    "schema",  # Large
+    "lat",
+    "long",
 }
 DEVICE_UID = "duid"
 REDACTED = "**REDACTED**"

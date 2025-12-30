@@ -6,6 +6,7 @@ from collections.abc import Generator, Iterator
 from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
 
+import syrupy
 import pytest
 
 from roborock.data import HomeData, UserData
@@ -349,7 +350,7 @@ async def test_start_connect_unexpected_error(home_data: HomeData, channel_failu
         await create_device_manager(USER_PARAMS)
 
 
-async def test_diagnostics_collection(home_data: HomeData) -> None:
+async def test_diagnostics_collection(home_data: HomeData, snapshot: syrupy.SnapshotAssertion) -> None:
     """Test that diagnostics are collected correctly in the DeviceManager."""
     device_manager = await create_device_manager(USER_PARAMS)
     devices = await device_manager.get_devices()
@@ -359,6 +360,8 @@ async def test_diagnostics_collection(home_data: HomeData) -> None:
     assert diagnostics is not None
     assert diagnostics.get("discover_devices") == 1
     assert diagnostics.get("fetch_home_data") == 1
+
+    assert snapshot == diagnostics
 
     await device_manager.close()
 
