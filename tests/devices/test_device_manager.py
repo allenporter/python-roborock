@@ -358,8 +358,10 @@ async def test_diagnostics_collection(home_data: HomeData, snapshot: syrupy.Snap
 
     diagnostics = device_manager.diagnostic_data()
     assert diagnostics is not None
-    assert diagnostics.get("discover_devices") == 1
-    assert diagnostics.get("fetch_home_data") == 1
+    diagnostics_data = diagnostics.get("diagnostics")
+    assert diagnostics_data
+    assert diagnostics_data.get("discover_devices") == 1
+    assert diagnostics_data.get("fetch_home_data") == 1
 
     assert snapshot == diagnostics
 
@@ -413,6 +415,8 @@ async def test_unsupported_protocol_version() -> None:
         assert [device.duid for device in devices] == ["device-uid-1"]
 
         # Verify diagnostics
-        data = device_manager.diagnostic_data()
-        assert data.get("supported_devices") == {"1.0": 1}
-        assert data.get("unsupported_devices") == {"unknown-pv": 1}
+        diagnostics = device_manager.diagnostic_data()
+        diagnostics_data = diagnostics.get("diagnostics")
+        assert diagnostics_data
+        assert diagnostics_data.get("supported_devices") == {"1.0": 1}
+        assert diagnostics_data.get("unsupported_devices") == {"unknown-pv": 1}
