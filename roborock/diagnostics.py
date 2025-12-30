@@ -114,7 +114,8 @@ REDACT_KEYS = {
 KEEP_KEYS = {
     # Product information no unique per user
     "product.id",
-    "schema.id",
+    "product.schema.id",
+    "product.schema.name",
     # Room ids are likely unique per user, but don't seem too sensitive and are
     # useful for debugging
     "rooms.id",
