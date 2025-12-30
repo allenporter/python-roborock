@@ -4,7 +4,7 @@ import asyncio
 import enum
 import logging
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from typing import Any
 
 import aiohttp
@@ -139,7 +139,7 @@ class DeviceManager:
         """Return diagnostics information about the device manager."""
         return {
             **self._diagnostics.as_dict(),
-            "home_data": redact_device_data(asdict(self._home_data or {})),
+            "home_data": redact_device_data(asdict(self._home_data) if self._home_data else {}),
             "devices": [device.diagnostic_data() for device in self._devices.values()],
         }
 

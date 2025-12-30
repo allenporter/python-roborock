@@ -6,8 +6,8 @@ from collections.abc import Generator, Iterator
 from typing import Any
 from unittest.mock import AsyncMock, Mock, patch
 
-import syrupy
 import pytest
+import syrupy
 
 from roborock.data import HomeData, UserData
 from roborock.devices.cache import InMemoryCache
