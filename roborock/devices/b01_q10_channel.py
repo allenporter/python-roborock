@@ -14,7 +14,6 @@ from roborock.protocols.b01_q10_protocol import (
 from .mqtt_channel import MqttChannel
 
 _LOGGER = logging.getLogger(__name__)
-_TIMEOUT = 10.0
 
 
 async def send_command(
