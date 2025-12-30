@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v4.2.0 (2025-12-30)
+
+### Chores
+
+- Add end to end tests for Q10 devices
+  ([#721](https://github.com/Python-roborock/python-roborock/pull/721),
+  [`8d76119`](https://github.com/Python-roborock/python-roborock/commit/8d761194bc1daaa82564fc49e3ef63f85a209dba))
+
+- Remove unused timeout field ([#721](https://github.com/Python-roborock/python-roborock/pull/721),
+  [`8d76119`](https://github.com/Python-roborock/python-roborock/commit/8d761194bc1daaa82564fc49e3ef63f85a209dba))
+
+### Features
+
+- Recognize Q10 devices and add a command trait
+  ([#721](https://github.com/Python-roborock/python-roborock/pull/721),
+  [`8d76119`](https://github.com/Python-roborock/python-roborock/commit/8d761194bc1daaa82564fc49e3ef63f85a209dba))
+
+
 ## v4.1.1 (2025-12-29)
 
 ### Bug Fixes
