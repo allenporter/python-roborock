@@ -166,6 +166,7 @@ async def test_q7_response_value_mapping(
     result = await q7_api.query_values(query)
 
     assert result is not None
+    assert result.status == expected_status
 
 
 async def test_send_decoded_command_non_dict_response(fake_channel: FakeChannel, message_builder: B01MessageBuilder):
