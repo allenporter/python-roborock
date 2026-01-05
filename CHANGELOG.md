@@ -2,6 +2,40 @@
 
 <!-- version list -->
 
+## v4.2.1 (2026-01-05)
+
+### Bug Fixes
+
+- Bump aiomqtt ([#730](https://github.com/Python-roborock/python-roborock/pull/730),
+  [`21af4f3`](https://github.com/Python-roborock/python-roborock/commit/21af4f30412d96eb5ac53f372b74b0e03ca6580e))
+
+### Chores
+
+- Add a01 and b01 q7 byte level tests
+  ([#724](https://github.com/Python-roborock/python-roborock/pull/724),
+  [`f20ade9`](https://github.com/Python-roborock/python-roborock/commit/f20ade97843241aa286405c4eacbb9f1939cbdf3))
+
+- Add docs for v1 device features
+  ([#727](https://github.com/Python-roborock/python-roborock/pull/727),
+  [`f031acf`](https://github.com/Python-roborock/python-roborock/commit/f031acffa2381c2eb9e4af6fbf7967ae22b1d7dc))
+
+- Documentation cleanup and updates
+  ([#725](https://github.com/Python-roborock/python-roborock/pull/725),
+  [`bbeb0d9`](https://github.com/Python-roborock/python-roborock/commit/bbeb0d95e11274bd024cfac23988f01acf814888))
+
+- Remove empty line in device features documentation
+  ([#727](https://github.com/Python-roborock/python-roborock/pull/727),
+  [`f031acf`](https://github.com/Python-roborock/python-roborock/commit/f031acffa2381c2eb9e4af6fbf7967ae22b1d7dc))
+
+- Remove some information from the summart
+  ([#727](https://github.com/Python-roborock/python-roborock/pull/727),
+  [`f031acf`](https://github.com/Python-roborock/python-roborock/commit/f031acffa2381c2eb9e4af6fbf7967ae22b1d7dc))
+
+- Restructure the channel modules
+  ([#728](https://github.com/Python-roborock/python-roborock/pull/728),
+  [`9fcc0a8`](https://github.com/Python-roborock/python-roborock/commit/9fcc0a8ca075097b7d903a57cc0fc33ed149bd97))
+
+
 ## v4.2.0 (2025-12-30)
 
 ### Chores
