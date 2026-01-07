@@ -16,7 +16,12 @@ Thank you for your interest in contributing to `python-roborock`! We welcome con
     uv venv
     uv sync
     ```
-4.  **Install pre-commit hooks**. This ensures your code meets our quality standards. Once installed, these hooks run automatically on staged files when you commit:
+4.  **Activate the virtual environment**. This is required for running `pre-commit` hooks and `pytest`:
+    ```bash
+    source .venv/bin/activate
+    ```
+
+5.  **Install pre-commit hooks**. This ensures your code meets our quality standards. Once installed, these hooks run automatically on staged files when you commit:
     ```bash
     pre-commit install
     ```
@@ -43,8 +48,8 @@ pre-commit run --all-files
 We use `pytest` for testing. Please ensure all tests pass and add new tests for your changes.
 
 ```bash
-# Run tests using uv
-uv run pytest
+# Run tests
+pytest
 ```
 
 ## Pull Requests
