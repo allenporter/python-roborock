@@ -138,7 +138,7 @@ class DeviceManager:
     def diagnostic_data(self) -> Mapping[str, Any]:
         """Return diagnostics information about the device manager."""
         return {
-            "home_data": redact_device_data(asdict(self._home_data) if self._home_data else {}),
+            "home_data": redact_device_data(self._home_data.as_dict()) if self._home_data else None,
             "devices": [device.diagnostic_data() for device in self._devices.values()],
             "diagnostics": self._diagnostics.as_dict(),
         }
