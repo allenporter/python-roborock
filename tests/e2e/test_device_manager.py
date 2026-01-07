@@ -452,9 +452,6 @@ async def test_q10_device(
         (
             {
                 **HOME_DATA_RAW,
-                # Use a fake Q7 device and product profile as a placeholder
-                # until we add a json file based on the real one.
-                **HOME_DATA_RAW,
                 "devices": [mock_data.Q7_DEVICE_DATA],
                 "products": [mock_data.SC01_PRODUCT_DATA],
             }
