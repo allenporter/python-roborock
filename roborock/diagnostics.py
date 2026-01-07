@@ -106,13 +106,12 @@ REDACT_KEYS = {
     "name",
     "productId",
     "ipAddress",
-    "mac",
     "wifiName",
     "lat",
     "long",
 }
 KEEP_KEYS = {
-    # Product information no unique per user
+    # Product information not unique per user
     "product.id",
     "product.schema.id",
     "product.schema.name",

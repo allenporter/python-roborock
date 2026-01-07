@@ -4,7 +4,7 @@ import asyncio
 import enum
 import logging
 from collections.abc import Callable, Mapping
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Any
 
 import aiohttp
