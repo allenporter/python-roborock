@@ -39,6 +39,7 @@ class DeviceFeaturesTrait(DeviceFeatures, common.V1TraitMixin):
         common.V1TraitMixin.__init__(self)
         self.converter = DeviceTraitsConverter(product)
         self._product = product
+        self._nickname = product.product_nickname
         self._device_cache = device_cache
         # All fields of DeviceFeatures are required. Initialize them to False
         # so we have some known state.
