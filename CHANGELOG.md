@@ -2,6 +2,71 @@
 
 <!-- version list -->
 
+## v4.2.2 (2026-01-09)
+
+### Bug Fixes
+
+- Decrease home data rate limits
+  ([#741](https://github.com/Python-roborock/python-roborock/pull/741),
+  [`29eb984`](https://github.com/Python-roborock/python-roborock/commit/29eb984d22494b08f26ec6e220b7c823b67d3242))
+
+### Chores
+
+- Add additional Home data to diagnostics
+  ([#723](https://github.com/Python-roborock/python-roborock/pull/723),
+  [`c29dfc8`](https://github.com/Python-roborock/python-roborock/commit/c29dfc81f4de1bb293b2918482cf681197ef3698))
+
+- Add CONTRIBUTING.md ([#734](https://github.com/Python-roborock/python-roborock/pull/734),
+  [`881b7d6`](https://github.com/Python-roborock/python-roborock/commit/881b7d687789c57eec20bf9011a195b4befff129))
+
+- Add CONTRIBUTINGmd ([#734](https://github.com/Python-roborock/python-roborock/pull/734),
+  [`881b7d6`](https://github.com/Python-roborock/python-roborock/commit/881b7d687789c57eec20bf9011a195b4befff129))
+
+- Add s5e device and product data examples
+  ([#737](https://github.com/Python-roborock/python-roborock/pull/737),
+  [`586bb3f`](https://github.com/Python-roborock/python-roborock/commit/586bb3f77e4655d4aae2d201746980b1c227160d))
+
+- Add Saros 10R API response data
+  ([#726](https://github.com/Python-roborock/python-roborock/pull/726),
+  [`fafc8d8`](https://github.com/Python-roborock/python-roborock/commit/fafc8d86833a2aac3ee69c7a1f353f83551eeb6f))
+
+- Fix diagnostic lint issues ([#723](https://github.com/Python-roborock/python-roborock/pull/723),
+  [`c29dfc8`](https://github.com/Python-roborock/python-roborock/commit/c29dfc81f4de1bb293b2918482cf681197ef3698))
+
+- Fix mock data lint ([#726](https://github.com/Python-roborock/python-roborock/pull/726),
+  [`fafc8d8`](https://github.com/Python-roborock/python-roborock/commit/fafc8d86833a2aac3ee69c7a1f353f83551eeb6f))
+
+- Fix schema redaction ([#723](https://github.com/Python-roborock/python-roborock/pull/723),
+  [`c29dfc8`](https://github.com/Python-roborock/python-roborock/commit/c29dfc81f4de1bb293b2918482cf681197ef3698))
+
+- Improve redaction logic to support more complex paths
+  ([#723](https://github.com/Python-roborock/python-roborock/pull/723),
+  [`c29dfc8`](https://github.com/Python-roborock/python-roborock/commit/c29dfc81f4de1bb293b2918482cf681197ef3698))
+
+- Remove duplicate data in test_q7_device
+  ([#736](https://github.com/Python-roborock/python-roborock/pull/736),
+  [`cd6cbbe`](https://github.com/Python-roborock/python-roborock/commit/cd6cbbe1be22a619a88d76783c60c936dbbc744d))
+
+- Update device snapshots and lint errors
+  ([#723](https://github.com/Python-roborock/python-roborock/pull/723),
+  [`c29dfc8`](https://github.com/Python-roborock/python-roborock/commit/c29dfc81f4de1bb293b2918482cf681197ef3698))
+
+- Update e2e tests for q7 to use different product data
+  ([#736](https://github.com/Python-roborock/python-roborock/pull/736),
+  [`cd6cbbe`](https://github.com/Python-roborock/python-roborock/commit/cd6cbbe1be22a619a88d76783c60c936dbbc744d))
+
+- Update end to end q7 tests ([#736](https://github.com/Python-roborock/python-roborock/pull/736),
+  [`cd6cbbe`](https://github.com/Python-roborock/python-roborock/commit/cd6cbbe1be22a619a88d76783c60c936dbbc744d))
+
+- Update steps to activate virtual environment
+  ([#734](https://github.com/Python-roborock/python-roborock/pull/734),
+  [`881b7d6`](https://github.com/Python-roborock/python-roborock/commit/881b7d687789c57eec20bf9011a195b4befff129))
+
+- Use built-in as_dict method for creating diagnostic data
+  ([#723](https://github.com/Python-roborock/python-roborock/pull/723),
+  [`c29dfc8`](https://github.com/Python-roborock/python-roborock/commit/c29dfc81f4de1bb293b2918482cf681197ef3698))
+
+
 ## v4.2.1 (2026-01-05)
 
 ### Bug Fixes
