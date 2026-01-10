@@ -10,9 +10,7 @@ from roborock.devices.traits.v1.status import StatusTrait
 from tests import mock_data
 
 V1_DEVICES = {
-    k: HomeDataDevice.from_dict(device)
-    for k, device in mock_data.DEVICES.items()
-    if device.get("pv") == "1.0"
+    k: HomeDataDevice.from_dict(device) for k, device in mock_data.DEVICES.items() if device.get("pv") == "1.0"
 }
 
 
@@ -26,12 +24,10 @@ async def test_is_attribute_supported(
     device: RoborockDevice,
     snapshot: SnapshotAssertion,
 ) -> None:
-    """Test successfully getting multi maps list."""
+    """Test if a field is supported."""
     assert device.v1_properties is not None
     assert device.v1_properties.device_features is not None
     device_features_trait = device.v1_properties.device_features
 
-    is_supported: list[tuple[str, bool]] = {
-        field.value: device_features_trait.is_field_supported(StatusTrait, field) for field in StatusField
-    }
+    is_supported = {field.value: device_features_trait.is_field_supported(StatusTrait, field) for field in StatusField}
     assert is_supported == snapshot
