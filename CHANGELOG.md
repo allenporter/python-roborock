@@ -2,6 +2,35 @@
 
 <!-- version list -->
 
+## v4.3.0 (2026-01-10)
+
+### Chores
+
+- Add function to create field metadata
+  ([#740](https://github.com/Python-roborock/python-roborock/pull/740),
+  [`bdc1591`](https://github.com/Python-roborock/python-roborock/commit/bdc159192cfb2afa02199171288a20b228abb7f6))
+
+- Simplify supported_schema_codes
+  ([#740](https://github.com/Python-roborock/python-roborock/pull/740),
+  [`bdc1591`](https://github.com/Python-roborock/python-roborock/commit/bdc159192cfb2afa02199171288a20b228abb7f6))
+
+- Update pydoc for DeviceFeaturesTrait
+  ([#740](https://github.com/Python-roborock/python-roborock/pull/740),
+  [`bdc1591`](https://github.com/Python-roborock/python-roborock/commit/bdc159192cfb2afa02199171288a20b228abb7f6))
+
+- Update test descrition ([#740](https://github.com/Python-roborock/python-roborock/pull/740),
+  [`bdc1591`](https://github.com/Python-roborock/python-roborock/commit/bdc159192cfb2afa02199171288a20b228abb7f6))
+
+- Update to use StrEnum ([#740](https://github.com/Python-roborock/python-roborock/pull/740),
+  [`bdc1591`](https://github.com/Python-roborock/python-roborock/commit/bdc159192cfb2afa02199171288a20b228abb7f6))
+
+### Features
+
+- Add an approach for determining if a dataclass field is supported
+  ([#740](https://github.com/Python-roborock/python-roborock/pull/740),
+  [`bdc1591`](https://github.com/Python-roborock/python-roborock/commit/bdc159192cfb2afa02199171288a20b228abb7f6))
+
+
 ## v4.2.2 (2026-01-09)
 
 ### Bug Fixes
