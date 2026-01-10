@@ -14,7 +14,7 @@ class DeviceFeaturesTrait(DeviceFeatures, common.V1TraitMixin):
     command = RoborockCommand.APP_GET_INIT_STATUS
 
     def __init__(self, product: HomeDataProduct, device_cache: DeviceCache) -> None:  # pylint: disable=super-init-not-called
-        """Initialize MapContentTrait."""
+        """Initialize DeviceFeaturesTrait."""
         self._product = product
         self._nickname = product.product_nickname
         self._device_cache = device_cache
