@@ -1,7 +1,7 @@
 import datetime
 import logging
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from roborock.const import (
@@ -92,7 +92,7 @@ from .v1_code_mappings import (
 _LOGGER = logging.getLogger(__name__)
 
 
-class FieldNameBase(str, Enum):
+class FieldNameBase(StrEnum):
     """A base enum class that represents a field name in a RoborockBase dataclass."""
 
 
