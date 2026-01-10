@@ -237,7 +237,7 @@ class HomeDataProduct(RoborockBase):
         """Return a set of fields that are supported by the device."""
         if self.schema is None:
             return set()
-        return set({schema.code for schema in self.schema if schema.code is not None})
+        return {schema.code for schema in self.schema if schema.code is not None}
 
 
 @dataclass
