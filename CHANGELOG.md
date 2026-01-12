@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.4.0 (2026-01-12)
+
+### Features
+
+- Iterate possible iot domains on 3030 error
+  ([#733](https://github.com/Python-roborock/python-roborock/pull/733),
+  [`f2e1d51`](https://github.com/Python-roborock/python-roborock/commit/f2e1d5156dd905e296d5ed38605d4fd6f97bfbb4))
+
+
 ## v4.3.0 (2026-01-10)
 
 ### Chores
