@@ -2,6 +2,21 @@
 
 <!-- version list -->
 
+## v4.6.0 (2026-01-18)
+
+### Chores
+
+- **deps**: Bump aiohttp from 3.13.2 to 3.13.3
+  ([#732](https://github.com/Python-roborock/python-roborock/pull/732),
+  [`e438364`](https://github.com/Python-roborock/python-roborock/commit/e438364e7619b2e9658cdffeace9b2b6e4e19269))
+
+### Features
+
+- Add 2 new states for zeostate in zeo_code_mappings
+  ([#689](https://github.com/Python-roborock/python-roborock/pull/689),
+  [`3482e4e`](https://github.com/Python-roborock/python-roborock/commit/3482e4eaafcea7dbc004c28e094e260cdf822e79))
+
+
 ## v4.5.0 (2026-01-14)
 
 ### Chores
