@@ -2,6 +2,29 @@
 
 <!-- version list -->
 
+## v4.7.0 (2026-01-18)
+
+### Chores
+
+- Address PR comments ([#747](https://github.com/Python-roborock/python-roborock/pull/747),
+  [`a97e90a`](https://github.com/Python-roborock/python-roborock/commit/a97e90aa11b4e60732014d8d65265a334568f32c))
+
+- Include snapshots ([#747](https://github.com/Python-roborock/python-roborock/pull/747),
+  [`a97e90a`](https://github.com/Python-roborock/python-roborock/commit/a97e90aa11b4e60732014d8d65265a334568f32c))
+
+- **deps-dev**: Bump ruff from 0.14.10 to 0.14.11
+  ([#742](https://github.com/Python-roborock/python-roborock/pull/742),
+  [`9274642`](https://github.com/Python-roborock/python-roborock/commit/92746429ddb029e20073dab127598645a223c856))
+
+### Features
+
+- Add from diagnostics ([#747](https://github.com/Python-roborock/python-roborock/pull/747),
+  [`a97e90a`](https://github.com/Python-roborock/python-roborock/commit/a97e90aa11b4e60732014d8d65265a334568f32c))
+
+- Improve device_info ([#747](https://github.com/Python-roborock/python-roborock/pull/747),
+  [`a97e90a`](https://github.com/Python-roborock/python-roborock/commit/a97e90aa11b4e60732014d8d65265a334568f32c))
+
+
 ## v4.6.0 (2026-01-18)
 
 ### Chores
