@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.7.1 (2026-01-19)
+
+### Bug Fixes
+
+- Add rooms from map_info which is occassionally available
+  ([#750](https://github.com/Python-roborock/python-roborock/pull/750),
+  [`814054e`](https://github.com/Python-roborock/python-roborock/commit/814054ee4200c5f172d3f658843a9c8ee99c7f52))
+
+
 ## v4.7.0 (2026-01-18)
 
 ### Chores
