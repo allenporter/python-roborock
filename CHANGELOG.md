@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.7.2 (2026-01-20)
+
+### Bug Fixes
+
+- Handle different error format for map status
+  ([#744](https://github.com/Python-roborock/python-roborock/pull/744),
+  [`9897379`](https://github.com/Python-roborock/python-roborock/commit/98973795af550ed7940c9c637c85adc84ec5a511))
+
+
 ## v4.7.1 (2026-01-19)
 
 ### Bug Fixes
