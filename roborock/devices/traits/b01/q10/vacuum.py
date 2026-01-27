@@ -1,12 +1,8 @@
 """Traits for Q10 B01 devices."""
 
-import logging
-
 from roborock.data.b01_q10.b01_q10_code_mappings import B01_Q10_DP
 
 from .command import CommandTrait
-
-_LOGGER = logging.getLogger(__name__)
 
 
 class VacuumTrait:
