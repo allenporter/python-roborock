@@ -22,7 +22,7 @@ class Q10PropertiesApi(Trait):
     """Trait for sending commands to Q10 devices."""
 
     vacuum: VacuumTrait
-    """Trait for sending Vacuum related commands to Q10 devices"""
+    """Trait for sending vacuum related commands to Q10 devices."""
 
     def __init__(self, channel: MqttChannel) -> None:
         """Initialize the B01Props API."""
