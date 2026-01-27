@@ -4,8 +4,6 @@ import asyncio
 import logging
 from typing import Any
 
-from roborock import B01Props
-from roborock.data.b01_q10.b01_q10_code_mappings import B01_Q10_DP
 from roborock.devices.traits import Trait
 from roborock.devices.transport.mqtt_channel import MqttChannel
 
@@ -26,7 +24,7 @@ class Q10PropertiesApi(Trait):
     """Trait for sending commands to Q10 devices."""
 
     vacuum: VacuumTrait
-    """Trait for sending Vacuum related commands to Q10 devices"""
+    """Trait for sending vacuum related commands to Q10 devices."""
 
     def __init__(self, channel: MqttChannel) -> None:
         """Initialize the B01Props API."""
