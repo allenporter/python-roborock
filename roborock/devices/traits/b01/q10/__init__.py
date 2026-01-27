@@ -1,14 +1,10 @@
 """Traits for Q10 B01 devices."""
 
-import logging
-
 from roborock.devices.traits import Trait
 from roborock.devices.transport.mqtt_channel import MqttChannel
 
 from .command import CommandTrait
 from .vacuum import VacuumTrait
-
-_LOGGER = logging.getLogger(__name__)
 
 __all__ = [
     "Q10PropertiesApi",
