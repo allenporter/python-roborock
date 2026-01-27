@@ -8,7 +8,7 @@ from .command import CommandTrait
 class VacuumTrait:
     """Trait for sending vacuum commands.
 
-    This is wrapper around the CommandTrait for sending vacuum related
+    This is a wrapper around the CommandTrait for sending vacuum related
     commands to Q10 devices.
     """
 
