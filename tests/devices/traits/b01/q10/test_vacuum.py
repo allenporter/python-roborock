@@ -34,7 +34,7 @@ def vacuumm_fixture(q10_api: Q10PropertiesApi) -> VacuumTrait:
         (lambda x: x.return_to_dock(), {"203": {}}),
     ],
 )
-async def test_q7_api_set_fan_speed(
+async def test_vacuum_commands(
     vacuumm: VacuumTrait,
     fake_channel: FakeChannel,
     command_fn: Callable[[VacuumTrait], Awaitable[None]],
