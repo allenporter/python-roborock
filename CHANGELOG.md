@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.8.0 (2026-01-27)
+
+### Features
+
+- Add the ability to set q7 mode
+  ([#748](https://github.com/Python-roborock/python-roborock/pull/748),
+  [`bf1f8af`](https://github.com/Python-roborock/python-roborock/commit/bf1f8af7bf39a15d546fbd420ff3979f7014042c))
+
+
 ## v4.7.2 (2026-01-20)
 
 ### Bug Fixes
