@@ -13,7 +13,7 @@ class VacuumTrait:
     """
 
     def __init__(self, command: CommandTrait) -> None:
-        """Initialize the CommandTrait."""
+        """Initialize the VacuumTrait."""
         self._command = command
 
     async def start_clean(self) -> None:
