@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.9.1 (2026-02-01)
+
+### Bug Fixes
+
+- Correctly handle unknown categories
+  ([#755](https://github.com/Python-roborock/python-roborock/pull/755),
+  [`742a382`](https://github.com/Python-roborock/python-roborock/commit/742a38200e943a987285cc6979c7e7d5ca729117))
+
+
 ## v4.9.0 (2026-02-01)
 
 ### Features
