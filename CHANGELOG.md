@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v4.10.0 (2026-02-01)
+
+### Features
+
+- Add clean record for Q7 ([#745](https://github.com/Python-roborock/python-roborock/pull/745),
+  [`329e52b`](https://github.com/Python-roborock/python-roborock/commit/329e52bc34b1a5de2685b94002deae025eb0bd1c))
+
+
 ## v4.9.1 (2026-02-01)
 
 ### Bug Fixes
