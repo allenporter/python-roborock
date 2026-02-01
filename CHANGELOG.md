@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.9.0 (2026-02-01)
+
+### Features
+
+- Add VacuumTrait to q10 devices
+  ([#754](https://github.com/Python-roborock/python-roborock/pull/754),
+  [`69b6e0f`](https://github.com/Python-roborock/python-roborock/commit/69b6e0f58ce470f59a3d57756e6b4f760f3fd5a0))
+
+
 ## v4.8.0 (2026-01-27)
 
 ### Features
