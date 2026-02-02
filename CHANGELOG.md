@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v4.12.0 (2026-02-02)
+
+### Bug Fixes
+
+- **map**: Removed unnecessary conversion of empty dict to none
+  ([#763](https://github.com/Python-roborock/python-roborock/pull/763),
+  [`5e28569`](https://github.com/Python-roborock/python-roborock/commit/5e285694b329701c019d804540493d856299a138))
+
+### Features
+
+- Add support for hiding walls and rooms in map rendering
+  ([#763](https://github.com/Python-roborock/python-roborock/pull/763),
+  [`5e28569`](https://github.com/Python-roborock/python-roborock/commit/5e285694b329701c019d804540493d856299a138))
+
+- **map**: Add option to hide walls and rooms in map rendering
+  ([#763](https://github.com/Python-roborock/python-roborock/pull/763),
+  [`5e28569`](https://github.com/Python-roborock/python-roborock/commit/5e285694b329701c019d804540493d856299a138))
+
+
 ## v4.11.0 (2026-02-02)
 
 ### Features
