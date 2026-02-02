@@ -2,6 +2,39 @@
 
 <!-- version list -->
 
+## v4.10.1 (2026-02-02)
+
+### Bug Fixes
+
+- Fix typo in B01_Q10_DP constant from REQUETDPS to REQUEST_DPS
+  ([#762](https://github.com/Python-roborock/python-roborock/pull/762),
+  [`601a402`](https://github.com/Python-roborock/python-roborock/commit/601a4029fa975f43b6a04bfcd863dc2c8bd8b8ae))
+
+- Fix typos in code mappings for Roborock
+  ([#762](https://github.com/Python-roborock/python-roborock/pull/762),
+  [`601a402`](https://github.com/Python-roborock/python-roborock/commit/601a4029fa975f43b6a04bfcd863dc2c8bd8b8ae))
+
+- Rename FUN_LEVEL to FAN_LEVEL in code mappings
+  ([#762](https://github.com/Python-roborock/python-roborock/pull/762),
+  [`601a402`](https://github.com/Python-roborock/python-roborock/commit/601a4029fa975f43b6a04bfcd863dc2c8bd8b8ae))
+
+- Typos in code mappings for Q10
+  ([#762](https://github.com/Python-roborock/python-roborock/pull/762),
+  [`601a402`](https://github.com/Python-roborock/python-roborock/commit/601a4029fa975f43b6a04bfcd863dc2c8bd8b8ae))
+
+### Chores
+
+- Set typing for from_code_optional to use Self
+  ([#761](https://github.com/Python-roborock/python-roborock/pull/761),
+  [`220ae8b`](https://github.com/Python-roborock/python-roborock/commit/220ae8bfc8b53d2e5070dc6c5211ef9b23df606d))
+
+### Documentation
+
+- Add comments documenting source code typos in B01_Q10_DP mappings
+  ([#762](https://github.com/Python-roborock/python-roborock/pull/762),
+  [`601a402`](https://github.com/Python-roborock/python-roborock/commit/601a4029fa975f43b6a04bfcd863dc2c8bd8b8ae))
+
+
 ## v4.10.0 (2026-02-01)
 
 ### Features
