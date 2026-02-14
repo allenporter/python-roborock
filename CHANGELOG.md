@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.13.0 (2026-02-14)
+
+### Features
+
+- **q10**: Add Roborock Q10 S5+ support with CLI commands
+  ([#766](https://github.com/Python-roborock/python-roborock/pull/766),
+  [`86aeba1`](https://github.com/Python-roborock/python-roborock/commit/86aeba1e3e0a9d51f98ba93c4423a0ee58e3fb55))
+
+
 ## v4.12.0 (2026-02-02)
 
 ### Bug Fixes
