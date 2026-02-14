@@ -55,11 +55,11 @@ class DpsDataConverter:
         self._dps_field_map = dps_field_map
 
     @classmethod
-    def from_dataclass(cls, borockBase: type[RoborockBase]):
+    def from_dataclass(cls, dataclass_type: type[RoborockBase]):
         """Initialize the converter for a specific RoborockBase-derived class."""
         dps_type_map: dict[B01_Q10_DP, type] = {}
         dps_field_map: dict[B01_Q10_DP, str] = {}
-        for field_obj in dataclasses.fields(borockBase):
+        for field_obj in dataclasses.fields(dataclass_type):
             if field_obj.metadata and "dps" in field_obj.metadata:
                 dps_id = field_obj.metadata["dps"]
                 dps_type_map[dps_id] = field_obj.type

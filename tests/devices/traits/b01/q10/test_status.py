@@ -20,7 +20,7 @@ from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 TEST_DATA_DIR = pathlib.Path("tests/protocols/testdata/b01_q10_protocol")
 
 TESTDATA_DP_STATUS_DP_CLEAN_TASK_TYPE = (TEST_DATA_DIR / "dpStatus-dpCleanTaskType.json").read_bytes()
-TESTDATA_DP_REQUEST_DPS = (TEST_DATA_DIR / "dpRequestDps.json").read_bytes()
+TESTDATA_DP_REQUEST_DPS = (TEST_DATA_DIR / "dpRequetDps.json").read_bytes()
 
 
 @pytest.fixture

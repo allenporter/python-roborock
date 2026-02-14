@@ -56,7 +56,7 @@ class Q10PropertiesApi(Trait):
 
     async def refresh(self) -> None:
         """Refresh all traits."""
-        # Ask for updates to speific DPS values. Updates will be received
+        # Ask for updates to specific DPS values. Updates will be received
         # by the subscribe loop below.
         # For now we just ask for all DPS values that traits care about here
         # but this could be split out to give each trait its own refresh
