@@ -1,6 +1,5 @@
 """Traits for Q10 B01 devices."""
 
-
 import asyncio
 import logging
 from typing import Any
