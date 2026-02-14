@@ -28,7 +28,7 @@ async def stream_decoded_responses(
             decoded_dps = decode_rpc_response(response_message)
         except RoborockException as ex:
             _LOGGER.debug(
-                "Failed to decode B01 RPC response: %s: %s",
+                "Failed to decode B01 Q10 RPC response: %s: %s",
                 response_message,
                 ex,
             )
