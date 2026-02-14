@@ -10,8 +10,8 @@ from roborock.devices.traits import Trait
 from roborock.devices.transport.mqtt_channel import MqttChannel
 
 from .command import CommandTrait
-from .vacuum import VacuumTrait
 from .status import StatusTrait
+from .vacuum import VacuumTrait
 
 __all__ = [
     "Q10PropertiesApi",
@@ -61,7 +61,7 @@ class Q10PropertiesApi(Trait):
         # For now we just ask for all DPS values that traits care about here
         # but this could be split out to give each trait its own refresh
         # method in the future if needed.
-        await self.command.send(B01_Q10_DP.REQUETDPS, params={})
+        await self.command.send(B01_Q10_DP.REQUEST_DPS, params={})
 
     async def _subscribe_loop(self) -> None:
         """Persistent loop to listen for status updates."""

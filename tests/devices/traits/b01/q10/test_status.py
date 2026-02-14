@@ -20,7 +20,7 @@ from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 TEST_DATA_DIR = pathlib.Path("tests/protocols/testdata/b01_q10_protocol")
 
 TESTDATA_DP_STATUS_DP_CLEAN_TASK_TYPE = (TEST_DATA_DIR / "dpStatus-dpCleanTaskType.json").read_bytes()
-TESTDATA_DP_REQUETDPS = (TEST_DATA_DIR / "dpRequetdps.json").read_bytes()
+TESTDATA_DP_REQUEST_DPS = (TEST_DATA_DIR / "dpRequestDps.json").read_bytes()
 
 
 @pytest.fixture
@@ -110,13 +110,13 @@ async def test_status_trait_refresh(
     """Test that the StatusTrait sends a refresh command and updates state."""
     assert q10_api.status.battery is None
     assert q10_api.status.status is None
-    assert q10_api.status.fun_level is None
+    assert q10_api.status.fan_level is None
 
     # Mock the response to refresh
     # battery (122) = 100
     # status (121) = 8 (CHARGING_STATE)
     # fun_level (123) = 2 (NORMAL)
-    message = build_message(TESTDATA_DP_REQUETDPS)
+    message = build_message(TESTDATA_DP_REQUEST_DPS)
 
     # Send a refresh command
     await q10_api.refresh()
@@ -127,7 +127,7 @@ async def test_status_trait_refresh(
     data = json.loads(sent_message.payload)
     assert data
     assert data.get("dps")
-    assert data.get("dps").get("102") == {}  # REQUETDPS code is 102
+    assert data.get("dps").get("102") == {}  # REQUEST_DPS code is 102
 
     # Push the response message into the queue
     message_queue.put_nowait(message)
@@ -138,4 +138,4 @@ async def test_status_trait_refresh(
     # Verify trait attributes are updated
     assert q10_api.status.battery == 100
     assert q10_api.status.status == YXDeviceState.CHARGING_STATE
-    assert q10_api.status.fun_level == YXFanLevel.NORMAL
+    assert q10_api.status.fan_level == YXFanLevel.NORMAL

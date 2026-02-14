@@ -93,7 +93,7 @@ class Q10Status(RoborockBase):
     clean_area: int | None = field(default=None, metadata={"dps": B01_Q10_DP.CLEAN_AREA})
     battery: int | None = field(default=None, metadata={"dps": B01_Q10_DP.BATTERY})
     status: YXDeviceState | None = field(default=None, metadata={"dps": B01_Q10_DP.STATUS})
-    fun_level: YXFanLevel | None = field(default=None, metadata={"dps": B01_Q10_DP.FUN_LEVEL})
+    fan_level: YXFanLevel | None = field(default=None, metadata={"dps": B01_Q10_DP.FAN_LEVEL})
     water_level: YXWaterLevel | None = field(default=None, metadata={"dps": B01_Q10_DP.WATER_LEVEL})
     clean_count: int | None = field(default=None, metadata={"dps": B01_Q10_DP.CLEAN_COUNT})
     clean_mode: YXDeviceWorkMode | None = field(default=None, metadata={"dps": B01_Q10_DP.CLEAN_MODE})
