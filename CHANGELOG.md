@@ -2,6 +2,21 @@
 
 <!-- version list -->
 
+## v4.18.0 (2026-03-06)
+
+### Bug Fixes
+
+- Correct mop intensity code for slider
+  ([#777](https://github.com/Python-roborock/python-roborock/pull/777),
+  [`f83f36a`](https://github.com/Python-roborock/python-roborock/commit/f83f36a8e96bee3eab7e0ee21cd296653546310a))
+
+### Features
+
+- Add the ability to not verify TLS for MQTT connections
+  ([#776](https://github.com/Python-roborock/python-roborock/pull/776),
+  [`fc7cf75`](https://github.com/Python-roborock/python-roborock/commit/fc7cf75e088cf74f6f6f648afb927fdb03bc9e23))
+
+
 ## v4.17.2 (2026-03-01)
 
 ### Bug Fixes
