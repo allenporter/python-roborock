@@ -2,6 +2,26 @@
 
 <!-- version list -->
 
+## v4.19.0 (2026-03-08)
+
+### Bug Fixes
+
+- Make room name always room num and not unknown
+  ([#780](https://github.com/Python-roborock/python-roborock/pull/780),
+  [`2bd569c`](https://github.com/Python-roborock/python-roborock/commit/2bd569caffe7e85bc08637fd9b8ed70eeade5aa8))
+
+### Chores
+
+- Address comments ([#780](https://github.com/Python-roborock/python-roborock/pull/780),
+  [`2bd569c`](https://github.com/Python-roborock/python-roborock/commit/2bd569caffe7e85bc08637fd9b8ed70eeade5aa8))
+
+### Features
+
+- Use get_rooms to limit issues with missing room names
+  ([#780](https://github.com/Python-roborock/python-roborock/pull/780),
+  [`2bd569c`](https://github.com/Python-roborock/python-roborock/commit/2bd569caffe7e85bc08637fd9b8ed70eeade5aa8))
+
+
 ## v4.18.1 (2026-03-07)
 
 ### Bug Fixes
