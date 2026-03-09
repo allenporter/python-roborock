@@ -21,6 +21,7 @@ V1ResponseData = dict | list | int | str
 class V1TraitDataConverter:
     """Converts responses to RoborockBase objects.
     
+    This is an internal class and should not be used directly by consumers.
     """
 
     @abstractmethod
