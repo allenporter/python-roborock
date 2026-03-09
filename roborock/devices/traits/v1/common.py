@@ -5,10 +5,9 @@ This is an internal library and should not be used directly by consumers.
 
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, fields
-from typing import Any, ClassVar, Self
+from dataclasses import fields
+from typing import ClassVar
 
-from roborock.callbacks import CallbackList
 from roborock.data import RoborockBase
 from roborock.protocols.v1_protocol import V1RpcChannel
 from roborock.roborock_typing import RoborockCommand
@@ -18,36 +17,16 @@ _LOGGER = logging.getLogger(__name__)
 
 V1ResponseData = dict | list | int | str
 
+
 class V1TraitDataConverter:
-    """Utility to handle the transformation and merging of data into models.
+    """Converts responses to RoborockBase objects."""
 
-    This has some special handling for v1 responses, then uses the common data
-    converters for updating the target objects.
-    """
-    
-    def __init__(self, dataclass_type: type[RoborockBase]):
-        """Initialize the converter for a specific RoborockBase-derived class."""
-        self._dataclass_type = dataclass_type
-        self._converter = TraitDataConverter(dataclass_type)
+    @abstractmethod
+    def convert(self, response: V1ResponseData) -> RoborockBase:
+        """Convert the values to a dict that can be parsed as a RoborockBase."""
 
-    def update_from_data(self, target: RoborockBase, data: V1ResponseData) -> None:
-        """Update the target object from a dictionary of raw values.
-
-        Returns True if any values were updated.
-        """
-        response = self._convert_to_dict(data)
-        return self._converter.update_from_dict(target, response)
-
-    def _convert_to_dict(self, response: V1ResponseData) -> None:
-        """Convert the values to a dict that can be parsed as a RoborockBase.
-        
-        Subclasses can override to implement custom parsing logic
-        """
-        if isinstance(response, list):
-            response = response[0]
-        if not isinstance(response, dict):
-            raise ValueError(f"Unexpected {self._dataclass_type.__name__} response format: {response!r}")
-        return response
+    def __repr__(self) -> str:
+        return self.__class__.__name__
 
 
 class V1TraitDataConverter(ABC):
