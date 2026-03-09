@@ -12,6 +12,7 @@ from roborock import (
 )
 from roborock.roborock_typing import RoborockCommand
 
+from roborock.data.v1.v1_containers import StatusV2
 from . import common
 from .device_features import DeviceFeaturesTrait
 
