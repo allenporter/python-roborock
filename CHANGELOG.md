@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v4.19.1 (2026-03-09)
+
+### Bug Fixes
+
+- Add missing return value ([#782](https://github.com/Python-roborock/python-roborock/pull/782),
+  [`3625590`](https://github.com/Python-roborock/python-roborock/commit/36255901f1ade071b97bd116bf2b00c6d152c042))
+
+
 ## v4.19.0 (2026-03-08)
 
 ### Bug Fixes
