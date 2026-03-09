@@ -19,7 +19,9 @@ V1ResponseData = dict | list | int | str
 
 
 class V1TraitDataConverter:
-    """Converts responses to RoborockBase objects."""
+    """Converts responses to RoborockBase objects.
+    
+    """
 
     @abstractmethod
     def convert(self, response: V1ResponseData) -> RoborockBase:
