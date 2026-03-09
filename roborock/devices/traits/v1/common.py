@@ -18,7 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 V1ResponseData = dict | list | int | str
 
 
-class V1TraitDataConverter:
+class V1TraitDataConverter(ABC):
     """Converts responses to RoborockBase objects.
 
     This is an internal class and should not be used directly by consumers.
