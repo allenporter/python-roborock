@@ -4,6 +4,7 @@ Potentially other devices may fall into this category in the future."""
 from typing import Any
 
 from roborock import B01Props
+from roborock.data import Q7MapList, Q7MapListEntry
 from roborock.data.b01_q7.b01_q7_code_mappings import (
     CleanPathPreferenceMapping,
     CleanRepeatMapping,
@@ -16,15 +17,19 @@ from roborock.data.b01_q7.b01_q7_code_mappings import (
 from roborock.devices.rpc.b01_q7_channel import send_decoded_command
 from roborock.devices.traits import Trait
 from roborock.devices.transport.mqtt_channel import MqttChannel
-from roborock.protocols.b01_q7_protocol import CommandType, ParamsType, Q7RequestMessage
+from roborock.protocols.b01_q7_protocol import B01_Q7_DPS, CommandType, ParamsType, Q7RequestMessage
 from roborock.roborock_message import RoborockB01Props
 from roborock.roborock_typing import RoborockB01Q7Methods
 
 from .clean_summary import CleanSummaryTrait
+from .map import MapTrait
 
 __all__ = [
     "Q7PropertiesApi",
     "CleanSummaryTrait",
+    "MapTrait",
+    "Q7MapList",
+    "Q7MapListEntry",
 ]
 
 
@@ -34,10 +39,14 @@ class Q7PropertiesApi(Trait):
     clean_summary: CleanSummaryTrait
     """Trait for clean records / clean summary (Q7 `service.get_record_list`)."""
 
+    map: MapTrait
+    """Trait for map list metadata + raw map payload retrieval."""
+
     def __init__(self, channel: MqttChannel) -> None:
         """Initialize the B01Props API."""
         self._channel = channel
         self.clean_summary = CleanSummaryTrait(channel)
+        self.map = MapTrait(channel)
 
     async def query_values(self, props: list[RoborockB01Props]) -> B01Props | None:
         """Query the device for the values of the given Q7 properties."""
@@ -87,6 +96,17 @@ class Q7PropertiesApi(Trait):
             },
         )
 
+    async def clean_segments(self, segment_ids: list[int]) -> None:
+        """Start segment cleaning for the given ids (Q7 uses room ids)."""
+        await self.send(
+            command=RoborockB01Q7Methods.SET_ROOM_CLEAN,
+            params={
+                "clean_type": CleanTaskTypeMapping.ROOM.code,
+                "ctrl_value": SCDeviceCleanParam.START.code,
+                "room_ids": segment_ids,
+            },
+        )
+
     async def pause_clean(self) -> None:
         """Pause cleaning."""
         await self.send(
@@ -127,7 +147,7 @@ class Q7PropertiesApi(Trait):
         """Send a command to the device."""
         return await send_decoded_command(
             self._channel,
-            Q7RequestMessage(dps=10000, command=command, params=params),
+            Q7RequestMessage(dps=B01_Q7_DPS, command=command, params=params),
         )
 
 

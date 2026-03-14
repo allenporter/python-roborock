@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from Crypto.Cipher import AES
@@ -27,16 +27,12 @@ async def test_q7_api_query_values(
     q7_api: Q7PropertiesApi, fake_channel: FakeChannel, message_builder: B01MessageBuilder
 ):
     """Test that Q7PropertiesApi correctly converts raw values."""
-    # We need to construct the expected result based on the mappings
-    # status: 1 -> WAITING_FOR_ORDERS
-    # wind: 2 -> STANDARD
     response_data = {
         "status": 1,
         "wind": 2,
         "battery": 100,
     }
 
-    # Queue the response
     fake_channel.response_queue.append(message_builder.build(response_data))
 
     result = await q7_api.query_values(
@@ -48,12 +44,6 @@ async def test_q7_api_query_values(
 
     assert result is not None
     assert result.status == WorkStatusMapping.WAITING_FOR_ORDERS
-    # wind might be mapped to SCWindMapping.STANDARD (2)
-    # let's verify checking the prop definition in B01Props
-    # wind: SCWindMapping | None = None
-    # SCWindMapping.STANDARD is 2 ('balanced')
-    from roborock.data.b01_q7 import SCWindMapping
-
     assert result.wind == SCWindMapping.STANDARD
 
     assert len(fake_channel.published_messages) == 1
@@ -61,10 +51,8 @@ async def test_q7_api_query_values(
     assert message.protocol == RoborockMessageProtocol.RPC_REQUEST
     assert message.version == B01_VERSION
 
-    # Verify request payload
     assert message.payload is not None
     payload_data = json.loads(unpad(message.payload, AES.block_size))
-    # {"dps": {"10000": {"method": "prop.get", "msgId": "123456789", "params": {"property": ["status", "wind"]}}}}
     assert "dps" in payload_data
     assert "10000" in payload_data["dps"]
     inner = payload_data["dps"]["10000"]
@@ -110,8 +98,6 @@ async def test_send_decoded_command_non_dict_response(fake_channel: FakeChannel,
     message = message_builder.build("some_string_error")
     fake_channel.response_queue.append(message)
 
-    # Use a random string for command type to avoid needing import
-
     with pytest.raises(RoborockException, match="Unexpected data type for response"):
         await send_decoded_command(fake_channel, Q7RequestMessage(dps=10000, command="prop.get", params=[]))  # type: ignore[arg-type]
 
@@ -123,6 +109,19 @@ async def test_send_decoded_command_error_code(fake_channel: FakeChannel, messag
 
     with pytest.raises(RoborockException, match="B01 command failed with code 5001"):
         await send_decoded_command(fake_channel, Q7RequestMessage(dps=10000, command="prop.get", params=[]))  # type: ignore[arg-type]
+
+
+async def test_send_decoded_command_allows_ok_string_ack(fake_channel: FakeChannel, message_builder: B01MessageBuilder):
+    """Command ACKs may return plain string payloads like ``ok``."""
+    message = message_builder.build("ok")
+    fake_channel.response_queue.append(message)
+
+    result = await send_decoded_command(
+        cast(Any, fake_channel),
+        Q7RequestMessage(dps=10000, command="service.set_room_clean", params=[]),  # type: ignore[arg-type]
+    )
+
+    assert result == "ok"
 
 
 async def test_q7_api_set_fan_speed(
@@ -257,3 +256,21 @@ async def test_q7_api_find_me(q7_api: Q7PropertiesApi, fake_channel: FakeChannel
     payload_data = json.loads(unpad(message.payload, AES.block_size))
     assert payload_data["dps"]["10000"]["method"] == "service.find_device"
     assert payload_data["dps"]["10000"]["params"] == {}
+
+
+async def test_q7_api_clean_segments(
+    q7_api: Q7PropertiesApi, fake_channel: FakeChannel, message_builder: B01MessageBuilder
+):
+    """Test room/segment cleaning helper for Q7."""
+    fake_channel.response_queue.append(message_builder.build({"result": "ok"}))
+    await q7_api.clean_segments([10, 11])
+
+    assert len(fake_channel.published_messages) == 1
+    message = fake_channel.published_messages[0]
+    payload_data = json.loads(unpad(message.payload, AES.block_size))
+    assert payload_data["dps"]["10000"]["method"] == "service.set_room_clean"
+    assert payload_data["dps"]["10000"]["params"] == {
+        "clean_type": CleanTaskTypeMapping.ROOM.code,
+        "ctrl_value": SCDeviceCleanParam.START.code,
+        "room_ids": [10, 11],
+    }
