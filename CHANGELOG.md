@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.22.0 (2026-03-14)
+
+### Features
+
+- Q7command-layer segment clean + map payload retrieval helpers (split 1/3)
+  ([#778](https://github.com/Python-roborock/python-roborock/pull/778),
+  [`602d0dc`](https://github.com/Python-roborock/python-roborock/commit/602d0dc160bf5e7735d5d8b0ec69cc20059e95e6))
+
+
 ## v4.21.0 (2026-03-14)
 
 ### Chores
