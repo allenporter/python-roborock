@@ -234,6 +234,12 @@ class PropertiesApi(Trait):
         # Dock type also acts like a device feature for some traits.
         dock_type = await self._dock_type()
 
+        # Initialize traits with special arguments before the generic loop
+        if self.wash_towel_mode is None and self._is_supported(WashTowelModeTrait, "wash_towel_mode", dock_type):
+            wash_towel_mode = WashTowelModeTrait(self.device_features)
+            wash_towel_mode._rpc_channel = self._get_rpc_channel(wash_towel_mode)  # type: ignore[assignment]
+            self.wash_towel_mode = wash_towel_mode
+
         # Dynamically create any traits that need to be populated
         for item in fields(self):
             if (trait := getattr(self, item.name, None)) is not None:
