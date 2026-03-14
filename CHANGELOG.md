@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## v4.21.0 (2026-03-14)
+
+### Chores
+
+- Address test comments ([#765](https://github.com/Python-roborock/python-roborock/pull/765),
+  [`258e918`](https://github.com/Python-roborock/python-roborock/commit/258e918905666647753a1cd5857b7fd89dc77014))
+
+- Call super init ([#765](https://github.com/Python-roborock/python-roborock/pull/765),
+  [`258e918`](https://github.com/Python-roborock/python-roborock/commit/258e918905666647753a1cd5857b7fd89dc77014))
+
+- Clean up and better match status trait
+  ([#765](https://github.com/Python-roborock/python-roborock/pull/765),
+  [`258e918`](https://github.com/Python-roborock/python-roborock/commit/258e918905666647753a1cd5857b7fd89dc77014))
+
+- Move outside of loop ([#765](https://github.com/Python-roborock/python-roborock/pull/765),
+  [`258e918`](https://github.com/Python-roborock/python-roborock/commit/258e918905666647753a1cd5857b7fd89dc77014))
+
+- Simplify device_feature_trait usage
+  ([#765](https://github.com/Python-roborock/python-roborock/pull/765),
+  [`258e918`](https://github.com/Python-roborock/python-roborock/commit/258e918905666647753a1cd5857b7fd89dc77014))
+
+### Features
+
+- Add stronger mop washing support
+  ([#765](https://github.com/Python-roborock/python-roborock/pull/765),
+  [`258e918`](https://github.com/Python-roborock/python-roborock/commit/258e918905666647753a1cd5857b7fd89dc77014))
+
+
 ## v4.20.0 (2026-03-09)
 
 ### Chores
