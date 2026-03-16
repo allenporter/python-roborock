@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v4.24.0 (2026-03-16)
+
+### Chores
+
+- Fix lint. ([#787](https://github.com/Python-roborock/python-roborock/pull/787),
+  [`08ca9aa`](https://github.com/Python-roborock/python-roborock/commit/08ca9aa2f9dfb85f41e427d62c3ef189d3a48727))
+
+- Fix MAX_PLUS enum value ([#787](https://github.com/Python-roborock/python-roborock/pull/787),
+  [`08ca9aa`](https://github.com/Python-roborock/python-roborock/commit/08ca9aa2f9dfb85f41e427d62c3ef189d3a48727))
+
+- Rename and reorder `YXFanLevel` enum members
+  ([#787](https://github.com/Python-roborock/python-roborock/pull/787),
+  [`08ca9aa`](https://github.com/Python-roborock/python-roborock/commit/08ca9aa2f9dfb85f41e427d62c3ef189d3a48727))
+
+### Documentation
+
+- Add docstring and alias comments to the YXFanLevel enum.
+  ([#787](https://github.com/Python-roborock/python-roborock/pull/787),
+  [`08ca9aa`](https://github.com/Python-roborock/python-roborock/commit/08ca9aa2f9dfb85f41e427d62c3ef189d3a48727))
+
+### Features
+
+- Rename and reorder `YXFanLevel` enum members
+  ([#787](https://github.com/Python-roborock/python-roborock/pull/787),
+  [`08ca9aa`](https://github.com/Python-roborock/python-roborock/commit/08ca9aa2f9dfb85f41e427d62c3ef189d3a48727))
+
+
 ## v4.23.0 (2026-03-16)
 
 ### Chores
