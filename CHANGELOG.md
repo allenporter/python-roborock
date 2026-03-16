@@ -2,6 +2,31 @@
 
 <!-- version list -->
 
+## v4.25.0 (2026-03-16)
+
+### Chores
+
+- Apply suggestions from code review
+  ([#788](https://github.com/Python-roborock/python-roborock/pull/788),
+  [`19d7674`](https://github.com/Python-roborock/python-roborock/commit/19d7674cbf98dcf1ba591d1bf71f87b370a90a55))
+
+### Features
+
+- Add `from_any_optional` method to `CodeMapping` for flexible enum resolution with corresponding
+  tests. ([#788](https://github.com/Python-roborock/python-roborock/pull/788),
+  [`19d7674`](https://github.com/Python-roborock/python-roborock/commit/19d7674cbf98dcf1ba591d1bf71f87b370a90a55))
+
+- Add `from_any_optional` method to `RoborockModeEnum`
+  ([#788](https://github.com/Python-roborock/python-roborock/pull/788),
+  [`19d7674`](https://github.com/Python-roborock/python-roborock/commit/19d7674cbf98dcf1ba591d1bf71f87b370a90a55))
+
+### Refactoring
+
+- Simplify B01_Q10 command parsing by removing a helper function and utilizing `from_any_optional`.
+  ([#788](https://github.com/Python-roborock/python-roborock/pull/788),
+  [`19d7674`](https://github.com/Python-roborock/python-roborock/commit/19d7674cbf98dcf1ba591d1bf71f87b370a90a55))
+
+
 ## v4.24.0 (2026-03-16)
 
 ### Chores
