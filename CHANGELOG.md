@@ -2,6 +2,48 @@
 
 <!-- version list -->
 
+## v4.23.0 (2026-03-16)
+
+### Chores
+
+- Remove duplicate V1TraitDataConverter
+  ([#783](https://github.com/Python-roborock/python-roborock/pull/783),
+  [`9f9c1b4`](https://github.com/Python-roborock/python-roborock/commit/9f9c1b4b9271a6a63a0dbe6afd21216b13a15648))
+
+- Remove unused `typing.Self` import.
+  ([#783](https://github.com/Python-roborock/python-roborock/pull/783),
+  [`9f9c1b4`](https://github.com/Python-roborock/python-roborock/commit/9f9c1b4b9271a6a63a0dbe6afd21216b13a15648))
+
+### Documentation
+
+- Clarify internal usage of V1TraitDataConverter and V1TraitMixin attributes.
+  ([#783](https://github.com/Python-roborock/python-roborock/pull/783),
+  [`9f9c1b4`](https://github.com/Python-roborock/python-roborock/commit/9f9c1b4b9271a6a63a0dbe6afd21216b13a15648))
+
+### Features
+
+- Separate trait response handling logic from refresh logic and merge
+  ([#783](https://github.com/Python-roborock/python-roborock/pull/783),
+  [`9f9c1b4`](https://github.com/Python-roborock/python-roborock/commit/9f9c1b4b9271a6a63a0dbe6afd21216b13a15648))
+
+- Simplify V1 trait handling ([#783](https://github.com/Python-roborock/python-roborock/pull/783),
+  [`9f9c1b4`](https://github.com/Python-roborock/python-roborock/commit/9f9c1b4b9271a6a63a0dbe6afd21216b13a15648))
+
+### Refactoring
+
+- Make V1TraitDataConverter an abstract base class, use a dedicated LedStatusConverter, and fix a
+  typo in Rooms. ([#783](https://github.com/Python-roborock/python-roborock/pull/783),
+  [`9f9c1b4`](https://github.com/Python-roborock/python-roborock/commit/9f9c1b4b9271a6a63a0dbe6afd21216b13a15648))
+
+- Remove trait update listeners and centralize data conversion into dedicated converter classes
+  ([#783](https://github.com/Python-roborock/python-roborock/pull/783),
+  [`9f9c1b4`](https://github.com/Python-roborock/python-roborock/commit/9f9c1b4b9271a6a63a0dbe6afd21216b13a15648))
+
+- Standardize trait data merging to `merge_trait_values` and remove direct `_parse_response` methods
+  from traits. ([#783](https://github.com/Python-roborock/python-roborock/pull/783),
+  [`9f9c1b4`](https://github.com/Python-roborock/python-roborock/commit/9f9c1b4b9271a6a63a0dbe6afd21216b13a15648))
+
+
 ## v4.22.0 (2026-03-14)
 
 ### Features
