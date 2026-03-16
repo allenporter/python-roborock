@@ -9,8 +9,10 @@ export default {
         "subject-case": [0], // 0 = disable, 1 = warn, 2 = error
         // Disable the rule that enforces a maximum line length in the body
         "body-max-line-length": [0, "always"],
-        // Increase the header max length to accommodate longer commit messages
-        "header-max-length": [2, "always", 200]
+        // Disable header max length for AI-generated commits
+        "header-max-length": [0],
+        // Disable the rule that prevents periods at the end of subjects
+        "header-full-stop": [0]
     },
 
 };
