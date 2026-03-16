@@ -125,7 +125,7 @@ class YXFanLevel(RoborockModeEnum):
     BALANCED = "balanced", 2
     TURBO = "turbo", 3
     MAX = "max", 4
-    MAX_PLUS = "max_plus", 5
+    MAX_PLUS = "max_plus", 8
 
 
 class YXWaterLevel(RoborockModeEnum):
