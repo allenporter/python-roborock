@@ -32,20 +32,6 @@ class V1TraitDataConverter(ABC):
         return self.__class__.__name__
 
 
-class V1TraitDataConverter(ABC):
-    """Converts responses to RoborockBase objects.
-
-    This is an internal class and should not be used directly by consumers.
-    """
-
-    @abstractmethod
-    def convert(self, response: V1ResponseData) -> RoborockBase:
-        """Convert the values to a dict that can be parsed as a RoborockBase."""
-
-    def __repr__(self) -> str:
-        return self.__class__.__name__
-
-
 class V1TraitMixin(ABC):
     """Base model that supports v1 traits.
 

@@ -48,10 +48,7 @@ class RoomsConverter(common.V1TraitDataConverter):
             raise ValueError(f"Unexpected RoomsTrait response format: {response!r}")
         segment_map = self.extract_segment_map(response)
         return Rooms(
-            rooms=[
-                NamedRoomMapping(segment_id=segment_id, iot_id=iot_id)
-                for segment_id, iot_id in segment_map.items()
-            ]
+            rooms=[NamedRoomMapping(segment_id=segment_id, iot_id=iot_id) for segment_id, iot_id in segment_map.items()]
         )
 
     @staticmethod
