@@ -104,7 +104,7 @@ class RoborockModeEnum(StrEnum):
     def from_any_optional(cls, value: str | int) -> Self | None:
         """Resolve a string or int to an enum member.
 
-        Triest to lookup by enum name, string value, or integer code
+        Tries to look up by enum name, string value, or integer code
         and returns None if no match is found.
         """
         # Try enum name lookup (e.g. "SEEK")

@@ -72,7 +72,7 @@ def test_invalid_from_value() -> None:
     ],
 )
 def test_from_any_optional(input: str | int, expected: B01_Q10_DP | None) -> None:
-    """Test from_name method."""
+    """Test from_any_optional method."""
     assert B01_Q10_DP.from_any_optional(input) == expected
 
 
