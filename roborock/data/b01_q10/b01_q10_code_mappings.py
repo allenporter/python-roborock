@@ -120,12 +120,12 @@ class B01_Q10_DP(RoborockModeEnum):
 
 class YXFanLevel(RoborockModeEnum):
     UNKNOWN = "unknown", -1
-    CLOSE = "close", 0
+    OFF = "off", 0
     QUIET = "quiet", 1
-    NORMAL = "normal", 2
-    STRONG = "strong", 3
+    BALANCED = "balanced", 2
+    TURBO = "turbo", 3
     MAX = "max", 4
-    SUPER = "super", 8
+    MAX_PLUS = "max_plus", 5
 
 
 class YXWaterLevel(RoborockModeEnum):
