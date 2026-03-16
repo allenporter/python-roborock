@@ -122,7 +122,7 @@ class YXFanLevel(RoborockModeEnum):
     """The fan or vacuum level of the robot.
 
     Note: The names used here are the v1 names, though the values
-    have different aliases in the app bundles. 
+    have different aliases in the app bundles.
     """
 
     UNKNOWN = "unknown", -1
