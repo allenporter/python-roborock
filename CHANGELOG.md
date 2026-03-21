@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v4.26.2 (2026-03-21)
+
+### Bug Fixes
+
+- **q10**: Add missing fault field to Q10Status
+  ([#792](https://github.com/Python-roborock/python-roborock/pull/792),
+  [`66d76fc`](https://github.com/Python-roborock/python-roborock/commit/66d76fc9b3cd6d6d15f5883bfa8a22c688d9b960))
+
+
 ## v4.26.1 (2026-03-21)
 
 ### Bug Fixes
