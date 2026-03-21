@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v4.26.1 (2026-03-21)
+
+### Bug Fixes
+
+- Add missing DPS fields to Q10Status and fix CLEAN_PROGRESS mapping
+  ([#791](https://github.com/Python-roborock/python-roborock/pull/791),
+  [`526da01`](https://github.com/Python-roborock/python-roborock/commit/526da01d02f6b52cab3674145273448eb602620e))
+
+- Correct comment for fan level in test_status_trait_refresh
+  ([#791](https://github.com/Python-roborock/python-roborock/pull/791),
+  [`526da01`](https://github.com/Python-roborock/python-roborock/commit/526da01d02f6b52cab3674145273448eb602620e))
+
+### Chores
+
+- Disable commitlint rules for header max length and header full stop.
+  ([#789](https://github.com/Python-roborock/python-roborock/pull/789),
+  [`711f49e`](https://github.com/Python-roborock/python-roborock/commit/711f49e9a6e4d7fc964b164c7f23265979aa166b))
+
+- Increase commit header maximum length to 200
+  ([#789](https://github.com/Python-roborock/python-roborock/pull/789),
+  [`711f49e`](https://github.com/Python-roborock/python-roborock/commit/711f49e9a6e4d7fc964b164c7f23265979aa166b))
+
+- Increase commit header maximum length to 200 in commitlint configuration.
+  ([#789](https://github.com/Python-roborock/python-roborock/pull/789),
+  [`711f49e`](https://github.com/Python-roborock/python-roborock/commit/711f49e9a6e4d7fc964b164c7f23265979aa166b))
+
+
 ## v4.26.0 (2026-03-19)
 
 ### Features
