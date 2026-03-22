@@ -96,10 +96,10 @@ async def test_status_trait_streaming(
     message_queue.put_nowait(message)
 
     # Wait for the update
-    await wait_for_attribute_value(q10_api.status, "status", YXDeviceState.CHARGING_STATE)
+    await wait_for_attribute_value(q10_api.status, "status", YXDeviceState.CHARGING)
 
     # Verify trait attributes are updated
-    assert q10_api.status.status == YXDeviceState.CHARGING_STATE
+    assert q10_api.status.status == YXDeviceState.CHARGING
     assert q10_api.status.clean_task_type == YXDeviceCleanTask.IDLE
 
 
@@ -142,7 +142,7 @@ async def test_status_trait_refresh(
 
     # Verify trait attributes are updated
     assert q10_api.status.battery == 100
-    assert q10_api.status.status == YXDeviceState.CHARGING_STATE
+    assert q10_api.status.status == YXDeviceState.CHARGING
     assert q10_api.status.fan_level == YXFanLevel.BALANCED
     assert q10_api.status.total_clean_area == 0
     assert q10_api.status.total_clean_count == 0
