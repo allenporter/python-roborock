@@ -157,9 +157,9 @@ class YXRoomMaterial(RoborockModeEnum):
 
 class YXCleanType(RoborockModeEnum):
     UNKNOWN = "unknown", -1
-    BOTH_WORK = "bothwork", 1
-    ONLY_SWEEP = "onlysweep", 2
-    ONLY_MOP = "onlymop", 3
+    VAC_AND_MOP = "vac_and_mop", 1  # bothwork
+    VACUUM = "vacuum", 2  # onlysweep
+    MOP = "mop", 3  # onlymop
 
 
 class YXDeviceState(RoborockModeEnum):
