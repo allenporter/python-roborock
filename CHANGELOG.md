@@ -2,6 +2,47 @@
 
 <!-- version list -->
 
+## v5.0.0 (2026-03-22)
+
+### Bug Fixes
+
+- **cli**: Make clean mode option case insensitive
+  ([#794](https://github.com/Python-roborock/python-roborock/pull/794),
+  [`7baeb65`](https://github.com/Python-roborock/python-roborock/commit/7baeb658fd80b40bfb631dc250b899e659e20210))
+
+- **q10**: Restrict clean mode cli choices
+  ([#794](https://github.com/Python-roborock/python-roborock/pull/794),
+  [`7baeb65`](https://github.com/Python-roborock/python-roborock/commit/7baeb658fd80b40bfb631dc250b899e659e20210))
+
+### Features
+
+- **api**: Again rename `YXDeviceState` enum members to have consistency with V1 state values
+  ([#795](https://github.com/Python-roborock/python-roborock/pull/795),
+  [`ad3ceea`](https://github.com/Python-roborock/python-roborock/commit/ad3ceeaea6f1b12dc51513c48476bcdf2756392b))
+
+- **api**: Rename `YXWaterLevel` enum values to mirror v1 values
+  ([#796](https://github.com/Python-roborock/python-roborock/pull/796),
+  [`c630022`](https://github.com/Python-roborock/python-roborock/commit/c63002264e40beb0f6e51281afd90e10e7b731cc))
+
+### Refactoring
+
+- **q10**: Use readable YXCleanType values with legacy aliases
+  ([#794](https://github.com/Python-roborock/python-roborock/pull/794),
+  [`7baeb65`](https://github.com/Python-roborock/python-roborock/commit/7baeb658fd80b40bfb631dc250b899e659e20210))
+
+- **YXCleanType**: Move legacy values to a separate dictionary and update from_value method
+  ([#794](https://github.com/Python-roborock/python-roborock/pull/794),
+  [`7baeb65`](https://github.com/Python-roborock/python-roborock/commit/7baeb658fd80b40bfb631dc250b899e659e20210))
+
+- **YXCleanType**: Remove legacy test for readable public values
+  ([#794](https://github.com/Python-roborock/python-roborock/pull/794),
+  [`7baeb65`](https://github.com/Python-roborock/python-roborock/commit/7baeb658fd80b40bfb631dc250b899e659e20210))
+
+- **YXCleanType**: Simplify clean type definitions and remove legacy alias support
+  ([#794](https://github.com/Python-roborock/python-roborock/pull/794),
+  [`7baeb65`](https://github.com/Python-roborock/python-roborock/commit/7baeb658fd80b40bfb631dc250b899e659e20210))
+
+
 ## v4.26.3 (2026-03-22)
 
 ### Bug Fixes
