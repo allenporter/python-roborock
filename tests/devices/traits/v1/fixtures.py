@@ -115,8 +115,8 @@ def mock_app_get_init_status_fixture(device_info: HomeDataDevice, products: list
     Uses real device feature data from device_info.yaml when available for the
     product model, falling back to the default mock data otherwise.
     """
-    product = next(filter(lambda product: product.id == device_info.product_id, products))
-    if not product:
+    product = next((product for product in products if product.id == device_info.product_id), None)
+    if product is None:
         raise ValueError(f"Product {device_info.product_id} not found")
     device_info_data = mock_data.DEVICE_INFO.get(product.model, {})
     return {
