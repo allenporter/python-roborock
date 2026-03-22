@@ -37,7 +37,7 @@ class RoborockDataProtocol(RoborockEnum):
 
     @classmethod
     def _missing_(cls: type[Self], key) -> Self:
-        raise ValueError("%s not a valid key for Data Protocol", key)
+        raise ValueError(f"{key} not a valid key for Data Protocol")
 
 
 class RoborockDyadDataProtocol(RoborockEnum):
