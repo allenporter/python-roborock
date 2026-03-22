@@ -143,14 +143,14 @@ Q10_DEVICE_DATA = DEVICES["home_data_device_q10.json"]
 ZEO_ONE_DEVICE_DATA = DEVICES["home_data_device_zeo_one.json"]
 SAROS_10R_DEVICE_DATA = DEVICES["home_data_device_saros_10r.json"]
 
-# Additional Device Features info from YAML. In the future we can merge these
-# all into a similar format or get from diagnostrics.
+# Additional Device Features info from YAML keyed by product model.
+# Each entry contains the fields needed for APP_GET_INIT_STATUS responses.
 _DEVICE_INFO_DATA = yaml.safe_load(pathlib.Path("device_info.yaml").read_text())
-DEVICE_INFO = {
+DEVICE_INFO: dict[str, dict[str, Any]] = {
     product_model: {
-        "new_feature_info": data.get("New Feature Info"),
-        "new_feature_info_str": data.get("New Feature Info Str"),
-        "feature_info": data.get("Feature Info"),
+        "new_feature_info": data.get("new_feature_info"),
+        "new_feature_info_str": data.get("new_feature_info_str"),
+        "feature_info": data.get("feature_info", []),
     }
     for product_model, data in _DEVICE_INFO_DATA.items()
 }

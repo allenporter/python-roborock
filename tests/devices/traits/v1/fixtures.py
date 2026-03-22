@@ -110,11 +110,21 @@ def dock_type_code_fixture(request: pytest.FixtureRequest) -> RoborockDockTypeCo
 
 @pytest.fixture(name="mock_app_get_init_status")
 def mock_app_get_init_status_fixture(device_info: HomeDataDevice, products: list[HomeDataProduct]) -> dict[str, Any]:
-    """Fixture to provide a DeviceFeaturesInfo instance for tests."""
+    """Fixture to provide model-specific APP_GET_INIT_STATUS data.
+
+    Uses real device feature data from device_info.yaml when available for the
+    product model, falling back to the default mock data otherwise.
+    """
     product = next(filter(lambda product: product.id == device_info.product_id, products))
     if not product:
         raise ValueError(f"Product {device_info.product_id} not found")
-    return mock_data.APP_GET_INIT_STATUS
+    device_info_data = mock_data.DEVICE_INFO.get(product.model)
+    if device_info_data is None:
+        return mock_data.APP_GET_INIT_STATUS
+    return {
+        **mock_data.APP_GET_INIT_STATUS,
+        **device_info_data,
+    }
 
 
 @pytest.fixture(autouse=True)

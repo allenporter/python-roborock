@@ -40,10 +40,11 @@ class DeviceFeaturesTrait(DeviceFeatures, common.V1TraitMixin):
         self.converter = DeviceTraitsConverter(product)
         self._product = product
         self._device_cache = device_cache
-        # All fields of DeviceFeatures are required. Initialize them to False
+        # All boolean fields of DeviceFeatures are required. Initialize them to False
         # so we have some known state.
         for field in fields(self):
-            setattr(self, field.name, False)
+            if field.type is bool:
+                setattr(self, field.name, False)
 
     def is_field_supported(self, cls: type[RoborockBase], field_name: FieldNameBase) -> bool:
         """Determines if the specified field is supported by this device.
