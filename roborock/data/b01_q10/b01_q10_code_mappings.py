@@ -164,24 +164,24 @@ class YXCleanType(RoborockModeEnum):
 
 class YXDeviceState(RoborockModeEnum):
     UNKNOWN = "unknown", -1
-    SLEEP_STATE = "sleeping", 2
-    STANDBY_STATE = "standby", 3
-    CLEANING_STATE = "cleaning", 5
-    TO_CHARGE_STATE = "going_to_charge", 6
-    REMOTEING_STATE = "remote_control", 7
-    CHARGING_STATE = "charging", 8
-    PAUSE_STATE = "paused", 10
-    FAULT_STATE = "fault", 12
-    UPGRADE_STATE = "updating", 14
-    DUSTING = "dusting", 22
-    CREATING_MAP_STATE = "creating_map", 29
-    MAP_SAVE_STATE = "saving_map", 99
-    RE_LOCATION_STATE = "relocating", 101
-    ROBOT_SWEEPING = "sweeping", 102
-    ROBOT_MOPING = "mopping", 103
-    ROBOT_SWEEP_AND_MOPING = "sweep_and_mop", 104
-    ROBOT_TRANSITIONING = "transitioning", 105
-    ROBOT_WAIT_CHARGE = "waiting_to_charge", 108
+    SLEEPING = "sleeping", 2  # sleepstate
+    IDLE = "idle", 3  # standbystate
+    CLEANING = "cleaning", 5  # cleaningstate
+    RETURNING_HOME = "returning_home", 6  # tochargestate
+    REMOTE_CONTROL_ACTIVE = "remote_control_active", 7  # remoteingstate
+    CHARGING = "charging", 8  # chargingstate
+    PAUSED = "paused", 10  # pausestate
+    ERROR = "error", 12  # faultstate
+    UPDATING = "updating", 14  # upgradestate
+    EMPTYING_THE_BIN = "emptying_the_bin", 22  # dusting
+    MAPPING = "mapping", 29  # creatingmapstate
+    SAVING_MAP = "saving_map", 99  # mapsavestate
+    RELOCATING = "relocating", 101  # relocationstate
+    SWEEPING = "sweeping", 102  # robotsweeping
+    MOPPING = "mopping", 103  # robotmoping
+    SWEEP_AND_MOP = "sweep_and_mop", 104  # robotsweepandmoping
+    TRANSITIONING = "transitioning", 105  # robottransitioning
+    WAITING_TO_CHARGE = "waiting_to_charge", 108  # robotwaitcharge
 
 
 class YXBackType(RoborockModeEnum):
