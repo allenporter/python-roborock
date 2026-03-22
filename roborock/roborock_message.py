@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import StrEnum
+from typing import Self
 
 from roborock import RoborockEnum
 from roborock.util import get_next_int, get_timestamp
@@ -37,7 +36,7 @@ class RoborockDataProtocol(RoborockEnum):
     OFFLINE_STATUS = 135
 
     @classmethod
-    def _missing_(cls: type[RoborockEnum], key) -> RoborockEnum:
+    def _missing_(cls: type[Self], key) -> Self:
         raise ValueError("%s not a valid key for Data Protocol", key)
 
 

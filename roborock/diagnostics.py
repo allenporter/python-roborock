@@ -9,8 +9,6 @@ data is collected and exposed to clients via higher level APIs like the
 DeviceManager.
 """
 
-from __future__ import annotations
-
 import time
 from collections import Counter
 from collections.abc import Generator, Mapping
@@ -49,7 +47,7 @@ class Diagnostics:
             data[k] = v
         return data
 
-    def subkey(self, key: str) -> Diagnostics:
+    def subkey(self, key: str) -> "Diagnostics":
         """Return sub-Diagnostics object with the specified subkey.
 
         This will create a new Diagnostics object if one does not already exist
