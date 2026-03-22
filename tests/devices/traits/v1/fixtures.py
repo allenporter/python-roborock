@@ -118,9 +118,7 @@ def mock_app_get_init_status_fixture(device_info: HomeDataDevice, products: list
     product = next(filter(lambda product: product.id == device_info.product_id, products))
     if not product:
         raise ValueError(f"Product {device_info.product_id} not found")
-    device_info_data = mock_data.DEVICE_INFO.get(product.model)
-    if device_info_data is None:
-        return mock_data.APP_GET_INIT_STATUS
+    device_info_data = mock_data.DEVICE_INFO.get(product.model, {})
     return {
         **mock_data.APP_GET_INIT_STATUS,
         **device_info_data,
