@@ -136,9 +136,9 @@ class YXFanLevel(RoborockModeEnum):
 
 class YXWaterLevel(RoborockModeEnum):
     UNKNOWN = "unknown", -1
-    CLOSE = "close", 0
+    OFF = "off", 0  # close
     LOW = "low", 1
-    MIDDLE = "middle", 2
+    MEDIUM = "medium", 2  # middle
     HIGH = "high", 3
 
 
