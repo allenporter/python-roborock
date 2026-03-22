@@ -3,7 +3,7 @@
   dict({
     'battery': True,
     'charge_status': True,
-    'clean_percent': False,
+    'clean_percent': True,
     'dry_status': True,
     'fan_power': True,
     'state': True,
@@ -14,7 +14,7 @@
   dict({
     'battery': True,
     'charge_status': True,
-    'clean_percent': False,
+    'clean_percent': True,
     'dry_status': True,
     'fan_power': True,
     'state': True,
@@ -25,7 +25,7 @@
   dict({
     'battery': True,
     'charge_status': True,
-    'clean_percent': False,
+    'clean_percent': True,
     'dry_status': True,
     'fan_power': True,
     'state': True,
