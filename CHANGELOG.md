@@ -2,6 +2,27 @@
 
 <!-- version list -->
 
+## v4.26.3 (2026-03-22)
+
+### Bug Fixes
+
+- **q10**: Add tests for Q10 status values and code mappings
+  ([#793](https://github.com/Python-roborock/python-roborock/pull/793),
+  [`dce00a2`](https://github.com/Python-roborock/python-roborock/commit/dce00a2499c3976f1cd25239bc4f81d996d51a79))
+
+- **q10**: Normalize status names to canonical values
+  ([#793](https://github.com/Python-roborock/python-roborock/pull/793),
+  [`dce00a2`](https://github.com/Python-roborock/python-roborock/commit/dce00a2499c3976f1cd25239bc4f81d996d51a79))
+
+- **q10**: Normalize YXDeviceState status names to canonical values
+  ([#793](https://github.com/Python-roborock/python-roborock/pull/793),
+  [`dce00a2`](https://github.com/Python-roborock/python-roborock/commit/dce00a2499c3976f1cd25239bc4f81d996d51a79))
+
+- **q10**: Refactor test for canonical status names using a dictionary
+  ([#793](https://github.com/Python-roborock/python-roborock/pull/793),
+  [`dce00a2`](https://github.com/Python-roborock/python-roborock/commit/dce00a2499c3976f1cd25239bc4f81d996d51a79))
+
+
 ## v4.26.2 (2026-03-21)
 
 ### Bug Fixes
