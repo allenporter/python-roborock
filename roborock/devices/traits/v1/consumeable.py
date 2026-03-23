@@ -4,6 +4,7 @@ A consumable attribute is one that is expected to be replaced or refilled
 periodically, such as filters, brushes, etc.
 """
 
+import logging
 from enum import StrEnum
 from typing import Any, Self
 
@@ -17,6 +18,8 @@ from .common import TraitUpdateListener
 __all__ = [
     "ConsumableTrait",
 ]
+
+_LOGGER = logging.getLogger(__name__)
 
 _DPS_CONVERTER = common.DpsDataConverter.from_dataclass(Consumable)
 
@@ -47,6 +50,11 @@ class ConsumableTrait(Consumable, common.V1TraitMixin, TraitUpdateListener):
 
     command = RoborockCommand.GET_CONSUMABLE
     converter = common.DefaultConverter(Consumable)
+
+    def __init__(self) -> None:
+        """Initialize the consumable trait."""
+        super().__init__()
+        TraitUpdateListener.__init__(self, logger=_LOGGER)
 
     async def reset_consumable(self, consumable: ConsumableAttribute) -> None:
         """Reset a specific consumable attribute on the device."""

@@ -170,8 +170,13 @@ def decode_rpc_response(message: RoborockMessage) -> ResponseMessage:
     response, as long as we can extract the request ID. This is so we can
     associate an API response with a request even if there was an error.
     """
-    if not (datapoints := _decode_dps_message(message)):
+    if not message.payload:
         return ResponseMessage(request_id=message.seq, data={})
+
+    if (datapoints := _decode_dps_message(message)) is None:
+        raise RoborockException(
+            f"Invalid V1 message format: missing or invalid 'dps' in payload for {message.payload!r}"
+        )
 
     if not (data_point := datapoints.get(RoborockMessageProtocol.RPC_RESPONSE)):
         raise RoborockException(
