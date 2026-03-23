@@ -11,6 +11,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, TypeVar
 
+from roborock.callbacks import CallbackList
 from roborock.data import HomeDataDevice, NetworkInfo, RoborockBase, UserData
 from roborock.devices.cache import DeviceCache
 from roborock.devices.transport.channel import Channel
@@ -30,9 +31,10 @@ from roborock.protocols.v1_protocol import (
     V1RpcChannel,
     create_map_response_decoder,
     create_security_data,
+    decode_data_protocol_message,
     decode_rpc_response,
 )
-from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
+from roborock.roborock_message import RoborockDataProtocol, RoborockMessage, RoborockMessageProtocol
 from roborock.roborock_typing import RoborockCommand
 from roborock.util import RoborockLoggerAdapter
 
@@ -188,6 +190,7 @@ class V1Channel(Channel):
         self._device_cache = device_cache
         self._reconnect_task: asyncio.Task[None] | None = None
         self._last_network_info_refresh: datetime.datetime | None = None
+        self._dps_listeners = CallbackList[dict[RoborockDataProtocol, Any]]()
 
     @property
     def is_connected(self) -> bool:
@@ -305,12 +308,14 @@ class V1Channel(Channel):
             loop = asyncio.get_running_loop()
             self._reconnect_task = loop.create_task(self._background_reconnect())
 
-        if not self.is_local_connected:
-            # We were not able to connect locally, so fallback to MQTT and at least
-            # establish that connection explicitly. If this fails then raise an
-            # error and let the caller know we failed to subscribe.
-            self._mqtt_unsub = await self._mqtt_channel.subscribe(self._on_mqtt_message)
-            self._logger.debug("V1Channel connected to device via MQTT")
+        # Always subscribe to MQTT to receive protocol updates (data points)
+        # even if we have a local connection. Protocol updates only come via cloud/MQTT.
+        # Local connection is used for RPC commands, but push notifications come via MQTT.
+        self._mqtt_unsub = await self._mqtt_channel.subscribe(self._on_mqtt_message)
+        if self.is_local_connected:
+            self._logger.debug("V1Channel connected via local and MQTT (for protocol updates)")
+        else:
+            self._logger.debug("V1Channel connected via MQTT only")
 
         def unsub() -> None:
             """Unsubscribe from all messages."""
@@ -327,6 +332,16 @@ class V1Channel(Channel):
 
         self._callback = callback
         return unsub
+
+    def add_dps_listener(self, listener: Callable[[dict[RoborockDataProtocol, Any]], None]) -> Callable[[], None]:
+        """Add a listener for DPS updates.
+
+        This will attach a listener to the existing subscription, invoking
+        the listener whenever new DPS values arrive from the subscription.
+        This will only work if a subscription has already been setup, which is
+        handled by the device setup.
+        """
+        return self._dps_listeners.add_callback(listener)
 
     async def _get_networking_info(self, *, prefer_cache: bool = True) -> NetworkInfo:
         """Retrieve networking information for the device.
@@ -428,6 +443,11 @@ class V1Channel(Channel):
         self._logger.debug("V1Channel received MQTT message: %s", message)
         if self._callback:
             self._callback(message)
+        try:
+            if datapoints := decode_data_protocol_message(message):
+                self._dps_listeners(datapoints)
+        except RoborockException as e:
+            self._logger.debug("Error decoding data protocol message: %s", e)
 
     def _on_local_message(self, message: RoborockMessage) -> None:
         """Handle incoming local messages."""

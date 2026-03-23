@@ -250,8 +250,8 @@ async def test_v1_channel_subscribe_local_success(
     mock_local_session.assert_called_once_with(TEST_HOST)
     mock_local_channel.connect.assert_called_once()
 
-    # Verify local connection established and not mqtt
-    assert not mock_mqtt_channel.subscribers
+    # Verify mqtt is also established
+    assert mock_mqtt_channel.subscribers
     assert mock_local_channel.subscribers
 
     # Verify properties
