@@ -235,12 +235,15 @@ class PropertiesApi(Trait):
 
     async def start(self) -> None:
         """Start the properties API and discover features."""
+        if self._unsub:
+            return
         await self.discover_features()
         self._unsub = self._add_dps_listener(self._on_dps_update)
 
     def close(self) -> None:
         if self._unsub:
             self._unsub()
+            self._unsub = None
 
     def _on_dps_update(self, dps: dict[RoborockDataProtocol, Any]) -> None:
         """Handle incoming messages from the device.
