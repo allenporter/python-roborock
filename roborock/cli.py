@@ -419,7 +419,7 @@ async def _v1_trait(context: RoborockContext, device_id: str, display_func: Call
     device = await device_manager.get_device(device_id)
     if device.v1_properties is None:
         raise RoborockUnsupportedFeature(f"Device {device.name} does not support V1 protocol")
-    await device.v1_properties.discover_features()
+    await device.v1_properties.start()
     trait = display_func(device.v1_properties)
     if trait is None:
         raise RoborockUnsupportedFeature("Trait not supported by device")
