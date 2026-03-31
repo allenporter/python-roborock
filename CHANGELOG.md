@@ -2,6 +2,101 @@
 
 <!-- version list -->
 
+## v5.1.0 (2026-03-31)
+
+### Bug Fixes
+
+- Add protobuf stubs to mypy hook
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- Avoid extra mypy surface from protobuf stubs
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- Pass q7 scmap lint checks ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- Scope mypy protobuf ignore to generated module
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- **ci**: Stop passing duplicate ruff exclude flag
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+### Chores
+
+- Migrate to `typing.Self` and remove `__future__` annotations.
+  ([#798](https://github.com/Python-roborock/python-roborock/pull/798),
+  [`d762649`](https://github.com/Python-roborock/python-roborock/commit/d7626494149beff993ff74fd3d31725fb9a37138))
+
+- Migrate to typing.Self and remove __future__ annotations.
+  ([#798](https://github.com/Python-roborock/python-roborock/pull/798),
+  [`d762649`](https://github.com/Python-roborock/python-roborock/commit/d7626494149beff993ff74fd3d31725fb9a37138))
+
+- Update github link to new 'python-roborock'
+  ([#800](https://github.com/Python-roborock/python-roborock/pull/800),
+  [`7137ccd`](https://github.com/Python-roborock/python-roborock/commit/7137ccd0acc84ce0e29100abbac7bf5b4fd9b4e3))
+
+- Update roborock/roborock_message.py
+  ([#798](https://github.com/Python-roborock/python-roborock/pull/798),
+  [`d762649`](https://github.com/Python-roborock/python-roborock/commit/d7626494149beff993ff74fd3d31725fb9a37138))
+
+- Use `typing.Self` for class-referencing type hints and dynamic instantiation
+  ([#798](https://github.com/Python-roborock/python-roborock/pull/798),
+  [`d762649`](https://github.com/Python-roborock/python-roborock/commit/d7626494149beff993ff74fd3d31725fb9a37138))
+
+### Documentation
+
+- **q7**: Refresh protobuf regeneration note
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+### Features
+
+- Define checked-in proto for q7 scmap
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- **q7**: Add b01 map_content support
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+### Refactoring
+
+- Make q7 scmap parsing declarative
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- Restore declarative q7 scmap fields
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- Trim q7 map parser scope ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- **q7**: Address maintainer review follow-ups
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- **q7**: Narrow decoded command response type
+  ([#786](https://github.com/Python-roborock/python-roborock/pull/786),
+  [`caf4dbb`](https://github.com/Python-roborock/python-roborock/commit/caf4dbb146f1f7da075bf847dac44eaa59ad4b8a))
+
+- **q7**: Remove intermediate SCMap mapping layer
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- **q7**: Use generated protobuf message types
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+- **q7**: Use shared ECB helpers for map decode
+  ([#785](https://github.com/Python-roborock/python-roborock/pull/785),
+  [`607ef97`](https://github.com/Python-roborock/python-roborock/commit/607ef973957de75744d40312e940e74f02b21f35))
+
+
 ## v5.0.0 (2026-03-22)
 
 ### Bug Fixes
