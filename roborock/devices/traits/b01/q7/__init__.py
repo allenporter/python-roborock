@@ -18,10 +18,10 @@ from roborock.data.b01_q7.b01_q7_code_mappings import (
     SCWindMapping,
     WaterLevelMapping,
 )
-from roborock.devices.rpc.b01_q7_channel import send_decoded_command
+from roborock.devices.rpc.b01_q7_channel import MapRpcChannel, send_decoded_command
 from roborock.devices.traits import Trait
 from roborock.devices.transport.mqtt_channel import MqttChannel
-from roborock.protocols.b01_q7_protocol import B01_Q7_DPS, CommandType, ParamsType, Q7RequestMessage
+from roborock.protocols.b01_q7_protocol import B01_Q7_DPS, CommandType, ParamsType, Q7RequestMessage, create_map_key
 from roborock.roborock_message import RoborockB01Props
 from roborock.roborock_typing import RoborockB01Q7Methods
 
@@ -51,9 +51,12 @@ class Q7PropertiesApi(Trait):
     map_content: MapContentTrait
     """Trait for fetching parsed current map content."""
 
-    def __init__(self, channel: MqttChannel, *, device: HomeDataDevice, product: HomeDataProduct) -> None:
+    def __init__(
+        self, channel: MqttChannel, map_rpc_channel: MapRpcChannel, device: HomeDataDevice, product: HomeDataProduct
+    ) -> None:
         """Initialize the Q7 API."""
         self._channel = channel
+        self._map_rpc_channel = map_rpc_channel
         self._device = device
         self._product = product
 
@@ -63,9 +66,8 @@ class Q7PropertiesApi(Trait):
         self.clean_summary = CleanSummaryTrait(channel)
         self.map = MapTrait(channel)
         self.map_content = MapContentTrait(
+            self._map_rpc_channel,
             self.map,
-            serial=device.sn,
-            model=product.model,
         )
 
     async def query_values(self, props: list[RoborockB01Props]) -> B01Props | None:
@@ -173,4 +175,5 @@ class Q7PropertiesApi(Trait):
 
 def create(product: HomeDataProduct, device: HomeDataDevice, channel: MqttChannel) -> Q7PropertiesApi:
     """Create traits for B01 Q7 devices."""
-    return Q7PropertiesApi(channel, device=device, product=product)
+    map_rpc_channel = MapRpcChannel(channel, map_key=create_map_key(serial=device.sn or "", model=product.model or ""))
+    return Q7PropertiesApi(channel, device=device, product=product, map_rpc_channel=map_rpc_channel)

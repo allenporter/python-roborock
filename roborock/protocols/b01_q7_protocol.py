@@ -1,7 +1,11 @@
 """Roborock B01 Protocol encoding and decoding."""
 
+import base64
+import binascii
+import hashlib
 import json
 import logging
+import zlib
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -10,6 +14,7 @@ from Crypto.Util.Padding import pad, unpad
 
 from roborock import RoborockB01Q7Methods
 from roborock.exceptions import RoborockException
+from roborock.protocol import Utils
 from roborock.roborock_message import (
     RoborockMessage,
     RoborockMessageProtocol,
@@ -80,3 +85,48 @@ def decode_rpc_response(message: RoborockMessage) -> dict[int, Any]:
         return {int(key): value for key, value in datapoints.items()}
     except ValueError:
         raise RoborockException(f"Invalid B01 message format: 'dps' key should be an integer for {message.payload!r}")
+
+
+@dataclass
+class MapKey:
+    """Data class for holding a B01 map decryption key."""
+
+    key: bytes
+
+
+def create_map_key(serial: str, model: str) -> MapKey:
+    """Derive the B01/Q7 map decrypt key from serial + model."""
+    model_suffix = model.split(".")[-1]
+    model_key = (model_suffix + "0" * 16)[:16].encode()
+    material = f"{serial}+{model_suffix}+{serial}".encode()
+    encrypted = Utils.encrypt_ecb(material, model_key)
+    md5 = hashlib.md5(base64.b64encode(encrypted), usedforsecurity=False).hexdigest()
+    return MapKey(key=md5[8:24].encode())
+
+
+def decode_map_payload(raw_payload: bytes, map_key: MapKey) -> bytes:
+    """Decode raw B01 `MAP_RESPONSE` payload into inflated SCMap bytes."""
+    encrypted_payload = _decode_base64_payload(raw_payload)
+    payload_len = len(encrypted_payload)
+    if payload_len % AES.block_size != 0:
+        raise RoborockException(
+            f"Unexpected encrypted B01 map payload length: {payload_len} (not a multiple of AES block size)"
+        )
+
+    try:
+        compressed_hex = Utils.decrypt_ecb(encrypted_payload, token=map_key.key).decode("ascii")
+        compressed_payload = bytes.fromhex(compressed_hex)
+        return zlib.decompress(compressed_payload)
+    except (ValueError, UnicodeDecodeError, zlib.error) as err:
+        raise RoborockException("Failed to decode B01 map payload") from err
+
+
+def _decode_base64_payload(raw_payload: bytes) -> bytes:
+    """Decode base64 payload."""
+
+    blob = raw_payload.strip()
+    padded = blob + b"=" * (-len(blob) % 4)
+    try:
+        return base64.b64decode(padded, validate=True)
+    except binascii.Error as err:
+        raise RoborockException("Failed to decode B01 map payload") from err

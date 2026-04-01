@@ -10,7 +10,14 @@ from typing import TypeAlias, TypeVar
 
 from roborock.devices.transport.mqtt_channel import MqttChannel
 from roborock.exceptions import RoborockException
-from roborock.protocols.b01_q7_protocol import B01_VERSION, Q7RequestMessage, decode_rpc_response, encode_mqtt_payload
+from roborock.protocols.b01_q7_protocol import (
+    B01_VERSION,
+    MapKey,
+    Q7RequestMessage,
+    decode_map_payload,
+    decode_rpc_response,
+    encode_mqtt_payload,
+)
 from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 
 _LOGGER = logging.getLogger(__name__)
@@ -127,18 +134,29 @@ async def send_decoded_command(
         raise
 
 
-async def send_map_command(mqtt_channel: MqttChannel, request_message: Q7RequestMessage) -> bytes:
-    """Send map upload command and wait for MAP_RESPONSE payload bytes.
+class MapRpcChannel:
+    """RPC channel for map-related commands on B01/Q7 devices."""
 
-    This stays separate from ``send_decoded_command()`` because map uploads arrive as
-    raw ``MAP_RESPONSE`` payload bytes instead of a decoded RPC ``data`` payload.
-    """
+    def __init__(self, mqtt_channel: MqttChannel, map_key: MapKey) -> None:
+        self._mqtt_channel = mqtt_channel
+        self._map_key = map_key
 
-    try:
-        return await _send_command(
-            mqtt_channel,
-            request_message,
-            response_matcher=lambda response_message: _matches_map_response(response_message, version=B01_VERSION),
-        )
-    except TimeoutError as ex:
-        raise RoborockException(f"B01 map command timed out after {_TIMEOUT}s ({request_message})") from ex
+    async def send_map_command(self, request_message: Q7RequestMessage) -> bytes:
+        """Send map upload command and wait for MAP_RESPONSE payload bytes.
+
+        This stays separate from ``send_decoded_command()`` because map uploads arrive as
+        raw ``MAP_RESPONSE`` payload bytes instead of a decoded RPC ``data`` payload.
+
+        The response is a protocol buffer than can be parsed by the map parser library.
+        """
+
+        try:
+            raw_payload = await _send_command(
+                self._mqtt_channel,
+                request_message,
+                response_matcher=lambda response_message: _matches_map_response(response_message, version=B01_VERSION),
+            )
+        except TimeoutError as ex:
+            raise RoborockException(f"B01 map command timed out after {_TIMEOUT}s ({request_message})") from ex
+
+        return decode_map_payload(raw_payload, map_key=self._map_key)
