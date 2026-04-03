@@ -90,7 +90,7 @@ class MapContentTrait(MapContent, Trait):
         except RoborockException:
             raise
         except Exception as ex:
-            raise RoborockException(f"Uncaught exception parsing B01 map data: {ex}") from ex
+            raise RoborockException("Failed to parse B01 map data") from ex
 
         if parsed_data.image_content is None:
             raise RoborockException("Failed to render B01 map image")
