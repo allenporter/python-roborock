@@ -142,12 +142,15 @@ class MapRpcChannel:
         self._map_key = map_key
 
     async def send_map_command(self, request_message: Q7RequestMessage) -> bytes:
-        """Send map upload command and wait for MAP_RESPONSE payload bytes.
+        """Send a map upload command and return decoded SCMap bytes.
 
-        This stays separate from ``send_decoded_command()`` because map uploads arrive as
-        raw ``MAP_RESPONSE`` payload bytes instead of a decoded RPC ``data`` payload.
+        This publishes the request and waits for a matching ``MAP_RESPONSE`` message
+        with the correct protocol version. The raw ``MAP_RESPONSE`` payload bytes are
+        then decoded/inflated via :func:`decode_map_payload` using this channel's
+        ``map_key``, and the resulting SCMap bytes are returned.
 
-        The response is a protocol buffer than can be parsed by the map parser library.
+        The returned value is the decoded map data bytes suitable for passing to the
+        map parser library, not the raw MQTT ``MAP_RESPONSE`` payload bytes.
         """
 
         try:
