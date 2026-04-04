@@ -8,14 +8,18 @@ This intentionally mirrors the v1 `MapContentTrait` contract:
 For B01/Q7 devices, the underlying raw map payload is retrieved via `MapTrait`.
 """
 
+import asyncio
 from dataclasses import dataclass
 
 from vacuum_map_parser_base.map_data import MapData
 
 from roborock.data import RoborockBase
+from roborock.devices.rpc.b01_q7_channel import MapRpcChannel
 from roborock.devices.traits import Trait
 from roborock.exceptions import RoborockException
 from roborock.map.b01_map_parser import B01MapParser, B01MapParserConfig
+from roborock.protocols.b01_q7_protocol import B01_Q7_DPS, Q7RequestMessage
+from roborock.roborock_typing import RoborockB01Q7Methods
 
 from .map import MapTrait
 
@@ -51,38 +55,38 @@ class MapContentTrait(MapContent, Trait):
 
     def __init__(
         self,
+        map_rpc_channel: MapRpcChannel,
         map_trait: MapTrait,
         *,
-        serial: str,
-        model: str,
         map_parser_config: B01MapParserConfig | None = None,
     ) -> None:
         super().__init__()
+        self._map_rpc_channel = map_rpc_channel
         self._map_trait = map_trait
-        self._serial = serial
-        self._model = model
         self._map_parser = B01MapParser(map_parser_config)
+        # Map uploads are serialized per-device to avoid response cross-wiring.
+        self._map_command_lock = asyncio.Lock()
 
     async def refresh(self) -> None:
-        """Fetch, decode, and parse the current map payload."""
-        raw_payload = await self._map_trait.get_current_map_payload()
-        parsed = self.parse_map_content(raw_payload)
-        self.image_content = parsed.image_content
-        self.map_data = parsed.map_data
-        self.raw_api_response = parsed.raw_api_response
+        """Fetch, decode, and parse the current map payload.
 
-    def parse_map_content(self, response: bytes) -> MapContent:
-        """Parse map content from raw bytes.
-
-        This mirrors the v1 trait behavior so cached map payload bytes can be
-        reparsed without going back to the device.
+        This relies on the Map Trait already having fetched the map list metadata
+        so it can determine the current map_id.
         """
+        # Users must call first
+        if (map_id := self._map_trait.current_map_id) is None:
+            raise RoborockException("Unable to determine current map ID")
+
+        request = Q7RequestMessage(
+            dps=B01_Q7_DPS,
+            command=RoborockB01Q7Methods.UPLOAD_BY_MAPID,
+            params={"map_id": map_id},
+        )
+        async with self._map_command_lock:
+            raw_payload = await self._map_rpc_channel.send_map_command(request)
+
         try:
-            parsed_data = self._map_parser.parse(
-                response,
-                serial=self._serial,
-                model=self._model,
-            )
+            parsed_data = self._map_parser.parse(raw_payload)
         except RoborockException:
             raise
         except Exception as ex:
@@ -91,8 +95,6 @@ class MapContentTrait(MapContent, Trait):
         if parsed_data.image_content is None:
             raise RoborockException("Failed to render B01 map image")
 
-        return MapContent(
-            image_content=parsed_data.image_content,
-            map_data=parsed_data.map_data,
-            raw_api_response=response,
-        )
+        self.image_content = parsed_data.image_content
+        self.map_data = parsed_data.map_data
+        self.raw_api_response = raw_payload

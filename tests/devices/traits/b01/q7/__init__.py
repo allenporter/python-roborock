@@ -39,3 +39,13 @@ class B01MessageBuilder:
             version=b"B01",
             seq=self.seq,
         )
+
+    def build_map_response(self, payload: bytes) -> RoborockMessage:
+        """Build a dummy MAP_RESPONSE message."""
+        self.seq += 1
+        return RoborockMessage(
+            protocol=RoborockMessageProtocol.MAP_RESPONSE,
+            payload=payload,
+            version=b"B01",
+            seq=self.seq,
+        )

@@ -13,6 +13,7 @@ from PIL import Image
 from roborock.exceptions import RoborockException
 from roborock.map.b01_map_parser import B01MapParser, _parse_scmap_payload
 from roborock.map.proto.b01_scmap_pb2 import RobotMap  # type: ignore[attr-defined]
+from roborock.protocols.b01_q7_protocol import create_map_key, decode_map_payload
 
 FIXTURE = Path(__file__).resolve().parent / "testdata" / "raw-mqtt-map301.bin.inflated.bin.gz"
 
@@ -32,12 +33,13 @@ def test_b01_map_parser_decodes_and_renders_fixture() -> None:
     inflated = gzip.decompress(FIXTURE.read_bytes())
 
     compressed = zlib.compress(inflated)
-    map_key = _derive_map_key(serial, model)
-    encrypted = AES.new(map_key, AES.MODE_ECB).encrypt(pad(compressed.hex().encode(), AES.block_size))
+    map_key = create_map_key(serial, model)
+    encrypted = AES.new(map_key.key, AES.MODE_ECB).encrypt(pad(compressed.hex().encode(), AES.block_size))
     payload = base64.b64encode(encrypted)
 
     parser = B01MapParser()
-    parsed = parser.parse(payload, serial=serial, model=model)
+    inflated_payload = decode_map_payload(payload, map_key=map_key)
+    parsed = parser.parse(inflated_payload)
 
     assert parsed.image_content is not None
     assert parsed.image_content.startswith(b"\x89PNG\r\n\x1a\n")
@@ -126,5 +128,5 @@ def test_b01_scmap_parser_maps_observed_schema_fields() -> None:
 
 def test_b01_map_parser_rejects_invalid_payload() -> None:
     parser = B01MapParser()
-    with pytest.raises(RoborockException, match="Failed to decode B01 map payload"):
-        parser.parse(b"not a map", serial="testsn012345", model="roborock.vacuum.sc05")
+    with pytest.raises(RoborockException, match="Failed to parse B01 SCMap"):
+        parser.parse(b"not a map")
