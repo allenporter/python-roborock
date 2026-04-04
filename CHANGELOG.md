@@ -2,6 +2,31 @@
 
 <!-- version list -->
 
+## v5.2.0 (2026-04-04)
+
+### Bug Fixes
+
+- Ensure device serial number and product model are provided when creating Q7PropertiesApi
+  ([#804](https://github.com/Python-roborock/python-roborock/pull/804),
+  [`aa1340a`](https://github.com/Python-roborock/python-roborock/commit/aa1340ad4b448fcf1b3586b008889c6fd26682d2))
+
+### Chores
+
+- Update map-related commands and payload decoding for B01/Q7 devices
+  ([#804](https://github.com/Python-roborock/python-roborock/pull/804),
+  [`aa1340a`](https://github.com/Python-roborock/python-roborock/commit/aa1340ad4b448fcf1b3586b008889c6fd26682d2))
+
+### Features
+
+- Implement map-related commands and payload decoding for B01/Q7 devices
+  ([#804](https://github.com/Python-roborock/python-roborock/pull/804),
+  [`aa1340a`](https://github.com/Python-roborock/python-roborock/commit/aa1340ad4b448fcf1b3586b008889c6fd26682d2))
+
+- Update roborock/devices/rpc/b01_q7_channel.py
+  ([#804](https://github.com/Python-roborock/python-roborock/pull/804),
+  [`aa1340a`](https://github.com/Python-roborock/python-roborock/commit/aa1340ad4b448fcf1b3586b008889c6fd26682d2))
+
+
 ## v5.1.0 (2026-03-31)
 
 ### Bug Fixes
