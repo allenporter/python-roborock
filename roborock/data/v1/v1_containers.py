@@ -625,11 +625,27 @@ class CleanSummaryWithDetail(CleanSummary):
     last_clean_record: CleanRecord | None = None
 
 
+class ConsumableField(FieldNameBase):
+    """An enum that represents a field in the `Consumable` class.
+
+    This is used with `roborock.devices.traits.v1.status.DeviceFeaturesTrait`
+    to understand if a feature is supported by the device using `is_field_supported`.
+
+    The enum values are names of fields in the `Consumable` class. Each field is
+    annotated with `requires_schema_code` metadata to map the field to a schema
+    code in the product schema, which may have a different name than the field/attribute name.
+    """
+
+    MAIN_BRUSH_WORK_TIME = "main_brush_work_time"
+    SIDE_BRUSH_WORK_TIME = "side_brush_work_time"
+    FILTER_WORK_TIME = "filter_work_time"
+
+
 @dataclass
 class Consumable(RoborockBase):
-    main_brush_work_time: int | None = None
-    side_brush_work_time: int | None = None
-    filter_work_time: int | None = None
+    main_brush_work_time: int | None = field(metadata={"requires_schema_code": "main_brush_life"}, default=None)
+    side_brush_work_time: int | None = field(metadata={"requires_schema_code": "side_brush_life"}, default=None)
+    filter_work_time: int | None = field(metadata={"requires_schema_code": "filter_life"}, default=None)
     filter_element_work_time: int | None = None
     sensor_dirty_time: int | None = None
     strainer_work_times: int | None = None

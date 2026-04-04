@@ -32,3 +32,24 @@
     'water_box_mode': True,
   })
 # ---
+# name: test_is_consumable_field_supported[home_data_device_s5e.json]
+  dict({
+    'filter_work_time': True,
+    'main_brush_work_time': True,
+    'side_brush_work_time': True,
+  })
+# ---
+# name: test_is_consumable_field_supported[home_data_device_s7_maxv.json]
+  dict({
+    'filter_work_time': True,
+    'main_brush_work_time': True,
+    'side_brush_work_time': True,
+  })
+# ---
+# name: test_is_consumable_field_supported[home_data_device_saros_10r.json]
+  dict({
+    'filter_work_time': True,
+    'main_brush_work_time': True,
+    'side_brush_work_time': True,
+  })
+# ---
