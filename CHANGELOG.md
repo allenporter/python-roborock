@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.3.0 (2026-04-04)
+
+### Features
+
+- Add dock strainer and cleaning brush consumable reset attributes
+  ([#805](https://github.com/Python-roborock/python-roborock/pull/805),
+  [`aa2691a`](https://github.com/Python-roborock/python-roborock/commit/aa2691a0add25cda95a172ea3e40a8074d6abdc6))
+
+
 ## v5.2.0 (2026-04-04)
 
 ### Bug Fixes
