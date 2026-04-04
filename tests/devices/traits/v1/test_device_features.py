@@ -29,5 +29,7 @@ async def test_is_attribute_supported(
     assert device.v1_properties.device_features is not None
     device_features_trait = device.v1_properties.device_features
 
-    is_supported = {field.value: device_features_trait.is_field_supported(StatusTrait, field) for field in StatusField}
-    assert is_supported == snapshot
+    is_v1_supported = {
+        field.value: device_features_trait.is_field_supported(StatusTrait, field) for field in StatusField
+    }
+    assert is_v1_supported == snapshot

@@ -113,6 +113,7 @@ class StatusField(FieldNameBase):
     WATER_BOX_MODE = "water_box_mode"
     CHARGE_STATUS = "charge_status"
     DRY_STATUS = "dry_status"
+    ERROR_CODE = "error_code"
 
 
 def _requires_schema_code(requires_schema_code: str, default=None) -> Any:
@@ -293,11 +294,11 @@ class StatusV2(RoborockBase):
 
     msg_ver: int | None = None
     msg_seq: int | None = None
-    state: RoborockStateCode | None = None
-    battery: int | None = None
+    state: RoborockStateCode | None = field(metadata={"requires_schema_code": "state"}, default=None)
+    battery: int | None = field(metadata={"requires_schema_code": "battery"}, default=None)
     clean_time: int | None = None
     clean_area: int | None = None
-    error_code: RoborockErrorCode | None = None
+    error_code: RoborockErrorCode | None = field(metadata={"requires_schema_code": "error_code"}, default=None)
     map_present: int | None = None
     in_cleaning: RoborockInCleaning | None = None
     in_returning: int | None = None
@@ -307,12 +308,12 @@ class StatusV2(RoborockBase):
     back_type: int | None = None
     wash_phase: int | None = None
     wash_ready: int | None = None
-    fan_power: int | None = None
+    fan_power: int | None = field(metadata={"requires_schema_code": "fan_power"}, default=None)
     dnd_enabled: int | None = None
     map_status: int | None = None
     is_locating: int | None = None
     lock_status: int | None = None
-    water_box_mode: int | None = None
+    water_box_mode: int | None = field(metadata={"requires_schema_code": "water_box_mode"}, default=None)
     water_box_carriage_status: int | None = None
     mop_forbidden_enable: int | None = None
     camera_status: int | None = None
@@ -330,13 +331,13 @@ class StatusV2(RoborockBase):
     collision_avoid_status: int | None = None
     switch_map_mode: int | None = None
     dock_error_status: RoborockDockErrorCode | None = None
-    charge_status: int | None = None
+    charge_status: int | None = field(metadata={"requires_schema_code": "charge_status"}, default=None)
     unsave_map_reason: int | None = None
     unsave_map_flag: int | None = None
     wash_status: int | None = None
     distance_off: int | None = None
     in_warmup: int | None = None
-    dry_status: int | None = None
+    dry_status: int | None = field(metadata={"requires_schema_code": "drying_status"}, default=None)
     rdt: int | None = None
     clean_percent: int | None = None
     rss: int | None = None
