@@ -98,13 +98,14 @@ class FieldNameBase(StrEnum):
 
 
 class StatusField(FieldNameBase):
-    """An enum that represents a field in the `Status` class.
+    """An enum that represents a field in the `StatusV2` class.
 
     This is used with `roborock.devices.traits.v1.status.DeviceFeaturesTrait`
     to understand if a feature is supported by the device using `is_field_supported`.
 
-    The enum values are names of fields in the `Status` class. Each field is annotated
-    with a metadata value to determine if the field is supported by the device.
+    The enum values are names of fields in the `StatusV2` class. Each field is
+    annotated with `dps` metadata to map the field to a `RoborockDataProtocol`
+    value used to check support against the product schema.
     """
 
     STATE = "state"
@@ -629,8 +630,9 @@ class ConsumableField(FieldNameBase):
     This is used with `roborock.devices.traits.v1.status.DeviceFeaturesTrait`
     to understand if a feature is supported by the device using `is_field_supported`.
 
-    The enum values are names of fields in the `Consumable` class. Each field is annotated
-    with a metadata value to determine if the field is supported by the device.
+    The enum values are names of fields in the `Consumable` class. Each field is
+    annotated with `dps` metadata to map the field to a `RoborockDataProtocol`
+    value used to check support against the product schema.
     """
 
     MAIN_BRUSH_WORK_TIME = "main_brush_work_time"
