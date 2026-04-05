@@ -48,7 +48,7 @@ optional traits:
 Additionally, DeviceFeaturesTrait has a method `is_field_supported` that is used to
 check individual trait field values. This is a more fine grained version to allow
 optional fields in a dataclass, vs the above feature checks that apply to an entire
-trait. The `dps` field metadata attribute is a string of the schema code in
+trait. The `dps` field metadata attribute references a schema code in
 HomeDataProduct Schema that is required for the field to be supported.
 """
 
