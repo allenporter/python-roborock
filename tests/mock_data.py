@@ -154,10 +154,13 @@ SAROS_10_DEVICE_DATA = DEVICES["home_data_device_saros.json"]
 _PRODUCTS_BY_ID: dict[str, HomeDataProduct] = {
     p.id: p for p in (HomeDataProduct.from_dict(v) for v in PRODUCTS.values())
 }
+_DEVICES_BY_FILENAME: dict[str, HomeDataDevice] = {
+    filename: HomeDataDevice.from_dict(device_data) for filename, device_data in DEVICES.items()
+}
 DEVICE_PRODUCT_PAIRS: dict[str, tuple[HomeDataDevice, HomeDataProduct]] = {
-    filename: (HomeDataDevice.from_dict(raw), product)
-    for filename, raw in DEVICES.items()
-    if (product := _PRODUCTS_BY_ID.get(HomeDataDevice.from_dict(raw).product_id)) is not None
+    filename: (device, product)
+    for filename, device in _DEVICES_BY_FILENAME.items()
+    if (product := _PRODUCTS_BY_ID.get(device.product_id)) is not None
 }
 
 
