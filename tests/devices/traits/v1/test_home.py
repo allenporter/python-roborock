@@ -370,8 +370,10 @@ async def test_discover_home_no_maps(
         [{"max_multi_map": 0, "max_bak_map": 0, "multi_map_count": 0, "map_info": []}]
     ]
 
-    with pytest.raises(Exception, match="Cannot perform home discovery without current map info"):
-        await home_trait.discover_home()
+    await home_trait.discover_home()
+
+    assert home_trait.home_map_info == {}
+    assert home_trait.home_map_content == {}
 
 
 async def test_refresh_updates_current_map_cache(
