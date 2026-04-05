@@ -126,11 +126,11 @@ class Status(RoborockBase):
 
     msg_ver: int | None = None
     msg_seq: int | None = None
-    state: RoborockStateCode | None = _requires_schema_code("state", default=None)
-    battery: int | None = _requires_schema_code("battery", default=None)
+    state: RoborockStateCode | None = _requires_schema_code("state")
+    battery: int | None = _requires_schema_code("battery")
     clean_time: int | None = None
     clean_area: int | None = None
-    error_code: RoborockErrorCode | None = _requires_schema_code("error_code", default=None)
+    error_code: RoborockErrorCode | None = _requires_schema_code("error_code")
     map_present: int | None = None
     in_cleaning: RoborockInCleaning | None = None
     in_returning: int | None = None
@@ -140,12 +140,12 @@ class Status(RoborockBase):
     back_type: int | None = None
     wash_phase: int | None = None
     wash_ready: int | None = None
-    fan_power: RoborockFanPowerCode | None = _requires_schema_code("fan_power", default=None)
+    fan_power: RoborockFanPowerCode | None = _requires_schema_code("fan_power")
     dnd_enabled: int | None = None
     map_status: int | None = None
     is_locating: int | None = None
     lock_status: int | None = None
-    water_box_mode: RoborockMopIntensityCode | None = _requires_schema_code("water_box_mode", default=None)
+    water_box_mode: RoborockMopIntensityCode | None = _requires_schema_code("water_box_mode")
     water_box_carriage_status: int | None = None
     mop_forbidden_enable: int | None = None
     camera_status: int | None = None
@@ -163,13 +163,13 @@ class Status(RoborockBase):
     collision_avoid_status: int | None = None
     switch_map_mode: int | None = None
     dock_error_status: RoborockDockErrorCode | None = None
-    charge_status: int | None = _requires_schema_code("charge_status", default=None)
+    charge_status: int | None = _requires_schema_code("charge_status")
     unsave_map_reason: int | None = None
     unsave_map_flag: int | None = None
     wash_status: int | None = None
     distance_off: int | None = None
     in_warmup: int | None = None
-    dry_status: int | None = _requires_schema_code("drying_status", default=None)
+    dry_status: int | None = _requires_schema_code("drying_status")
     rdt: int | None = None
     clean_percent: int | None = None
     rss: int | None = None
@@ -294,11 +294,11 @@ class StatusV2(RoborockBase):
 
     msg_ver: int | None = None
     msg_seq: int | None = None
-    state: RoborockStateCode | None = _requires_schema_code("state", default=None)
-    battery: int | None = _requires_schema_code("battery", default=None)
+    state: RoborockStateCode | None = _requires_schema_code("state")
+    battery: int | None = _requires_schema_code("battery")
     clean_time: int | None = None
     clean_area: int | None = None
-    error_code: RoborockErrorCode | None = _requires_schema_code("error_code", default=None)
+    error_code: RoborockErrorCode | None = _requires_schema_code("error_code")
     map_present: int | None = None
     in_cleaning: RoborockInCleaning | None = None
     in_returning: int | None = None
@@ -308,12 +308,12 @@ class StatusV2(RoborockBase):
     back_type: int | None = None
     wash_phase: int | None = None
     wash_ready: int | None = None
-    fan_power: int | None = _requires_schema_code("fan_power", default=None)
+    fan_power: int | None = _requires_schema_code("fan_power")
     dnd_enabled: int | None = None
     map_status: int | None = None
     is_locating: int | None = None
     lock_status: int | None = None
-    water_box_mode: int | None = _requires_schema_code("water_box_mode", default=None)
+    water_box_mode: int | None = _requires_schema_code("water_box_mode")
     water_box_carriage_status: int | None = None
     mop_forbidden_enable: int | None = None
     camera_status: int | None = None
@@ -330,14 +330,14 @@ class StatusV2(RoborockBase):
     debug_mode: int | None = None
     collision_avoid_status: int | None = None
     switch_map_mode: int | None = None
-    dock_error_status: RoborockDockErrorCode | None = _requires_schema_code("dock_error_status", default=None)
-    charge_status: int | None = _requires_schema_code("charge_status", default=None)
+    dock_error_status: RoborockDockErrorCode | None = _requires_schema_code("dock_error_status")
+    charge_status: int | None = _requires_schema_code("charge_status")
     unsave_map_reason: int | None = None
     unsave_map_flag: int | None = None
     wash_status: int | None = None
     distance_off: int | None = None
     in_warmup: int | None = None
-    dry_status: int | None = _requires_schema_code("drying_status", default=None)
+    dry_status: int | None = _requires_schema_code("drying_status")
     rdt: int | None = None
     clean_percent: int | None = None
     rss: int | None = None
