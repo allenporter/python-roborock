@@ -5,6 +5,8 @@ import json
 import pathlib
 from typing import Any
 
+from roborock.data.containers import HomeDataDevice, HomeDataProduct
+
 # All data is based on a U.S. customer with a Roborock S7 MaxV Ultra
 USER_EMAIL = "user@domain.com"
 
@@ -142,6 +144,17 @@ Q10_DEVICE_DATA = DEVICES["home_data_device_q10.json"]
 ZEO_ONE_DEVICE_DATA = DEVICES["home_data_device_zeo_one.json"]
 SAROS_10R_DEVICE_DATA = DEVICES["home_data_device_saros_10r.json"]
 SAROS_10_DEVICE_DATA = DEVICES["home_data_device_saros.json"]
+
+# All testdata devices joined with their matching product (keyed by device filename).
+# Devices whose productId has no corresponding product file are omitted.
+_PRODUCTS_BY_ID: dict[str, HomeDataProduct] = {
+    p.id: p for p in (HomeDataProduct.from_dict(v) for v in PRODUCTS.values())
+}
+DEVICE_PRODUCT_PAIRS: dict[str, tuple[HomeDataDevice, HomeDataProduct]] = {
+    filename: (HomeDataDevice.from_dict(raw), product)
+    for filename, raw in DEVICES.items()
+    if (product := _PRODUCTS_BY_ID.get(HomeDataDevice.from_dict(raw).product_id)) is not None
+}
 
 
 HOME_DATA_RAW: dict[str, Any] = {
