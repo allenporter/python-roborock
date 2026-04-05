@@ -133,13 +133,15 @@ SC01_PRODUCT_DATA = PRODUCTS["home_data_product_sc01.json"]
 SS07_PRODUCT_DATA = PRODUCTS["home_data_product_ss07.json"]
 A102_PRODUCT_DATA = PRODUCTS["home_data_product_a102.json"]
 A114_PRODUCT_DATA = PRODUCTS["home_data_product_a114.json"]
+A147_PRODUCT_DATA = PRODUCTS["home_data_product_a147.json"]
 
 # Devices
-S7_DEVICE_DATA = DEVICES["home_data_device_s7_maxv.json"]
+S7_MAXV_DEVICE_DATA = DEVICES["home_data_device_s7_maxv.json"]
 Q7_DEVICE_DATA = DEVICES["home_data_device_q7.json"]
 Q10_DEVICE_DATA = DEVICES["home_data_device_q10.json"]
 ZEO_ONE_DEVICE_DATA = DEVICES["home_data_device_zeo_one.json"]
 SAROS_10R_DEVICE_DATA = DEVICES["home_data_device_saros_10r.json"]
+SAROS_10_DEVICE_DATA = DEVICES["home_data_device_saros.json"]
 
 
 HOME_DATA_RAW: dict[str, Any] = {
@@ -152,7 +154,7 @@ HOME_DATA_RAW: dict[str, Any] = {
         A27_PRODUCT_DATA,
     ],
     "devices": [
-        S7_DEVICE_DATA,
+        S7_MAXV_DEVICE_DATA,
     ],
     "receivedDevices": [],
     "rooms": [
