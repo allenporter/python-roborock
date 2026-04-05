@@ -1,0 +1,32 @@
+{
+    "duid": "device-id-a125",
+    "name": "Roborock Q5 Max+",
+    "localKey": "key123key123key1",
+    "productId": "product-id-a125",
+    "fv": "02.01.24",
+    "activeTime": 1765325043,
+    "timeZoneId": "America/Chicago",
+    "iconUrl": "",
+    "share": false,
+    "online": true,
+    "pv": "1.0",
+    "tuyaMigrated": false,
+    "extra": "{}",
+    "sn": "A125SAMPLESNTEST",
+    "featureSet": "2097860516935167",
+    "newFeatureSet": "00000040385AFFF6",
+    "deviceStatus": {
+        "121": 8,
+        "122": 100,
+        "123": 106,
+        "125": 11,
+        "126": 0,
+        "127": 0,
+        "128": 0,
+        "133": 1,
+        "120": 0,
+        "124": 204
+    },
+    "silentOtaSwitch": true,
+    "f": false
+}

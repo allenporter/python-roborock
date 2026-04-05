@@ -1,5 +1,16 @@
 # serializer version: 1
-# name: test_is_attribute_supported[home_data_device_a123.json]
+# name: test_is_attribute_supported[home_data_device_pearls.json]
+  dict({
+    'battery': True,
+    'charge_status': True,
+    'dry_status': True,
+    'error_code': True,
+    'fan_power': True,
+    'state': True,
+    'water_box_mode': True,
+  })
+# ---
+# name: test_is_attribute_supported[home_data_device_q5_max.json]
   dict({
     'battery': True,
     'charge_status': True,
@@ -54,7 +65,14 @@
     'water_box_mode': True,
   })
 # ---
-# name: test_is_consumable_field_supported[home_data_device_a123.json]
+# name: test_is_consumable_field_supported[home_data_device_pearls.json]
+  dict({
+    'filter_work_time': True,
+    'main_brush_work_time': True,
+    'side_brush_work_time': True,
+  })
+# ---
+# name: test_is_consumable_field_supported[home_data_device_q5_max.json]
   dict({
     'filter_work_time': True,
     'main_brush_work_time': True,
