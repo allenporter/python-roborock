@@ -264,7 +264,8 @@ class HomeDataProduct(RoborockBase):
     def supported_schema_ids(self) -> set[int]:
         """Return a set of schema IDs (DPS integers) that are supported by the device.
 
-        These correspond to RoborockDataProtocol or RoborockB01Protocol enum number values.
+        These correspond to RoborockMessageProtocol and RoborockDataProtocol or
+        RoborockB01Protocol enum number values (depends on the device protocol versions).
         """
         if self.schema is None:
             return set()
