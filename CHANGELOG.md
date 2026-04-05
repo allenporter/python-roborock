@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## v5.4.0 (2026-04-05)
+
+### Bug Fixes
+
+- Update error_code and other fields to use _requires_schema_code for schema validation
+  ([#806](https://github.com/Python-roborock/python-roborock/pull/806),
+  [`e6f20cc`](https://github.com/Python-roborock/python-roborock/commit/e6f20cc235b8c24cf10eae2e35f72dfe7d89937a))
+
+### Features
+
+- Add consumable fields ([#806](https://github.com/Python-roborock/python-roborock/pull/806),
+  [`e6f20cc`](https://github.com/Python-roborock/python-roborock/commit/e6f20cc235b8c24cf10eae2e35f72dfe7d89937a))
+
+- Update schema requirements in StatusV2
+  ([#806](https://github.com/Python-roborock/python-roborock/pull/806),
+  [`e6f20cc`](https://github.com/Python-roborock/python-roborock/commit/e6f20cc235b8c24cf10eae2e35f72dfe7d89937a))
+
+- Update schema requirements in StatusV2 and Consumable
+  ([#806](https://github.com/Python-roborock/python-roborock/pull/806),
+  [`e6f20cc`](https://github.com/Python-roborock/python-roborock/commit/e6f20cc235b8c24cf10eae2e35f72dfe7d89937a))
+
+### Refactoring
+
+- Remove redundant default=None arguments from _requires_schema_code calls in v1_containers
+  ([#806](https://github.com/Python-roborock/python-roborock/pull/806),
+  [`e6f20cc`](https://github.com/Python-roborock/python-roborock/commit/e6f20cc235b8c24cf10eae2e35f72dfe7d89937a))
+
+
 ## v5.3.0 (2026-04-04)
 
 ### Features
