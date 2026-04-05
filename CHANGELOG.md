@@ -2,6 +2,35 @@
 
 <!-- version list -->
 
+## v5.4.1 (2026-04-05)
+
+### Bug Fixes
+
+- Align protobuf runtime constraint with checked-in B01 gencode
+  ([#803](https://github.com/Python-roborock/python-roborock/pull/803),
+  [`6d5cfb8`](https://github.com/Python-roborock/python-roborock/commit/6d5cfb8daf7399359226ccf0c40eadd33d489dfe))
+
+- **protobuf**: Require v6 runtime for checked-in gencode
+  ([#803](https://github.com/Python-roborock/python-roborock/pull/803),
+  [`6d5cfb8`](https://github.com/Python-roborock/python-roborock/commit/6d5cfb8daf7399359226ccf0c40eadd33d489dfe))
+
+### Chores
+
+- Apply suggestion from @Copilot
+  ([#803](https://github.com/Python-roborock/python-roborock/pull/803),
+  [`6d5cfb8`](https://github.com/Python-roborock/python-roborock/commit/6d5cfb8daf7399359226ccf0c40eadd33d489dfe))
+
+- Update protobuf version in uv.lock
+  ([#803](https://github.com/Python-roborock/python-roborock/pull/803),
+  [`6d5cfb8`](https://github.com/Python-roborock/python-roborock/commit/6d5cfb8daf7399359226ccf0c40eadd33d489dfe))
+
+### Documentation
+
+- **protobuf**: Trim proto regeneration comment
+  ([#803](https://github.com/Python-roborock/python-roborock/pull/803),
+  [`6d5cfb8`](https://github.com/Python-roborock/python-roborock/commit/6d5cfb8daf7399359226ccf0c40eadd33d489dfe))
+
+
 ## v5.4.0 (2026-04-05)
 
 ### Bug Fixes
