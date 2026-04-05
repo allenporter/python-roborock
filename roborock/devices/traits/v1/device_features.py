@@ -45,27 +45,26 @@ class DeviceFeaturesTrait(DeviceFeatures, common.V1TraitMixin):
         for field in fields(self):
             setattr(self, field.name, False)
 
+    @staticmethod
+    def _get_dataclass_field(cls: type[RoborockBase], field_name: FieldNameBase) -> Field:
+        """Look up a dataclass field by its FieldNameBase name."""
+        for f in fields(cls):
+            if f.name == field_name:
+                return f
+        raise ValueError(f"Field {field_name!r} not found in {cls}")
+
     def is_field_supported(self, cls: type[RoborockBase], field_name: FieldNameBase) -> bool:
         """Determines if the specified field is supported by this device.
 
-        We use dataclass attributes on the field to specify the schema code that is required
-        for the field to be supported and it is compared against the list of
-        supported schema codes for the device returned in the product information.
+        We use the `dps` dataclass field metadata to get the `RoborockDataProtocol`
+        integer ID and check it against the set of supported schema IDs for the
+        device returned in the product information.
         """
-        dataclass_field: Field | None = None
-        for field in fields(cls):
-            if field.name == field_name:
-                dataclass_field = field
-                break
-        if dataclass_field is None:
-            raise ValueError(f"Field {field_name} not found in {cls}")
-
-        requires_schema_code = dataclass_field.metadata.get("requires_schema_code", None)
-        if requires_schema_code is None:
-            # We assume the field is supported
+        dataclass_field = self._get_dataclass_field(cls, field_name)
+        if (dps := dataclass_field.metadata.get("dps")) is None:
+            # No DPS metadata — field is assumed always supported
             return True
-        # If the field requires a protocol that is not supported, we return False
-        return requires_schema_code in self._product.supported_schema_codes
+        return int(dps) in self._product.supported_schema_ids
 
     async def refresh(self) -> None:
         """Refresh the contents of this trait.
