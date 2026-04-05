@@ -126,8 +126,12 @@ HOME_DATA_SCENES_RAW = [
 
 TESTDATA = pathlib.Path("tests/testdata")
 
-PRODUCTS = {file.name: json.load(file.open(encoding="utf-8")) for file in TESTDATA.glob("home_data_product_*.json")}
-DEVICES = {file.name: json.load(file.open(encoding="utf-8")) for file in TESTDATA.glob("home_data_device_*.json")}
+PRODUCTS = {
+    file.name: json.load(file.open(encoding="utf-8")) for file in sorted(TESTDATA.glob("home_data_product_*.json"))
+}
+DEVICES = {
+    file.name: json.load(file.open(encoding="utf-8")) for file in sorted(TESTDATA.glob("home_data_device_*.json"))
+}
 
 # Products
 A27_PRODUCT_DATA = PRODUCTS["home_data_product_a27.json"]

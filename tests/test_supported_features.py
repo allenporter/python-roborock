@@ -101,6 +101,5 @@ def test_device_features_from_home_data(
         feature_info=[],
         product_nickname=product.product_nickname,
     )
-    # Snapshot all boolean features as a sorted dict for stable output
     feature_dict = {k: v for k, v in asdict(device_features).items() if isinstance(v, bool)}
     assert feature_dict == snapshot
