@@ -2,6 +2,37 @@
 
 <!-- version list -->
 
+## v5.5.0 (2026-04-06)
+
+### Bug Fixes
+
+- Support home discovery when there are no maps
+  ([#809](https://github.com/Python-roborock/python-roborock/pull/809),
+  [`011c9d1`](https://github.com/Python-roborock/python-roborock/commit/011c9d169dd665d1042b140442b560a4124e681d))
+
+### Chores
+
+- Replace schema code strings with RoborockDataProtocol enum values in status containers and add
+  supported_schema_ids helper ([#808](https://github.com/Python-roborock/python-roborock/pull/808),
+  [`4fcef24`](https://github.com/Python-roborock/python-roborock/commit/4fcef24bc2ab19756d43902dc7b044d30df6e903))
+
+- Update dps field metadata description in DeviceFeaturesTrait docstring
+  ([#808](https://github.com/Python-roborock/python-roborock/pull/808),
+  [`4fcef24`](https://github.com/Python-roborock/python-roborock/commit/4fcef24bc2ab19756d43902dc7b044d30df6e903))
+
+### Features
+
+- Update supported_schema_ids to include additional RoborockMessageProtocol and RoborockDataProtocol
+  constants ([#808](https://github.com/Python-roborock/python-roborock/pull/808),
+  [`4fcef24`](https://github.com/Python-roborock/python-roborock/commit/4fcef24bc2ab19756d43902dc7b044d30df6e903))
+
+### Refactoring
+
+- Replace schema code strings with RoborockDataProtocol enums
+  ([#808](https://github.com/Python-roborock/python-roborock/pull/808),
+  [`4fcef24`](https://github.com/Python-roborock/python-roborock/commit/4fcef24bc2ab19756d43902dc7b044d30df6e903))
+
+
 ## v5.4.1 (2026-04-05)
 
 ### Bug Fixes
