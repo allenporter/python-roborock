@@ -15,6 +15,7 @@ from roborock.data.containers import (
     _camelize,
     _decamelize,
 )
+from roborock.roborock_message import RoborockDataProtocol, RoborockMessageProtocol
 from tests.mock_data import (
     HOME_DATA_RAW,
     K_VALUE,
@@ -212,6 +213,27 @@ def test_home_data():
         "task_cancel_low_power",
         "task_complete",
         "water_box_mode",
+    }
+    assert product.supported_schema_ids == {
+        int(v)
+        for v in (
+            RoborockMessageProtocol.RPC_REQUEST,
+            RoborockMessageProtocol.RPC_RESPONSE,
+            RoborockDataProtocol.ERROR_CODE,
+            RoborockDataProtocol.STATE,
+            RoborockDataProtocol.BATTERY,
+            RoborockDataProtocol.FAN_POWER,
+            RoborockDataProtocol.WATER_BOX_MODE,
+            RoborockDataProtocol.MAIN_BRUSH_WORK_TIME,
+            RoborockDataProtocol.SIDE_BRUSH_WORK_TIME,
+            RoborockDataProtocol.FILTER_WORK_TIME,
+            RoborockDataProtocol.ADDITIONAL_PROPS,
+            RoborockDataProtocol.TASK_COMPLETE,
+            RoborockDataProtocol.TASK_CANCEL_LOW_POWER,
+            RoborockDataProtocol.TASK_CANCEL_IN_MOTION,
+            RoborockDataProtocol.CHARGE_STATUS,
+            RoborockDataProtocol.DRYING_STATUS,
+        )
     }
 
     device = hd.devices[0]

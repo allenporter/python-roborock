@@ -251,10 +251,25 @@ class HomeDataProduct(RoborockBase):
 
     @cached_property
     def supported_schema_codes(self) -> set[str]:
-        """Return a set of fields that are supported by the device."""
+        """Return a set of schema codes that are supported by the device.
+
+        These correspond with string field names like "state" or "error_code" that
+        correspond to RoborockDataProtocol or RoborockB01Protocol code values.
+        """
         if self.schema is None:
             return set()
         return {schema.code for schema in self.schema if schema.code is not None}
+
+    @cached_property
+    def supported_schema_ids(self) -> set[int]:
+        """Return a set of schema IDs (DPS integers) that are supported by the device.
+
+        These correspond to RoborockMessageProtocol and RoborockDataProtocol or
+        RoborockB01Protocol enum number values (depends on the device protocol versions).
+        """
+        if self.schema is None:
+            return set()
+        return {int(schema.id) for schema in self.schema if schema.id is not None}
 
 
 @dataclass
