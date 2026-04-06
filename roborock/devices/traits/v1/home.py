@@ -107,7 +107,10 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
 
         await self._maps_trait.refresh()
         if self._maps_trait.current_map_info is None:
-            raise RoborockException("Cannot perform home discovery without current map info")
+            _LOGGER.debug("Cannot perform home discovery without current map info")
+            self._discovery_completed = True
+            await self._update_home_cache({}, {})
+            return
 
         home_map_info, home_map_content = await self._build_home_map_info()
         _LOGGER.debug("Home discovery complete, caching data for %d maps", len(home_map_info))
@@ -198,7 +201,8 @@ class HomeTrait(RoborockBase, common.V1TraitMixin):
         if (current_map_info := self._maps_trait.current_map_info) is None or (
             map_flag := self._maps_trait.current_map
         ) is None:
-            raise RoborockException("Cannot refresh home data without current map info")
+            _LOGGER.debug("Cannot refresh home data without current map info")
+            return
 
         # Refresh the map content to ensure we have the latest image and object positions
         new_map_content = await self._refresh_map_content()

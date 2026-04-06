@@ -367,11 +367,25 @@ async def test_discover_home_no_maps(
     """Test discovery when no maps are available."""
     # Setup mock to return empty maps list
     mock_mqtt_rpc_channel.send_command.side_effect = [
-        [{"max_multi_map": 0, "max_bak_map": 0, "multi_map_count": 0, "map_info": []}]
+        # Discover home
+        [{"max_multi_map": 0, "max_bak_map": 0, "multi_map_count": 0, "map_info": []}],
+        # Refresh
+        [{"max_multi_map": 0, "max_bak_map": 0, "multi_map_count": 0, "map_info": []}],
     ]
 
-    with pytest.raises(Exception, match="Cannot perform home discovery without current map info"):
-        await home_trait.discover_home()
+    # Discover home should not change anything
+    await home_trait.discover_home()
+    assert home_trait.current_map_data is None
+    assert home_trait.home_map_info == {}
+    assert home_trait.home_map_content == {}
+    assert home_trait.current_rooms == []
+
+    # Refresh should not change anything
+    await home_trait.refresh()
+    assert home_trait.current_map_data is None
+    assert home_trait.home_map_info == {}
+    assert home_trait.home_map_content == {}
+    assert home_trait.current_rooms == []
 
 
 async def test_refresh_updates_current_map_cache(
