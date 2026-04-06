@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.5.1 (2026-04-06)
+
+### Bug Fixes
+
+- Use YXCleanType for Q10Status.clean_mode instead of YXDeviceWorkMode
+  ([#810](https://github.com/Python-roborock/python-roborock/pull/810),
+  [`66fcb83`](https://github.com/Python-roborock/python-roborock/commit/66fcb83ef7b4075e3e856fbada2244b1d964ff16))
+
+
 ## v5.5.0 (2026-04-06)
 
 ### Bug Fixes
