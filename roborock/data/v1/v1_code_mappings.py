@@ -556,14 +556,14 @@ class RoborockDockErrorCode(RoborockEnum):
     no_dustbin_or_filter = 32
     """No dock dustbin or filter installed.
 
-    This error message applies to auto-empty docs.
+    This error message applies to auto-empty docks.
     """
 
     auto_empty_dock_fan_error = 33
     """Auto-Empty Dock fan error: Dock dustbin or filter out of place."""
 
     duct_blockage = 34
-    """Auto-Empty Dock jammed: Dock dustbin, filter, or air duct jammed, check and make it clean."""
+    """Auto-Empty Dock jammed: Dock dustbin, filter, or air duct jammed, check and clean it."""
 
     auto_empty_dock_voltage_error = 35
     """Auto-Empty Dock voltage error: Unable to empty the dustbin."""
