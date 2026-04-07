@@ -2,6 +2,35 @@
 
 <!-- version list -->
 
+## v5.6.0 (2026-04-07)
+
+### Chores
+
+- Update supported features documentation, device definitions, and CLI model mapping
+  ([#807](https://github.com/Python-roborock/python-roborock/pull/807),
+  [`e3a0eab`](https://github.com/Python-roborock/python-roborock/commit/e3a0eab328053d050ee13ae824aeec04f5c6bf69))
+
+### Features
+
+- Add support for Roborock Q5 Max+ and update test snapshots
+  ([#807](https://github.com/Python-roborock/python-roborock/pull/807),
+  [`e3a0eab`](https://github.com/Python-roborock/python-roborock/commit/e3a0eab328053d050ee13ae824aeec04f5c6bf69))
+
+- Add support for Saros 10 (A147) device and update test snapshots
+  ([#807](https://github.com/Python-roborock/python-roborock/pull/807),
+  [`e3a0eab`](https://github.com/Python-roborock/python-roborock/commit/e3a0eab328053d050ee13ae824aeec04f5c6bf69))
+
+### Refactoring
+
+- Ensure deterministic test data loading by sorting file globs and remove redundant snapshot comment
+  ([#807](https://github.com/Python-roborock/python-roborock/pull/807),
+  [`e3a0eab`](https://github.com/Python-roborock/python-roborock/commit/e3a0eab328053d050ee13ae824aeec04f5c6bf69))
+
+- Optimize device lookup in mock data by caching parsed device objects
+  ([#807](https://github.com/Python-roborock/python-roborock/pull/807),
+  [`e3a0eab`](https://github.com/Python-roborock/python-roborock/commit/e3a0eab328053d050ee13ae824aeec04f5c6bf69))
+
+
 ## v5.5.1 (2026-04-06)
 
 ### Bug Fixes
