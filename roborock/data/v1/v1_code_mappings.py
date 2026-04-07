@@ -551,13 +551,46 @@ class RoborockDockErrorCode(RoborockEnum):
     """Describes the error code of the dock."""
 
     ok = 0
+    """No error condition."""
+
+    no_dustbin_or_filter = 32
+    """No dock dustbin or filter installed.
+
+    This error message applies to auto-empty docks.
+    """
+
+    auto_empty_dock_fan_error = 33
+    """Auto-Empty Dock fan error: Dock dustbin or filter out of place."""
+
     duct_blockage = 34
+    """Auto-Empty Dock jammed: Dock dustbin, filter, or air duct jammed, check and clean it."""
+
+    auto_empty_dock_voltage_error = 35
+    """Auto-Empty Dock voltage error: Unable to empty the dustbin."""
+
     water_empty = 38
+    """Clean water tank empty: Check tank placement or refill as required."""
+
     waste_water_tank_full = 39
+    """Check the dirty water tank: Check tank placement or empty as required."""
+
     maintenance_brush_jammed = 42
+    """Self-cleaning roller error: Maintenance brush jammed. Remove and clean."""
+
     dirty_tank_latch_open = 44
+    """Water filter blocked: Clean and reinstall.
+
+    Make sure that the dirty water tank cover is closed and the latch is secured.
+    """
+
     no_dustbin = 46
+    """Dustbin not installed (Standard error for missing dustbin).
+
+    This error message applies to larger wash docks.
+    """
+
     cleaning_tank_full_or_blocked = 53
+    """Cleaning tank full or blocked (Water filter or sink strainer blocked/not installed)."""
 
 
 class RoborockDockTypeCode(RoborockEnum):
