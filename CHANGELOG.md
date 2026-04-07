@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v5.7.0 (2026-04-07)
+
+### Chores
+
+- Apply suggestions from code review
+  ([#811](https://github.com/Python-roborock/python-roborock/pull/811),
+  [`9f8b87f`](https://github.com/Python-roborock/python-roborock/commit/9f8b87fa99ad9a187e876fb2a45442be369be2bd))
+
+### Features
+
+- Add additional RoborockDockErrorCode values
+  ([#811](https://github.com/Python-roborock/python-roborock/pull/811),
+  [`9f8b87f`](https://github.com/Python-roborock/python-roborock/commit/9f8b87fa99ad9a187e876fb2a45442be369be2bd))
+
+- Add missing auto-empty dock error codes to v1 mappings
+  ([#811](https://github.com/Python-roborock/python-roborock/pull/811),
+  [`9f8b87f`](https://github.com/Python-roborock/python-roborock/commit/9f8b87fa99ad9a187e876fb2a45442be369be2bd))
+
+
 ## v5.6.0 (2026-04-07)
 
 ### Chores
