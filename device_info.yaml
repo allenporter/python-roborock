@@ -1,3 +1,107 @@
+roborock.vacuum.a10:
+  protocol_version: '1.0'
+  product_nickname: TANOSV
+  new_feature_info: 10738169343
+  product:
+    id: 7ggJhlYqQs58zKFAOgBPc1
+    name: S6 MaxV
+    model: roborock.vacuum.a10
+    category: robot.vacuum.cleaner
+    capability: 2
+    schema:
+    - id: 101
+      name: rpc_request
+      code: rpc_request
+      mode: rw
+      type: RAW
+    - id: 102
+      name: rpc_response
+      code: rpc_response
+      mode: rw
+      type: RAW
+    - id: 120
+      name: "\u9519\u8BEF\u4EE3\u7801"
+      code: error_code
+      mode: ro
+      type: ENUM
+      property: '{"range": []}'
+    - id: 121
+      name: "\u8BBE\u5907\u72B6\u6001"
+      code: state
+      mode: ro
+      type: ENUM
+      property: '{"range": []}'
+    - id: 122
+      name: "\u8BBE\u5907\u7535\u91CF"
+      code: battery
+      mode: ro
+      type: ENUM
+      property: '{"range": []}'
+    - id: 123
+      name: "\u6E05\u626B\u6A21\u5F0F"
+      code: fan_power
+      mode: rw
+      type: ENUM
+      property: '{"range": []}'
+    - id: 124
+      name: "\u62D6\u5730\u6A21\u5F0F"
+      code: water_box_mode
+      mode: rw
+      type: ENUM
+      property: '{"range": []}'
+    - id: 125
+      name: "\u4E3B\u5237\u5BFF\u547D"
+      code: main_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": null, "scale": 1}'
+    - id: 126
+      name: "\u8FB9\u5237\u5BFF\u547D"
+      code: side_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": null, "scale": 1}'
+    - id: 127
+      name: "\u6EE4\u7F51\u5BFF\u547D"
+      code: filter_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": null, "scale": 1}'
+    - id: 128
+      name: "\u989D\u5916\u72B6\u6001"
+      code: additional_props
+      mode: ro
+      type: RAW
+    - id: 130
+      name: "\u5B8C\u6210\u4E8B\u4EF6"
+      code: task_complete
+      mode: ro
+      type: RAW
+    - id: 131
+      name: "\u7535\u91CF\u4E0D\u8DB3\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_low_power
+      mode: ro
+      type: RAW
+    - id: 132
+      name: "\u8FD0\u52A8\u4E2D\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_in_motion
+      mode: ro
+      type: RAW
+    - id: 133
+      name: "\u5145\u7535\u72B6\u6001"
+      code: charge_status
+      mode: ro
+      type: RAW
+    - id: 134
+      name: "\u70D8\u5E72\u72B6\u6001"
+      code: drying_status
+      mode: ro
+      type: RAW
+    - id: 135
+      name: "\u79BB\u7EBF\u539F\u56E0\u7EC6\u5206"
+      code: offline_status
+      mode: ro
+      type: RAW
 roborock.vacuum.a117:
   protocol_version: '1.0'
   product_nickname: PEARLPLUSS
@@ -119,6 +223,326 @@ roborock.vacuum.a117:
       code: offline_status
       mode: ro
       type: RAW
+roborock.vacuum.a123:
+  protocol_version: '1.0'
+  product_nickname: PEARLSLITE
+  new_feature_info: 0
+  new_feature_info_str: 42BA8D587EDAFFFE
+  product:
+    id: 15zrEeDGib2Rn15gviBrvv
+    name: '**REDACTED**'
+    model: roborock.vacuum.a123
+    category: robot.vacuum.cleaner
+    capability: 0
+    schema:
+    - id: 101
+      name: rpc_request
+      code: rpc_request
+      mode: rw
+      type: RAW
+    - id: 102
+      name: rpc_response
+      code: rpc_response
+      mode: rw
+      type: RAW
+    - id: 120
+      name: "\u9519\u8BEF\u4EE3\u7801"
+      code: error_code
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 121
+      name: "\u8BBE\u5907\u72B6\u6001"
+      code: state
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 122
+      name: "\u8BBE\u5907\u7535\u91CF"
+      code: battery
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 123
+      name: "\u6E05\u626B\u6A21\u5F0F"
+      code: fan_power
+      mode: rw
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 124
+      name: "\u62D6\u5730\u6A21\u5F0F"
+      code: water_box_mode
+      mode: rw
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 125
+      name: "\u4E3B\u5237\u5BFF\u547D"
+      code: main_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 126
+      name: "\u8FB9\u5237\u5BFF\u547D"
+      code: side_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 127
+      name: "\u6EE4\u7F51\u5BFF\u547D"
+      code: filter_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 128
+      name: "\u989D\u5916\u72B6\u6001"
+      code: additional_props
+      mode: ro
+      type: RAW
+    - id: 130
+      name: "\u5B8C\u6210\u4E8B\u4EF6"
+      code: task_complete
+      mode: ro
+      type: RAW
+    - id: 131
+      name: "\u7535\u91CF\u4E0D\u8DB3\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_low_power
+      mode: ro
+      type: RAW
+    - id: 132
+      name: "\u8FD0\u52A8\u4E2D\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_in_motion
+      mode: ro
+      type: RAW
+    - id: 133
+      name: "\u5145\u7535\u72B6\u6001"
+      code: charge_status
+      mode: ro
+      type: RAW
+    - id: 134
+      name: "\u70D8\u5E72\u72B6\u6001"
+      code: drying_status
+      mode: ro
+      type: RAW
+    - id: 135
+      name: "\u79BB\u7EBF\u539F\u56E0\u7EC6\u5206"
+      code: offline_status
+      mode: ro
+      type: RAW
+roborock.vacuum.a125:
+  protocol_version: '1.0'
+  product_nickname: ULTRONSE
+  new_feature_info: 2097860516935167
+  new_feature_info_str: 00000040385AFFF6
+  product:
+    id: 2BNKSSVJ0bsXHxTH3KLi6H
+    name: Q5 Max+
+    model: roborock.vacuum.a125
+    category: robot.vacuum.cleaner
+    capability: 0
+    schema:
+    - id: 101
+      name: rpc_request
+      code: rpc_request
+      mode: rw
+      type: RAW
+    - id: 102
+      name: rpc_response
+      code: rpc_response
+      mode: rw
+      type: RAW
+    - id: 120
+      name: "\u9519\u8BEF\u4EE3\u7801"
+      code: error_code
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 121
+      name: "\u8BBE\u5907\u72B6\u6001"
+      code: state
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 122
+      name: "\u8BBE\u5907\u7535\u91CF"
+      code: battery
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 123
+      name: "\u6E05\u626B\u6A21\u5F0F"
+      code: fan_power
+      mode: rw
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 124
+      name: "\u62D6\u5730\u6A21\u5F0F"
+      code: water_box_mode
+      mode: rw
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 125
+      name: "\u4E3B\u5237\u5BFF\u547D"
+      code: main_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 126
+      name: "\u8FB9\u5237\u5BFF\u547D"
+      code: side_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 127
+      name: "\u6EE4\u7F51\u5BFF\u547D"
+      code: filter_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 128
+      name: "\u989D\u5916\u72B6\u6001"
+      code: additional_props
+      mode: ro
+      type: RAW
+    - id: 130
+      name: "\u5B8C\u6210\u4E8B\u4EF6"
+      code: task_complete
+      mode: ro
+      type: RAW
+    - id: 131
+      name: "\u7535\u91CF\u4E0D\u8DB3\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_low_power
+      mode: ro
+      type: RAW
+    - id: 132
+      name: "\u8FD0\u52A8\u4E2D\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_in_motion
+      mode: ro
+      type: RAW
+    - id: 133
+      name: "\u5145\u7535\u72B6\u6001"
+      code: charge_status
+      mode: ro
+      type: RAW
+    - id: 134
+      name: "\u70D8\u5E72\u72B6\u6001"
+      code: drying_status
+      mode: ro
+      type: RAW
+    - id: 135
+      name: "\u79BB\u7EBF\u539F\u56E0\u7EC6\u5206"
+      code: offline_status
+      mode: ro
+      type: RAW
+roborock.vacuum.a147:
+  protocol_version: '1.0'
+  product_nickname: VERDELITE
+  new_feature_info: 4499195120484351
+  new_feature_info_str: 0000000008EFBCDDDFFFAE7E7EFEFFFF
+  product:
+    id: 1KtYm84Say3qrqaqNAWebE
+    name: Saros 10
+    model: roborock.vacuum.a147
+    category: robot.vacuum.cleaner
+    capability: 0
+    schema:
+    - id: 101
+      name: rpc_request
+      code: rpc_request
+      mode: rw
+      type: RAW
+    - id: 102
+      name: rpc_response
+      code: rpc_response
+      mode: rw
+      type: RAW
+    - id: 120
+      name: "\u9519\u8BEF\u4EE3\u7801"
+      code: error_code
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 121
+      name: "\u8BBE\u5907\u72B6\u6001"
+      code: state
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 122
+      name: "\u8BBE\u5907\u7535\u91CF"
+      code: battery
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 123
+      name: "\u6E05\u626B\u6A21\u5F0F"
+      code: fan_power
+      mode: rw
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 124
+      name: "\u62D6\u5730\u6A21\u5F0F"
+      code: water_box_mode
+      mode: rw
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 125
+      name: "\u4E3B\u5237\u5BFF\u547D"
+      code: main_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 126
+      name: "\u8FB9\u5237\u5BFF\u547D"
+      code: side_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 127
+      name: "\u6EE4\u7F51\u5BFF\u547D"
+      code: filter_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 128
+      name: "\u989D\u5916\u72B6\u6001"
+      code: additional_props
+      mode: ro
+      type: RAW
+    - id: 130
+      name: "\u5B8C\u6210\u4E8B\u4EF6"
+      code: task_complete
+      mode: ro
+      type: RAW
+    - id: 131
+      name: "\u7535\u91CF\u4E0D\u8DB3\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_low_power
+      mode: ro
+      type: RAW
+    - id: 132
+      name: "\u8FD0\u52A8\u4E2D\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_in_motion
+      mode: ro
+      type: RAW
+    - id: 133
+      name: "\u5145\u7535\u72B6\u6001"
+      code: charge_status
+      mode: ro
+      type: RAW
+    - id: 134
+      name: "\u70D8\u5E72\u72B6\u6001"
+      code: drying_status
+      mode: ro
+      type: RAW
+    - id: 135
+      name: "\u79BB\u7EBF\u539F\u56E0\u7EC6\u5206"
+      code: offline_status
+      mode: ro
+      type: RAW
+    - id: 139
+      name: "\u56DE\u57FA\u7AD9\u76EE\u7684"
+      code: back_type
+      mode: ro
+      type: RAW
 roborock.vacuum.a15:
   protocol_version: '1.0'
   product_nickname: TANOSS
@@ -143,6 +567,220 @@ roborock.vacuum.a15:
     id: 1YYW18rpgyAJTISwb1NM91
     name: S7
     model: roborock.vacuum.a15
+    category: robot.vacuum.cleaner
+    capability: 0
+    schema:
+    - id: 101
+      name: rpc_request
+      code: rpc_request
+      mode: rw
+      type: RAW
+    - id: 102
+      name: rpc_response
+      code: rpc_response
+      mode: rw
+      type: RAW
+    - id: 120
+      name: "\u9519\u8BEF\u4EE3\u7801"
+      code: error_code
+      mode: ro
+      type: ENUM
+      property: '{"range": []}'
+    - id: 121
+      name: "\u8BBE\u5907\u72B6\u6001"
+      code: state
+      mode: ro
+      type: ENUM
+      property: '{"range": []}'
+    - id: 122
+      name: "\u8BBE\u5907\u7535\u91CF"
+      code: battery
+      mode: ro
+      type: ENUM
+      property: '{"range": []}'
+    - id: 123
+      name: "\u6E05\u626B\u6A21\u5F0F"
+      code: fan_power
+      mode: rw
+      type: ENUM
+      property: '{"range": []}'
+    - id: 124
+      name: "\u62D6\u5730\u6A21\u5F0F"
+      code: water_box_mode
+      mode: rw
+      type: ENUM
+      property: '{"range": []}'
+    - id: 125
+      name: "\u4E3B\u5237\u5BFF\u547D"
+      code: main_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": null, "scale": 1}'
+    - id: 126
+      name: "\u8FB9\u5237\u5BFF\u547D"
+      code: side_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": null, "scale": 1}'
+    - id: 127
+      name: "\u6EE4\u7F51\u5BFF\u547D"
+      code: filter_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": null, "scale": 1}'
+    - id: 128
+      name: "\u989D\u5916\u72B6\u6001"
+      code: additional_props
+      mode: ro
+      type: RAW
+    - id: 130
+      name: "\u5B8C\u6210\u4E8B\u4EF6"
+      code: task_complete
+      mode: ro
+      type: RAW
+    - id: 131
+      name: "\u7535\u91CF\u4E0D\u8DB3\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_low_power
+      mode: ro
+      type: RAW
+    - id: 132
+      name: "\u8FD0\u52A8\u4E2D\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_in_motion
+      mode: ro
+      type: RAW
+    - id: 133
+      name: "\u5145\u7535\u72B6\u6001"
+      code: charge_status
+      mode: ro
+      type: RAW
+    - id: 134
+      name: "\u70D8\u5E72\u72B6\u6001"
+      code: drying_status
+      mode: ro
+      type: RAW
+    - id: 135
+      name: "\u79BB\u7EBF\u539F\u56E0\u7EC6\u5206"
+      code: offline_status
+      mode: ro
+      type: RAW
+roborock.vacuum.a187:
+  protocol_version: '1.0'
+  product_nickname: Unknown
+  new_feature_info: 2247397454282751
+  new_feature_info_str: 00040040282834C9C2FA8F5C7EDEFFFE
+  product:
+    id: 7gkjgsDwbTIwhqpDKoETBi
+    name: Roborock Qrevo Edge Series
+    model: roborock.vacuum.a187
+    category: robot.vacuum.cleaner
+    capability: 0
+    schema:
+    - id: 101
+      name: rpc_request
+      code: rpc_request
+      mode: rw
+      type: RAW
+    - id: 102
+      name: rpc_response
+      code: rpc_response
+      mode: rw
+      type: RAW
+    - id: 120
+      name: "\u9519\u8BEF\u4EE3\u7801"
+      code: error_code
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 121
+      name: "\u8BBE\u5907\u72B6\u6001"
+      code: state
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 122
+      name: "\u8BBE\u5907\u7535\u91CF"
+      code: battery
+      mode: ro
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 123
+      name: "\u6E05\u626B\u6A21\u5F0F"
+      code: fan_power
+      mode: rw
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 124
+      name: "\u62D6\u5730\u6A21\u5F0F"
+      code: water_box_mode
+      mode: rw
+      type: ENUM
+      property: '{"range": [""]}'
+    - id: 125
+      name: "\u4E3B\u5237\u5BFF\u547D"
+      code: main_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 126
+      name: "\u8FB9\u5237\u5BFF\u547D"
+      code: side_brush_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 127
+      name: "\u6EE4\u7F51\u5BFF\u547D"
+      code: filter_life
+      mode: rw
+      type: VALUE
+      property: '{"max": 100, "min": 0, "step": 1, "unit": "null", "scale": 1}'
+    - id: 128
+      name: "\u989D\u5916\u72B6\u6001"
+      code: additional_props
+      mode: ro
+      type: RAW
+    - id: 130
+      name: "\u5B8C\u6210\u4E8B\u4EF6"
+      code: task_complete
+      mode: ro
+      type: RAW
+    - id: 131
+      name: "\u7535\u91CF\u4E0D\u8DB3\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_low_power
+      mode: ro
+      type: RAW
+    - id: 132
+      name: "\u8FD0\u52A8\u4E2D\u4EFB\u52A1\u53D6\u6D88"
+      code: task_cancel_in_motion
+      mode: ro
+      type: RAW
+    - id: 133
+      name: "\u5145\u7535\u72B6\u6001"
+      code: charge_status
+      mode: ro
+      type: RAW
+    - id: 134
+      name: "\u70D8\u5E72\u72B6\u6001"
+      code: drying_status
+      mode: ro
+      type: RAW
+    - id: 135
+      name: "\u79BB\u7EBF\u539F\u56E0\u7EC6\u5206"
+      code: offline_status
+      mode: ro
+      type: RAW
+    - id: 139
+      name: "\u56DE\u57FA\u7AD9\u76EE\u7684"
+      code: back_type
+      mode: ro
+      type: RAW
+roborock.vacuum.a27:
+  protocol_version: '1.0'
+  product_nickname: TOPAZSV
+  new_feature_info: false
+  product:
+    id: 3FvTMilsXUPmxlqAeOsIrB
+    name: '**REDACTED**'
+    model: roborock.vacuum.a27
     category: robot.vacuum.cleaner
     capability: 0
     schema:

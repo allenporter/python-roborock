@@ -1,0 +1,33 @@
+{
+    "duid": "device-id-a123",
+    "name": "Roborock PearlS Lite",
+    "localKey": "key123key123key1",
+    "productId": "product-id-a123",
+    "fv": "02.03.28",
+    "activeTime": 1742574271,
+    "timeZoneId": "America/Los_Angeles",
+    "iconUrl": "",
+    "share": false,
+    "online": true,
+    "pv": "1.0",
+    "tuyaMigrated": false,
+    "extra": "{}",
+    "sn": "A123SAMPLESNTEST",
+    "featureSet": "2247397454282751",
+    "newFeatureSet": "42BA8D587EDAFFFE",
+    "deviceStatus": {
+        "121": 8,
+        "122": 100,
+        "123": 110,
+        "124": 209,
+        "125": 0,
+        "126": 22,
+        "127": 0,
+        "128": 0,
+        "133": 1,
+        "120": 0,
+        "134": 0
+    },
+    "silentOtaSwitch": true,
+    "f": false
+}

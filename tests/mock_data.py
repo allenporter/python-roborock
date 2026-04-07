@@ -5,6 +5,8 @@ import json
 import pathlib
 from typing import Any
 
+from roborock.data.containers import HomeDataDevice, HomeDataProduct
+
 # All data is based on a U.S. customer with a Roborock S7 MaxV Ultra
 USER_EMAIL = "user@domain.com"
 
@@ -124,8 +126,12 @@ HOME_DATA_SCENES_RAW = [
 
 TESTDATA = pathlib.Path("tests/testdata")
 
-PRODUCTS = {file.name: json.load(file.open(encoding="utf-8")) for file in TESTDATA.glob("home_data_product_*.json")}
-DEVICES = {file.name: json.load(file.open(encoding="utf-8")) for file in TESTDATA.glob("home_data_device_*.json")}
+PRODUCTS = {
+    file.name: json.load(file.open(encoding="utf-8")) for file in sorted(TESTDATA.glob("home_data_product_*.json"))
+}
+DEVICES = {
+    file.name: json.load(file.open(encoding="utf-8")) for file in sorted(TESTDATA.glob("home_data_device_*.json"))
+}
 
 # Products
 A27_PRODUCT_DATA = PRODUCTS["home_data_product_a27.json"]
@@ -135,11 +141,25 @@ A102_PRODUCT_DATA = PRODUCTS["home_data_product_a102.json"]
 A114_PRODUCT_DATA = PRODUCTS["home_data_product_a114.json"]
 
 # Devices
-S7_DEVICE_DATA = DEVICES["home_data_device_s7_maxv.json"]
+S7_MAXV_DEVICE_DATA = DEVICES["home_data_device_s7_maxv.json"]
 Q7_DEVICE_DATA = DEVICES["home_data_device_q7.json"]
 Q10_DEVICE_DATA = DEVICES["home_data_device_q10.json"]
 ZEO_ONE_DEVICE_DATA = DEVICES["home_data_device_zeo_one.json"]
 SAROS_10R_DEVICE_DATA = DEVICES["home_data_device_saros_10r.json"]
+
+# All testdata devices joined with their matching product (keyed by device filename).
+# Devices whose productId has no corresponding product file are omitted.
+_PRODUCTS_BY_ID: dict[str, HomeDataProduct] = {
+    p.id: p for p in (HomeDataProduct.from_dict(v) for v in PRODUCTS.values())
+}
+_DEVICES_BY_FILENAME: dict[str, HomeDataDevice] = {
+    filename: HomeDataDevice.from_dict(device_data) for filename, device_data in DEVICES.items()
+}
+DEVICE_PRODUCT_PAIRS: dict[str, tuple[HomeDataDevice, HomeDataProduct]] = {
+    filename: (device, product)
+    for filename, device in _DEVICES_BY_FILENAME.items()
+    if (product := _PRODUCTS_BY_ID.get(device.product_id)) is not None
+}
 
 
 HOME_DATA_RAW: dict[str, Any] = {
@@ -152,7 +172,7 @@ HOME_DATA_RAW: dict[str, Any] = {
         A27_PRODUCT_DATA,
     ],
     "devices": [
-        S7_DEVICE_DATA,
+        S7_MAXV_DEVICE_DATA,
     ],
     "receivedDevices": [],
     "rooms": [

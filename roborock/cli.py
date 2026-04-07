@@ -878,12 +878,12 @@ def _parse_diagnostic_file(diagnostic_path: Path) -> dict[str, dict[str, Any]]:
         device_features = traits_data.get("device_features", {})
 
         # newFeatureInfo is the integer
-        new_feature_info = device_features.get("newFeatureInfo")
+        new_feature_info = device_features.get("newFeatureInfo", device_data.get("featureSet"))
         if new_feature_info is not None:
-            current_product_data["new_feature_info"] = new_feature_info
+            current_product_data["new_feature_info"] = int(new_feature_info)
 
         # newFeatureInfoStr is the hex string
-        new_feature_info_str = device_features.get("newFeatureInfoStr")
+        new_feature_info_str = device_data.get("newFeatureSet")
         if new_feature_info_str:
             current_product_data["new_feature_info_str"] = new_feature_info_str
 
@@ -1048,29 +1048,67 @@ def update_docs(data_file: str, output_file: str):
     data_path = Path(data_file)
     output_path = Path(output_file)
 
-    if not data_path.exists():
-        click.echo(f"Error: Data file not found at '{data_path}'", err=True)
-        return
+    product_data_from_yaml = {}
+    if data_path.exists():
+        click.echo(f"Loading data from {data_path}...")
+        with open(data_path, encoding="utf-8") as f:
+            product_data_from_yaml = yaml.safe_load(f) or {}
+    else:
+        click.echo(f"Data file not found at '{data_path}', will try testdata.")
 
-    click.echo(f"Loading data from {data_path}...")
-    with open(data_path, encoding="utf-8") as f:
-        product_data_from_yaml = yaml.safe_load(f)
+    combined_product_data = {}
 
-    if not product_data_from_yaml:
-        click.echo("No data found in YAML file. Exiting.", err=True)
+    testdata_path = Path("tests/testdata")
+    if testdata_path.exists():
+        products_by_id = {}
+        for f in testdata_path.glob("home_data_product_*.json"):
+            with open(f, encoding="utf-8") as file:
+                data = json.load(file)
+            products_by_id[data.get("id")] = data
+
+        loaded_testdata = False
+        for f in testdata_path.glob("home_data_device_*.json"):
+            with open(f, encoding="utf-8") as file:
+                device_data = json.load(file)
+            product_id = device_data["productId"]
+            if product_id in products_by_id:
+                product_data = products_by_id[product_id]
+                model = product_data["model"]
+                short_model = model.split(".")[-1]
+                product_nickname = SHORT_MODEL_TO_ENUM.get(short_model)
+                feature_set = device_data.get("featureSet", "0")
+                new_feature_set = device_data.get("newFeatureSet", "0")
+                combined_product_data[model] = {
+                    "product_nickname": product_nickname.name if product_nickname else "Unknown",
+                    "protocol_version": device_data["pv"],
+                    "new_feature_info": int(feature_set),
+                    "new_feature_info_str": new_feature_set,
+                    "feature_info": [],
+                }
+                print("Loaded %s", product_id)
+                loaded_testdata = True
+        if loaded_testdata:
+            click.echo("Loaded mock testdata from local repository.")
+
+    if product_data_from_yaml:
+        for model, data in product_data_from_yaml.items():
+            combined_product_data[model] = data
+
+    if not combined_product_data:
+        click.echo("No data found from YAML or testdata. Exiting.", err=True)
         return
 
     product_features_map = {}
     all_feature_names = set()
 
-    # Process the raw data from YAML to build the feature map
-    for model, data in product_data_from_yaml.items():
+    # Process the combined data to build the feature map
+    for model, data in combined_product_data.items():
         # Reconstruct the DeviceFeatures object from the raw data in the YAML file
         device_features = DeviceFeatures.from_feature_flags(
-            new_feature_info=data.get("new_feature_info"),
-            new_feature_info_str=data.get("new_feature_info_str"),
-            feature_info=data.get("feature_info"),
-            product_nickname=data.get("product_nickname"),
+            new_feature_info=data.get("new_feature_info", 0),
+            new_feature_info_str=data.get("new_feature_info_str", ""),
+            feature_info=data.get("feature_info", []),
+            product_nickname=data.get("product_nickname", ""),
         )
         features_dict = asdict(device_features)
 

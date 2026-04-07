@@ -1,8 +1,12 @@
+from dataclasses import asdict
+
+import pytest
 from syrupy import SnapshotAssertion
 
 from roborock import SHORT_MODEL_TO_ENUM
 from roborock.data.code_mappings import RoborockProductNickname
 from roborock.device_features import DeviceFeatures
+from tests import mock_data
 
 
 def test_supported_features_qrevo_maxv():
@@ -73,3 +77,29 @@ def test_new_feature_str_missing():
     assert not device_features.is_dust_collection_setting_supported
     assert not device_features.is_hot_wash_towel_supported
     assert not device_features.is_show_clean_finish_reason_supported
+
+
+@pytest.mark.parametrize(
+    ("device_filename"),
+    list(mock_data.DEVICE_PRODUCT_PAIRS.keys()),
+)
+def test_device_features_from_home_data(
+    device_filename: str,
+    snapshot: SnapshotAssertion,
+) -> None:
+    """Test DeviceFeatures constructed from real testdata devices and products.
+
+    For each paired device+product in testdata, construct DeviceFeatures from the
+    featureSet/newFeatureSet home data fields and assert the full feature dict
+    matches the snapshot. This catches regressions in feature-flag decoding
+    across all real device samples.
+    """
+    device, product = mock_data.DEVICE_PRODUCT_PAIRS[device_filename]
+    device_features = DeviceFeatures.from_feature_flags(
+        new_feature_info=int(device.feature_set or "0"),
+        new_feature_info_str=device.new_feature_set or "",
+        feature_info=[],
+        product_nickname=product.product_nickname,
+    )
+    feature_dict = {k: v for k, v in asdict(device_features).items() if isinstance(v, bool)}
+    assert feature_dict == snapshot
