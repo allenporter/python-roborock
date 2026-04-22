@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v5.7.1 (2026-04-22)
+
+### Bug Fixes
+
+- Allow protobuf 7.x ([#815](https://github.com/Python-roborock/python-roborock/pull/815),
+  [`072767f`](https://github.com/Python-roborock/python-roborock/commit/072767f52dc8473616f6d9f0d36d88f21f047fba))
+
+
 ## v5.7.0 (2026-04-07)
 
 ### Chores
