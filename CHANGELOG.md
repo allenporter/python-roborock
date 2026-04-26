@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v5.8.0 (2026-04-26)
+
+### Features
+
+- Fix AppInitStatus to handle missing fields and add RoborockParsingException
+  ([#819](https://github.com/Python-roborock/python-roborock/pull/819),
+  [`aeb320a`](https://github.com/Python-roborock/python-roborock/commit/aeb320a59352adf26469f41a4c6fe728b6170a99))
+
+- Implement RoborockParsingException for trait responses and update AppInitStatus to handle missing
+  fields ([#819](https://github.com/Python-roborock/python-roborock/pull/819),
+  [`aeb320a`](https://github.com/Python-roborock/python-roborock/commit/aeb320a59352adf26469f41a4c6fe728b6170a99))
+
+### Refactoring
+
+- Wrap room response processing in try-except block and fix test docstring
+  ([#819](https://github.com/Python-roborock/python-roborock/pull/819),
+  [`aeb320a`](https://github.com/Python-roborock/python-roborock/commit/aeb320a59352adf26469f41a4c6fe728b6170a99))
+
+
 ## v5.7.1 (2026-04-22)
 
 ### Bug Fixes
