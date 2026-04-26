@@ -308,9 +308,8 @@ class V1Channel(Channel):
             loop = asyncio.get_running_loop()
             self._reconnect_task = loop.create_task(self._background_reconnect())
 
-        # Always attempt to subscribe to MQTT to receive protocol updates (data points)
-        # even if we have a local connection. Protocol updates only come via cloud/MQTT.
-        # Local connection is used for RPC commands, but push notifications come via MQTT.
+        # We maintain an active MQTT subscription even when connected locally to receive
+        # unsolicited status updates (DPS push messages) directly from the cloud.
         try:
             self._mqtt_unsub = await self._mqtt_channel.subscribe(self._on_mqtt_message)
         except RoborockException as err:
@@ -342,7 +341,7 @@ class V1Channel(Channel):
         This will attach a listener to the existing subscription, invoking
         the listener whenever new DPS values arrive from the subscription.
         This will only work if a subscription has already been setup, which is
-        handled by the device setup.
+        handled by the device start.
         """
         return self._dps_listeners.add_callback(listener)
 
@@ -447,10 +446,16 @@ class V1Channel(Channel):
         if self._callback:
             self._callback(message)
         try:
-            if datapoints := decode_data_protocol_message(message):
-                self._dps_listeners(datapoints)
+            datapoints = decode_data_protocol_message(message)
         except RoborockException as e:
             self._logger.debug("Error decoding data protocol message: %s", e)
+            return
+
+        if datapoints:
+            try:
+                self._dps_listeners(datapoints)
+            except Exception:
+                self._logger.exception("Error in DPS listener callback")
 
     def _on_local_message(self, message: RoborockMessage) -> None:
         """Handle incoming local messages."""

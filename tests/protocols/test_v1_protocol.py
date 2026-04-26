@@ -320,9 +320,7 @@ def test_decode_data_protocol_message() -> None:
         payload=payload,
     )
     result = decode_data_protocol_message(message)
-    assert result is not None
-    assert result[RoborockDataProtocol.STATE] == 8
-    assert result[RoborockDataProtocol.BATTERY] == 95
+    assert result == {RoborockDataProtocol.STATE: 8, RoborockDataProtocol.BATTERY: 95}
 
 
 def test_decode_data_protocol_message_all_status_fields() -> None:
@@ -338,13 +336,14 @@ def test_decode_data_protocol_message_all_status_fields() -> None:
         payload=payload,
     )
     result = decode_data_protocol_message(message)
-    assert result is not None
-    assert result[RoborockDataProtocol.ERROR_CODE] == 0
-    assert result[RoborockDataProtocol.STATE] == 5
-    assert result[RoborockDataProtocol.BATTERY] == 100
-    assert result[RoborockDataProtocol.FAN_POWER] == 102
-    assert result[RoborockDataProtocol.WATER_BOX_MODE] == 204
-    assert result[RoborockDataProtocol.CHARGE_STATUS] == 1
+    assert result == {
+        RoborockDataProtocol.ERROR_CODE: 0,
+        RoborockDataProtocol.STATE: 5,
+        RoborockDataProtocol.BATTERY: 100,
+        RoborockDataProtocol.FAN_POWER: 102,
+        RoborockDataProtocol.WATER_BOX_MODE: 204,
+        RoborockDataProtocol.CHARGE_STATUS: 1,
+    }
 
 
 def test_decode_data_protocol_message_unknown_codes() -> None:
@@ -355,9 +354,7 @@ def test_decode_data_protocol_message_unknown_codes() -> None:
         payload=payload,
     )
     result = decode_data_protocol_message(message)
-    assert result is not None
-    assert len(result) == 1
-    assert result[RoborockDataProtocol.STATE] == 8
+    assert result == {RoborockDataProtocol.STATE: 8}
 
 
 def test_decode_data_protocol_message_empty_payload() -> None:
