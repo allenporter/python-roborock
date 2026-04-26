@@ -9,11 +9,10 @@ from enum import StrEnum
 from typing import Any, Self
 
 from roborock.data import Consumable
+from roborock.devices.traits.common import DpsDataConverter, TraitUpdateListener
 from roborock.devices.traits.v1 import common
 from roborock.roborock_message import RoborockDataProtocol
 from roborock.roborock_typing import RoborockCommand
-
-from .common import TraitUpdateListener
 
 __all__ = [
     "ConsumableTrait",
@@ -21,7 +20,7 @@ __all__ = [
 
 _LOGGER = logging.getLogger(__name__)
 
-_DPS_CONVERTER = common.DpsDataConverter.from_dataclass(Consumable)
+_DPS_CONVERTER = DpsDataConverter.from_dataclass(Consumable)
 
 
 class ConsumableAttribute(StrEnum):

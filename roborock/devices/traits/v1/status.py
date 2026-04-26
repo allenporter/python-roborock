@@ -12,16 +12,16 @@ from roborock import (
     get_water_mode_mapping,
     get_water_modes,
 )
+from roborock.devices.traits.common import DpsDataConverter, TraitUpdateListener
 from roborock.roborock_message import RoborockDataProtocol
 from roborock.roborock_typing import RoborockCommand
 
 from . import common
-from .common import TraitUpdateListener
 from .device_features import DeviceFeaturesTrait
 
 _LOGGER = logging.getLogger(__name__)
 
-_DPS_CONVERTER = common.DpsDataConverter.from_dataclass(StatusV2)
+_DPS_CONVERTER = DpsDataConverter.from_dataclass(StatusV2)
 
 
 class StatusTrait(StatusV2, common.V1TraitMixin, TraitUpdateListener):
