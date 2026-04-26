@@ -429,7 +429,7 @@ class StatusV2(RoborockBase):
         newer off-peak charging logic seamlessly while maintaining backwards compatibility
         with older devices.
         """
-        if self.state is None:
+        if self.state is None or self.state == RoborockStateCode.unknown:
             return RoborockDockState.unknown
 
         # 6. DUSTING
