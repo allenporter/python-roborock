@@ -338,3 +338,24 @@ def test_partial_app_init_status() -> None:
     assert app_init_status.local_info.name == "custom_A.03.0096_FCC"
     assert app_init_status.feature_info == [111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125]
     assert app_init_status.new_feature_info_str == ""
+
+
+def test_missing_new_feature_info() -> None:
+    """Test that an AppInitStatus response missing new_feature_info is handled correctly."""
+    app_init_status = AppInitStatus.from_dict(
+        {
+            "local_info": {
+                "name": "custom_A.03.0096_FCC",
+                "bom": "A.03.0096",
+                "location": "us",
+                "language": "en",
+                "wifiplan": "US",
+                "timezone": "US/Pacific",
+                "logserver": "awsusor0.fds.api.xiaomi.com",
+                "featureset": 1,
+            },
+            "feature_info": [111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125],
+        }
+    )
+    assert app_init_status.new_feature_info == 0
+    assert app_init_status.new_feature_info_str == ""

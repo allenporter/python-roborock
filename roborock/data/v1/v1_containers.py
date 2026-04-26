@@ -792,7 +792,7 @@ class AppInitStatusLocalInfo(RoborockBase):
 class AppInitStatus(RoborockBase):
     local_info: AppInitStatusLocalInfo
     feature_info: list[int]
-    new_feature_info: int
+    new_feature_info: int = 0
     new_feature_info_str: str = ""
     new_feature_info_2: int | None = None
     carriage_type: int | None = None

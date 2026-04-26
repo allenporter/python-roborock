@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from roborock.data import HomeData, HomeDataRoom, NamedRoomMapping, RoborockBase
 from roborock.devices.traits.v1 import common
+from roborock.exceptions import RoborockParsingException
 from roborock.roborock_typing import RoborockCommand
 from roborock.web_api import UserWebApiClient
 
@@ -106,7 +107,15 @@ class RoomsTrait(Rooms, common.V1TraitMixin):
                 self._home_data.rooms = updated_rooms
             self._discovered_iot_ids.update(new_iot_ids)
 
-        rooms = self.converter.convert(response)
+        try:
+            rooms = self.converter.convert(response)
+        except (TypeError, ValueError) as err:
+            raise RoborockParsingException(
+                trait_name=type(self).__name__,
+                command=self.command,
+                payload=response,
+                inner_error=err,
+            ) from err
         rooms = rooms.with_room_names(self._home_data.rooms_name_map)
         common.merge_trait_values(self, rooms)
 

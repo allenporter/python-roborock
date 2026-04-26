@@ -13,7 +13,7 @@ from roborock.device_features import DeviceFeatures
 from roborock.devices.device import RoborockDevice
 from roborock.devices.traits.v1.device_features import DeviceFeaturesTrait
 from roborock.devices.traits.v1.status import StatusTrait
-from roborock.exceptions import RoborockException
+from roborock.exceptions import RoborockException, RoborockParsingException
 from roborock.roborock_typing import RoborockCommand
 from tests import mock_data
 from tests.mock_data import STATUS
@@ -60,10 +60,10 @@ async def test_refresh_status_propagates_exception(status_trait: StatusTrait, mo
 
 
 async def test_refresh_status_invalid_format(status_trait: StatusTrait, mock_rpc_channel: AsyncMock) -> None:
-    """Test that invalid response format raises ValueError."""
+    """Test that invalid response format raises RoborockParsingException."""
     mock_rpc_channel.send_command.return_value = "invalid"
 
-    with pytest.raises(ValueError, match="Unexpected StatusV2 response format"):
+    with pytest.raises(RoborockParsingException, match="Unexpected StatusV2 response format"):
         await status_trait.refresh()
 
 
