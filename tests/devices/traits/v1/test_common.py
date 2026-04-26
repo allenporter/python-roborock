@@ -44,7 +44,7 @@ async def test_fake_trait_bad_payload() -> None:
 
 
 async def test_valid_payload() -> None:
-    """Test that parsing a bad payload throws a helpful parsing error."""
+    """Test that a valid payload is parsed successfully into trait fields."""
     trait = FakeTrait()
     trait._rpc_channel.send_command.return_value = [{"fake_field": 123, "other_field": "abc"}]
     await trait.refresh()
