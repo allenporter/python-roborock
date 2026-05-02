@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.9.1 (2026-05-02)
+
+### Bug Fixes
+
+- Fix operator precedence bug with walrus operator in cli.py command execution
+  ([#822](https://github.com/Python-roborock/python-roborock/pull/822),
+  [`c3ae98b`](https://github.com/Python-roborock/python-roborock/commit/c3ae98b9ff7acadb97d4d5be8e3409d9fa8ed2a5))
+
+
 ## v5.9.0 (2026-04-29)
 
 ### Chores
