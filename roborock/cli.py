@@ -780,7 +780,7 @@ async def command(ctx, cmd, device_id, params):
         if result:
             click.echo(dump_json(result))
     elif device.b01_q10_properties is not None:
-        if cmd_value := B01_Q10_DP.from_any_optional(cmd) is None:
+        if (cmd_value := B01_Q10_DP.from_any_optional(cmd)) is None:
             raise RoborockException(f"Invalid command {cmd} for B01_Q10 device")
         command_trait: Trait = device.b01_q10_properties.command
         await command_trait.send(cmd_value, json.loads(params) if params is not None else None)
