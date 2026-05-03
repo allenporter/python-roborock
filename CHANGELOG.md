@@ -2,6 +2,16 @@
 
 <!-- version list -->
 
+## v5.10.0 (2026-05-03)
+
+### Features
+
+- Implement direct device trait updates from data protocol messages using `dps` metadata and add
+  corresponding update listeners
+  ([#799](https://github.com/Python-roborock/python-roborock/pull/799),
+  [`ba57677`](https://github.com/Python-roborock/python-roborock/commit/ba576778bb51f7e381e16ec93ff218d4a898e009))
+
+
 ## v5.9.1 (2026-05-02)
 
 ### Bug Fixes
