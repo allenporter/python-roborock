@@ -173,6 +173,7 @@ def create_web_api_wrapper(
     *,
     cache: Cache | None = None,
     session: aiohttp.ClientSession | None = None,
+    unauthorized_hook: SessionUnauthorizedHook | None = None,
 ) -> UserWebApiClient:
     """Create a home data API wrapper from an existing API client."""
 
@@ -180,7 +181,7 @@ def create_web_api_wrapper(
     # by caching this next to `UserData` if needed to avoid unnecessary API calls.
     client = RoborockApiClient(username=user_params.username, base_url=user_params.base_url, session=session)
 
-    return UserWebApiClient(client, user_params.user_data)
+    return UserWebApiClient(client, user_params.user_data, unauthorized_hook=unauthorized_hook)
 
 
 async def create_device_manager(
@@ -212,7 +213,9 @@ async def create_device_manager(
     if cache is None:
         cache = NoCache()
 
-    web_api = create_web_api_wrapper(user_params, session=session, cache=cache)
+    web_api = create_web_api_wrapper(
+        user_params, session=session, cache=cache, unauthorized_hook=mqtt_session_unauthorized_hook
+    )
     user_data = user_params.user_data
 
     diagnostics = Diagnostics()
@@ -264,6 +267,12 @@ async def create_device_manager(
             dev.add_ready_callback(ready_callback)
         return dev
 
-    manager = DeviceManager(web_api, device_creator, mqtt_session=mqtt_session, cache=cache, diagnostics=diagnostics)
+    manager = DeviceManager(
+        web_api,
+        device_creator,
+        mqtt_session=mqtt_session,
+        cache=cache,
+        diagnostics=diagnostics,
+    )
     await manager.discover_devices(prefer_cache)
     return manager
