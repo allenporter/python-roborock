@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v5.10.1 (2026-05-12)
+
+### Bug Fixes
+
+- Handle Web API unauthorized errors
+  ([#825](https://github.com/Python-roborock/python-roborock/pull/825),
+  [`ad8d8f0`](https://github.com/Python-roborock/python-roborock/commit/ad8d8f095a260ee720c3e0193bcba5bd691c9f96))
+
+- Mark non vacuum v1 devices as not supported
+  ([#828](https://github.com/Python-roborock/python-roborock/pull/828),
+  [`2e9a848`](https://github.com/Python-roborock/python-roborock/commit/2e9a84807f5d0c2cffb5b0b6592b9baa6ee14c64))
+
+
 ## v5.10.0 (2026-05-03)
 
 ### Features
