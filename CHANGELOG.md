@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.12.0 (2026-05-17)
+
+### Features
+
+- Add Qrevo S5V dock type code (22) to RoborockDockTypeCode
+  ([#829](https://github.com/Python-roborock/python-roborock/pull/829),
+  [`8d8a443`](https://github.com/Python-roborock/python-roborock/commit/8d8a4437a3a14f989a5b4345192833018e17b399))
+
+
 ## v5.11.0 (2026-05-12)
 
 ### Features
