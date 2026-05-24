@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v5.13.0 (2026-05-24)
+
+### Features
+
+- Bump map parser to 0.1.5 ([#831](https://github.com/Python-roborock/python-roborock/pull/831),
+  [`29db86c`](https://github.com/Python-roborock/python-roborock/commit/29db86c06a476d4208f83a4de5db57f5b5e970f3))
+
+
 ## v5.12.0 (2026-05-17)
 
 ### Features
