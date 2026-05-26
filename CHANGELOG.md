@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v5.14.0 (2026-05-26)
+
+### Features
+
+- Add Q10 remote trait ([#813](https://github.com/Python-roborock/python-roborock/pull/813),
+  [`1ac49be`](https://github.com/Python-roborock/python-roborock/commit/1ac49bed2420066028946f786f0eb8c155b3f509))
+
+
 ## v5.13.0 (2026-05-24)
 
 ### Features
