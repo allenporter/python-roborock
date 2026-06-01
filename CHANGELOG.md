@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.14.1 (2026-06-01)
+
+### Bug Fixes
+
+- Wrap aiohttp network errors in RoborockException
+  ([#835](https://github.com/Python-roborock/python-roborock/pull/835),
+  [`c3db8e2`](https://github.com/Python-roborock/python-roborock/commit/c3db8e2c674739297439e967bb28e492ba8fe99b))
+
+
 ## v5.14.0 (2026-05-26)
 
 ### Features
