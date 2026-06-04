@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v5.14.2 (2026-06-04)
+
+### Bug Fixes
+
+- **q10**: Accept customized clean mode code 4
+  ([#838](https://github.com/Python-roborock/python-roborock/pull/838),
+  [`b901fb8`](https://github.com/Python-roborock/python-roborock/commit/b901fb8e8306e304c1be07e3cd11b7a122fcbe14))
+
+- **q10**: Adjust CUSTOMIZED mode comment formatting
+  ([#838](https://github.com/Python-roborock/python-roborock/pull/838),
+  [`b901fb8`](https://github.com/Python-roborock/python-roborock/commit/b901fb8e8306e304c1be07e3cd11b7a122fcbe14))
+
+
 ## v5.14.1 (2026-06-01)
 
 ### Bug Fixes
