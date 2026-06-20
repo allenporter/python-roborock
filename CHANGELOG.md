@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.16.0 (2026-06-20)
+
+### Features
+
+- **q7**: Add set_volume trait method
+  ([#841](https://github.com/Python-roborock/python-roborock/pull/841),
+  [`f5c6ac5`](https://github.com/Python-roborock/python-roborock/commit/f5c6ac5d481141dcb42c77718da6e54c1119ebea))
+
+
 ## v5.15.2 (2026-06-20)
 
 ### Bug Fixes
