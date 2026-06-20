@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.15.2 (2026-06-20)
+
+### Bug Fixes
+
+- **web_api**: Sign request body in Hawk auth for B01 /jobs writes
+  ([#852](https://github.com/Python-roborock/python-roborock/pull/852),
+  [`4dbe17e`](https://github.com/Python-roborock/python-roborock/commit/4dbe17e6af82ddc2450a2b261e17b5049913a77c))
+
+
 ## v5.15.1 (2026-06-19)
 
 ### Bug Fixes
