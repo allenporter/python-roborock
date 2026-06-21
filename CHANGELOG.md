@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v5.18.0 (2026-06-21)
+
+### Bug Fixes
+
+- Q10 restricted-zone type 3 is door-threshold, no-mop is type 2
+  ([#850](https://github.com/Python-roborock/python-roborock/pull/850),
+  [`0832b0a`](https://github.com/Python-roborock/python-roborock/commit/0832b0a1d824af945e798e28ca6827d456af452a))
+
+### Features
+
+- Add B01 grid-layer decomposition + Q10 vector overlay decoding
+  ([#850](https://github.com/Python-roborock/python-roborock/pull/850),
+  [`0832b0a`](https://github.com/Python-roborock/python-roborock/commit/0832b0a1d824af945e798e28ca6827d456af452a))
+
+- B01 grid-layer decomposition + Q10 vector overlay decoding
+  ([#850](https://github.com/Python-roborock/python-roborock/pull/850),
+  [`0832b0a`](https://github.com/Python-roborock/python-roborock/commit/0832b0a1d824af945e798e28ca6827d456af452a))
+
+
 ## v5.17.0 (2026-06-21)
 
 ### Features
