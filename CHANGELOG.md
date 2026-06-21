@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.17.0 (2026-06-21)
+
+### Features
+
+- **q7**: Add set_child_lock trait method
+  ([#842](https://github.com/Python-roborock/python-roborock/pull/842),
+  [`3142eef`](https://github.com/Python-roborock/python-roborock/commit/3142eef7d0c57f47e11661c334860021ce36284d))
+
+
 ## v5.16.0 (2026-06-20)
 
 ### Features
