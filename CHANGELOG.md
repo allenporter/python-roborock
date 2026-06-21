@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v5.19.0 (2026-06-21)
+
+### Features
+
+- **q7**: Add set_do_not_disturb trait method
+  ([#844](https://github.com/Python-roborock/python-roborock/pull/844),
+  [`3bbf72e`](https://github.com/Python-roborock/python-roborock/commit/3bbf72ed9f8c4f835cccff0ae433e3a1a7525dd3))
+
+
 ## v5.18.0 (2026-06-21)
 
 ### Bug Fixes
