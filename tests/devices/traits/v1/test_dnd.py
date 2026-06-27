@@ -181,6 +181,43 @@ async def test_set_end_time_success(dnd_trait: DoNotDisturbTrait, mock_rpc_chann
     assert dnd_trait.end_time == datetime.time(9, 45)
 
 
+async def test_set_end_time_when_start_time_not_set(dnd_trait: DoNotDisturbTrait, mock_rpc_channel: AsyncMock) -> None:
+    """Test setting end time when start time is not set."""
+    mock_rpc_channel.send_command.side_effect = [
+        # Response for SET_DND_TIMER
+        {},
+        # Response for GET_DND_TIMER after updating
+        {
+            "startHour": None,
+            "startMinute": None,
+            "endHour": 9,
+            "endMinute": 45,
+            "enabled": 1,
+        },
+    ]
+
+    # Set up initial trait state so it does NOT have a start time
+    dnd_trait.start_hour = None
+    dnd_trait.start_minute = None
+    dnd_trait.end_hour = None
+    dnd_trait.end_minute = None
+
+    await dnd_trait.set_end_time(datetime.time(9, 45))
+
+    expected_params = [None, None, 9, 45]
+    assert mock_rpc_channel.send_command.mock_calls == [
+        call(RoborockCommand.SET_DND_TIMER, params=expected_params),
+        call(RoborockCommand.GET_DND_TIMER),
+    ]
+
+    assert dnd_trait.start_hour is None
+    assert dnd_trait.start_minute is None
+    assert dnd_trait.end_hour == 9
+    assert dnd_trait.end_minute == 45
+    assert dnd_trait.end_time == datetime.time(9, 45)
+    assert dnd_trait.start_time is None
+
+
 async def test_clear_dnd_timer_success(dnd_trait: DoNotDisturbTrait, mock_rpc_channel: AsyncMock) -> None:
     """Test successfully clearing DnD timer settings."""
     mock_rpc_channel.send_command.side_effect = [
