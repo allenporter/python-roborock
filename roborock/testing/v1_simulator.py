@@ -228,7 +228,7 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
             "charge_status": 1 if self.state == RoborockStateCode.charging else 0,
             "unsave_map_reason": 0,
             "unsave_map_flag": 0,
-            "dss": 169,
+            "dss": 169,  # Dock sensor status (bitmask representing water box, dust bag, wash/dry status)
         }
 
     def _handle_app_start(self, params: Any) -> str:
