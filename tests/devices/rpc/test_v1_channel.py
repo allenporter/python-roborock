@@ -236,8 +236,6 @@ async def test_v1_channel_mqtt_disconnected(
 async def test_v1_channel_mqtt_subscription_fails_local_succeeds(
     v1_channel: V1Channel,
     mock_mqtt_channel: FakeChannel,
-    mock_local_channel: FakeChannel,
-    mock_local_session: Mock,
     device_cache: DeviceCache,
 ) -> None:
     """Test MQTT subscription failure while local connection succeeds."""
@@ -265,7 +263,6 @@ async def test_v1_channel_all_connection_attempts_fail(
     v1_channel: V1Channel,
     mock_mqtt_channel: FakeChannel,
     mock_local_channel: FakeChannel,
-    mock_local_session: Mock,
     device_cache: DeviceCache,
 ) -> None:
     """Test when both local connect and MQTT subscribe fail."""
