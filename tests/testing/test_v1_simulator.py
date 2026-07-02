@@ -152,3 +152,22 @@ async def test_trait_custom_handler_override():
     await device.v1_properties.status.refresh()
     assert device.v1_properties.status.battery == 77
     assert device.v1_properties.status.fan_power == 999
+
+
+async def test_trait_properties_and_dss_config():
+    """Verify that properties and dss config are correctly exposed on the simulator."""
+    fake_device = V1VacuumSimulator(duid="s7_properties", state=RoborockStateCode.cleaning, dss=42)
+    assert fake_device.in_cleaning == 1
+    assert fake_device.in_returning == 0
+    assert fake_device.charge_status == 0
+    assert fake_device.dss == 42
+
+    fake_device.state = RoborockStateCode.returning_home
+    assert fake_device.in_cleaning == 0
+    assert fake_device.in_returning == 1
+    assert fake_device.charge_status == 0
+
+    fake_device.state = RoborockStateCode.charging
+    assert fake_device.in_cleaning == 0
+    assert fake_device.in_returning == 0
+    assert fake_device.charge_status == 1

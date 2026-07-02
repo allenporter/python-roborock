@@ -93,6 +93,7 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
         custom_handlers: dict[str, Callable[[list[Any]], Any]] | None = None,
         device_info: HomeDataDevice | None = None,
         product: HomeDataProduct | None = None,
+        dss: int = 169,
     ):
         super().__init__(duid=duid, device_info=device_info, product=product)
         self.battery = battery
@@ -102,6 +103,7 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
         self.mop_mode = mop_mode
         self.water_box_mode = water_box_mode
         self.custom_handlers = custom_handlers or {}
+        self.dss = dss
 
         self.consumables = {
             "main_brush_work_time": 74382,
@@ -181,6 +183,21 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
         """Returns the real V1Channel bound to the fake channels."""
         return self._v1_channel
 
+    @property
+    def in_cleaning(self) -> int:
+        """Return 1 if cleaning, else 0."""
+        return 1 if self.state == RoborockStateCode.cleaning else 0
+
+    @property
+    def in_returning(self) -> int:
+        """Return 1 if returning, else 0."""
+        return 1 if self.state == RoborockStateCode.returning_home else 0
+
+    @property
+    def charge_status(self) -> int:
+        """Return 1 if charging, else 0."""
+        return 1 if self.state == RoborockStateCode.charging else 0
+
     def get_status_dict(self) -> dict[str, Any]:
         """Generate status dict using the current simulated state."""
         return {
@@ -192,8 +209,8 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
             "clean_area": 20965000,
             "error_code": 0,
             "map_present": 1,
-            "in_cleaning": 1 if self.state == RoborockStateCode.cleaning else 0,
-            "in_returning": 1 if self.state == RoborockStateCode.returning_home else 0,
+            "in_cleaning": self.in_cleaning,
+            "in_returning": self.in_returning,
             "in_fresh_state": 1,
             "lab_status": 1,
             "water_box_status": 1,
@@ -225,10 +242,10 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
             "collision_avoid_status": 1,
             "switch_map_mode": 0,
             "dock_error_status": 0,
-            "charge_status": 1 if self.state == RoborockStateCode.charging else 0,
+            "charge_status": self.charge_status,
             "unsave_map_reason": 0,
             "unsave_map_flag": 0,
-            "dss": 169,  # Dock sensor status (bitmask representing water box, dust bag, wash/dry status)
+            "dss": self.dss,
         }
 
     def _handle_app_start(self, params: Any) -> str:
