@@ -94,6 +94,7 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
         device_info: HomeDataDevice | None = None,
         product: HomeDataProduct | None = None,
         dss: int = 169,
+        dock_type: int = 3,
     ):
         super().__init__(duid=duid, device_info=device_info, product=product)
         self.battery = battery
@@ -104,6 +105,7 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
         self.water_box_mode = water_box_mode
         self.custom_handlers = custom_handlers or {}
         self.dss = dss
+        self.dock_type = dock_type
 
         self.consumables = {
             "main_brush_work_time": 74382,
@@ -233,7 +235,7 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
             "water_shortage_status": 0,
             "grey_water_box_status": 0,
             "dirty_water_box_status": 0,
-            "dock_type": 3,
+            "dock_type": self.dock_type,
             "dust_collection_status": 0,
             "auto_dust_collection": 1,
             "avoid_count": 19,
