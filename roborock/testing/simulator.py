@@ -84,15 +84,19 @@ class RoborockDeviceSimulator:
     async def _handle_local_publish(self, message: RoborockMessage) -> None:
         assert self.local_channel is not None
         self.local_channel.published_messages.append(message)
+        if self.local_channel.publish_side_effect:
+            raise self.local_channel.publish_side_effect
         await self._handle_publish(message, self.local_channel)
 
     async def _handle_mqtt_publish(self, message: RoborockMessage) -> None:
         self.mqtt_channel.published_messages.append(message)
+        if self.mqtt_channel.publish_side_effect:
+            raise self.mqtt_channel.publish_side_effect
         await self._handle_publish(message, self.mqtt_channel)
 
     async def _handle_publish(self, message: RoborockMessage, channel: FakeChannel) -> None:
         """To be overridden by subclasses to route commands."""
-        pass
+        raise NotImplementedError("Subclasses must implement _handle_publish")
 
     def connect(self) -> None:
         if self.local_channel is not None:

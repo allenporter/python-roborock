@@ -1,8 +1,11 @@
+import pytest
+
 from roborock.data import UserData
 from roborock.data.v1 import RoborockStateCode
 from roborock.devices.cache import InMemoryCache
 from roborock.devices.device_manager import UserParams, create_device_manager
 from roborock.devices.traits.v1.consumeable import ConsumableAttribute
+from roborock.exceptions import RoborockException
 from roborock.testing import FakeRoborockCloud, V1VacuumSimulator
 from tests import mock_data
 
@@ -172,3 +175,22 @@ async def test_trait_properties_and_dss_config():
     assert fake_device.in_cleaning == 0
     assert fake_device.in_returning == 0
     assert fake_device.charge_status == 1
+
+
+async def test_trait_publish_failure_injection():
+    """Verify that publish_side_effect on simulator channels correctly raises errors."""
+    cloud = FakeRoborockCloud()
+    fake_device = V1VacuumSimulator(duid="s7_failing_publish")
+    device = await _create_connected_device(cloud, fake_device)
+
+    # Make local publish fail
+    assert fake_device.local_channel is not None
+    fake_device.local_channel.publish_side_effect = RoborockException("Local network error")
+
+    # The client status refresh should still succeed by falling back to MQTT!
+    await device.v1_properties.status.refresh()
+
+    # If MQTT also fails, the refresh must fail
+    fake_device.mqtt_channel.publish_side_effect = RoborockException("MQTT network error")
+    with pytest.raises(RoborockException, match="MQTT network error"):
+        await device.v1_properties.status.refresh()
