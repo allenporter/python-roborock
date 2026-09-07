@@ -2,6 +2,21 @@
 
 <!-- version list -->
 
+## v7.3.0 (2026-09-07)
+
+### Bug Fixes
+
+- Update last_message_time on unsubscribed query responses
+  ([#941](https://github.com/Python-roborock/python-roborock/pull/941),
+  [`b7a5208`](https://github.com/Python-roborock/python-roborock/commit/b7a52081c8398b6570ceae98e4c85579ae406788))
+
+### Features
+
+- Track A01 device state from push updates
+  ([#941](https://github.com/Python-roborock/python-roborock/pull/941),
+  [`b7a5208`](https://github.com/Python-roborock/python-roborock/commit/b7a52081c8398b6570ceae98e4c85579ae406788))
+
+
 ## v7.2.3 (2026-09-02)
 
 ### Bug Fixes
