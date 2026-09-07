@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v7.4.0 (2026-09-07)
+
+### Features
+
+- **web_api**: Add firmware/OTA info, update trigger and silent-OTA toggle
+  ([#839](https://github.com/Python-roborock/python-roborock/pull/839),
+  [`c742831`](https://github.com/Python-roborock/python-roborock/commit/c74283159b3d3212aaef9771fcfa3550e813d845))
+
+
 ## v7.3.0 (2026-09-07)
 
 ### Bug Fixes
