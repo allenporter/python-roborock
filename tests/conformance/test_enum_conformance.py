@@ -8,11 +8,14 @@ so unknown codes from firmware updates never crash consumers.
 
 from __future__ import annotations
 
+import enum
+import inspect
+
 import pytest
 
 import roborock
 from roborock.data.code_mappings import RoborockEnum, RoborockModeEnum
-from tests.conformance.discovery import discover_subclasses, to_pytest_params
+from tests.conformance.discovery import discover_subclasses, to_pytest_params, walk_modules
 
 # Baseline inventory of legacy RoborockEnum classes that do not yet define an
 # explicit `unknown` member. When newer firmware emits an undocumented code,
@@ -87,6 +90,33 @@ _ALL_ROBOROCK_ENUMS = discover_subclasses(roborock, RoborockEnum, exclude=(Robor
 _ALL_MODE_ENUMS = discover_subclasses(roborock, RoborockModeEnum, exclude=(RoborockModeEnum,))
 
 
+# Enums in wire code mapping modules that intentionally remain standard Enum/StrEnum/IntEnum
+# (e.g., domain categories, product nicknames, or outgoing command identifiers).
+ALLOWED_NON_RESILIENT_CODE_MAPPING_ENUMS = {
+    "roborock.data.b01_q10.b01_q10_code_mappings.RemoteCommand",
+    "roborock.data.code_mappings.RoborockCategory",
+    "roborock.data.code_mappings.RoborockProductNickname",
+    "roborock.data.v1.v1_code_mappings.RoborockDockState",
+}
+
+
+def _discover_code_mapping_enums() -> list[type[enum.Enum]]:
+    enums: list[type[enum.Enum]] = []
+    for mod in walk_modules(roborock):
+        if "code_mapping" in mod.__name__:
+            for _, obj in inspect.getmembers(mod, inspect.isclass):
+                if (
+                    obj.__module__ == mod.__name__
+                    and issubclass(obj, enum.Enum)
+                    and obj not in (enum.Enum, enum.IntEnum, enum.StrEnum, RoborockEnum, RoborockModeEnum)
+                ):
+                    enums.append(obj)
+    return sorted(enums, key=lambda c: f"{c.__module__}.{c.__name__}")
+
+
+_ALL_CODE_MAPPING_ENUMS = _discover_code_mapping_enums()
+
+
 @pytest.mark.parametrize("enum_cls", to_pytest_params(_ALL_ROBOROCK_ENUMS, marks_by_fqn=_XFAIL_MARKS))
 def test_roborock_enum_has_unknown_fallback(enum_cls: type[RoborockEnum]) -> None:
     """All RoborockEnum subclasses must define an explicit 'unknown' member."""
@@ -94,14 +124,28 @@ def test_roborock_enum_has_unknown_fallback(enum_cls: type[RoborockEnum]) -> Non
         f"{enum_cls.__module__}.{enum_cls.__name__} must define an 'unknown' member to prevent "
         "crashing or defaulting to arbitrary states on new firmware."
     )
-    # Also verify that resolving an unknown int code returns the unknown member
-    assert enum_cls(99999) == enum_cls.unknown
+    # Derive an integer sentinel guaranteed to not exist in the enum
+    sentinel = max(item.value for item in enum_cls) + 1 if list(enum_cls) else 99999
+    assert enum_cls(sentinel) == enum_cls.unknown
 
 
 @pytest.mark.parametrize("mode_enum_cls", to_pytest_params(_ALL_MODE_ENUMS))
 def test_roborock_mode_enum_handles_unknown_code(mode_enum_cls: type[RoborockModeEnum]) -> None:
     """RoborockModeEnum subclasses must return None when an unknown code is provided."""
-    assert mode_enum_cls.from_code_optional(99999) is None
+    sentinel = max(member.code for member in mode_enum_cls) + 1 if list(mode_enum_cls) else 99999
+    assert mode_enum_cls.from_code_optional(sentinel) is None
+
+
+@pytest.mark.parametrize("enum_cls", to_pytest_params(_ALL_CODE_MAPPING_ENUMS))
+def test_code_mapping_enums_inherit_resilient_bases(enum_cls: type[enum.Enum]) -> None:
+    """Enums in wire code mapping modules must inherit from RoborockEnum or RoborockModeEnum."""
+    fqn = f"{enum_cls.__module__}.{enum_cls.__name__}"
+    if fqn in ALLOWED_NON_RESILIENT_CODE_MAPPING_ENUMS:
+        return
+    assert issubclass(enum_cls, (RoborockEnum, RoborockModeEnum)), (
+        f"{fqn} in a code mapping module does not inherit from RoborockEnum or RoborockModeEnum. "
+        "Wire status and error code enums must use resilient enum bases to handle unknown firmware codes."
+    )
 
 
 def test_known_missing_unknown_baseline_inventory() -> None:

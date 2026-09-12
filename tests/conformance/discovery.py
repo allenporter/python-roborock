@@ -21,10 +21,7 @@ def walk_modules(package: types.ModuleType) -> list[types.ModuleType]:
     if not hasattr(package, "__path__"):
         return modules
     for _, modname, _ in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
-        try:
-            modules.append(importlib.import_module(modname))
-        except (ImportError, AttributeError):
-            continue
+        modules.append(importlib.import_module(modname))
     return modules
 
 
