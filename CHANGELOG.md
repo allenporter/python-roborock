@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v7.5.0 (2026-09-12)
+
+### Bug Fixes
+
+- Resolve Q7 map mypy errors ([#911](https://github.com/Python-roborock/python-roborock/pull/911),
+  [`09c9a5b`](https://github.com/Python-roborock/python-roborock/commit/09c9a5b1bd3d2f7e5c635b70d10948fbaf7b8b66))
+
+### Features
+
+- Align Q7 map colors with V1 ([#911](https://github.com/Python-roborock/python-roborock/pull/911),
+  [`09c9a5b`](https://github.com/Python-roborock/python-roborock/commit/09c9a5b1bd3d2f7e5c635b70d10948fbaf7b8b66))
+
+- Color and label Q7 rooms in the rendered map
+  ([#911](https://github.com/Python-roborock/python-roborock/pull/911),
+  [`09c9a5b`](https://github.com/Python-roborock/python-roborock/commit/09c9a5b1bd3d2f7e5c635b70d10948fbaf7b8b66))
+
+- Decode and render Q7 carpets ([#911](https://github.com/Python-roborock/python-roborock/pull/911),
+  [`09c9a5b`](https://github.com/Python-roborock/python-roborock/commit/09c9a5b1bd3d2f7e5c635b70d10948fbaf7b8b66))
+
+- Decode Q7 (B01) map geometry — dock, robot pose, path and rooms
+  ([#911](https://github.com/Python-roborock/python-roborock/pull/911),
+  [`09c9a5b`](https://github.com/Python-roborock/python-roborock/commit/09c9a5b1bd3d2f7e5c635b70d10948fbaf7b8b66))
+
+- Render Q7 restricted areas ([#911](https://github.com/Python-roborock/python-roborock/pull/911),
+  [`09c9a5b`](https://github.com/Python-roborock/python-roborock/commit/09c9a5b1bd3d2f7e5c635b70d10948fbaf7b8b66))
+
+
 ## v7.4.3 (2026-09-12)
 
 ### Bug Fixes
