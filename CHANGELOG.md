@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## v7.7.0 (2026-09-13)
+
+### Bug Fixes
+
+- Require confirmed Q10 goto ownership
+  ([#908](https://github.com/Python-roborock/python-roborock/pull/908),
+  [`4411412`](https://github.com/Python-roborock/python-roborock/commit/44114126b4bfae2f4af4dbf8a4b129bfa24af381))
+
+### Features
+
+- Add Q10 zone cleaning and position coordinates
+  ([#908](https://github.com/Python-roborock/python-roborock/pull/908),
+  [`4411412`](https://github.com/Python-roborock/python-roborock/commit/44114126b4bfae2f4af4dbf8a4b129bfa24af381))
+
+- Add Q10 zone, position, and goto support
+  ([#908](https://github.com/Python-roborock/python-roborock/pull/908),
+  [`4411412`](https://github.com/Python-roborock/python-roborock/commit/44114126b4bfae2f4af4dbf8a4b129bfa24af381))
+
+- Add safe Q10 goto lifecycle ([#908](https://github.com/Python-roborock/python-roborock/pull/908),
+  [`4411412`](https://github.com/Python-roborock/python-roborock/commit/44114126b4bfae2f4af4dbf8a4b129bfa24af381))
+
+### Refactoring
+
+- Apply Q10 API review feedback
+  ([#908](https://github.com/Python-roborock/python-roborock/pull/908),
+  [`4411412`](https://github.com/Python-roborock/python-roborock/commit/44114126b4bfae2f4af4dbf8a4b129bfa24af381))
+
+
 ## v7.6.0 (2026-09-13)
 
 ### Features
