@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v7.7.1 (2026-09-13)
+
+### Bug Fixes
+
+- Docstring formatting in test_decode_unknown_dps_code
+  ([#951](https://github.com/Python-roborock/python-roborock/pull/951),
+  [`7af2463`](https://github.com/Python-roborock/python-roborock/commit/7af2463122174b7ad8ada2961db2493bd61bd1f5))
+
+- **code_mappings**: Map codes 112 and 113 for B01_Q10_DP
+  ([#951](https://github.com/Python-roborock/python-roborock/pull/951),
+  [`7af2463`](https://github.com/Python-roborock/python-roborock/commit/7af2463122174b7ad8ada2961db2493bd61bd1f5))
+
+
 ## v7.7.0 (2026-09-13)
 
 ### Bug Fixes
