@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v7.6.0 (2026-09-13)
+
+### Features
+
+- Add dust collection settings to the B01 Q7 api
+  ([#919](https://github.com/Python-roborock/python-roborock/pull/919),
+  [`b8b2409`](https://github.com/Python-roborock/python-roborock/commit/b8b2409404438478f36f3ef343f4828423caaffb))
+
+
 ## v7.5.0 (2026-09-12)
 
 ### Bug Fixes
