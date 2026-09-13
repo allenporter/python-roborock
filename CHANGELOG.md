@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v7.8.0 (2026-09-13)
+
+### Features
+
+- Add Q7 dock state enums ([#958](https://github.com/Python-roborock/python-roborock/pull/958),
+  [`44ffbe6`](https://github.com/Python-roborock/python-roborock/commit/44ffbe6689aa213e1de1c6401b5d637fab5fab07))
+
+
 ## v7.7.1 (2026-09-13)
 
 ### Bug Fixes
