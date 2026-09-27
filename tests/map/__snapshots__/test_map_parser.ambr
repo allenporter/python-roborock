@@ -9,6 +9,7 @@
       'minor_version': 0,
     }),
     'charger': Point(x=25612, y=25254, a=None),
+    'goto': None,
     'goto_path_points': 0,
     'image_format': 'PNG',
     'image_size': tuple(
@@ -42,6 +43,7 @@
       'minor_version': 0,
     }),
     'charger': Point(x=25612, y=25254, a=None),
+    'goto': Point(x=25874, y=26218, a=None),
     'goto_path_points': 0,
     'image_format': 'PNG',
     'image_size': tuple(
@@ -71,6 +73,7 @@
       'minor_version': 1,
     }),
     'charger': Point(x=25652, y=25222, a=98),
+    'goto': None,
     'goto_path_points': 0,
     'image_format': 'PNG',
     'image_size': tuple(
@@ -103,6 +106,7 @@
       'minor_version': 0,
     }),
     'charger': Point(x=25273, y=25603, a=-1),
+    'goto': None,
     'goto_path_points': 0,
     'image_format': 'PNG',
     'image_size': tuple(

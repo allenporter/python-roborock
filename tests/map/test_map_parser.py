@@ -27,6 +27,7 @@ def _map_data_to_snapshot(result: ParsedMapData) -> dict[str, Any]:
         "image_format": image.format,
         "charger": md.charger,
         "vacuum_position": md.vacuum_position,
+        "goto": md.goto,
         "rooms": md.rooms,
         "walls": md.walls,
         "no_go_areas": md.no_go_areas,
