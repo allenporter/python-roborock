@@ -19,9 +19,12 @@ Or directly as a standalone profiling CLI:
 import argparse
 import cProfile
 import io
+import math
 import pstats
+import statistics
 import time
 from collections.abc import Callable
+from dataclasses import replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -32,11 +35,16 @@ from vacuum_map_parser_base.config.drawable import Drawable
 from roborock.map.b01_q10_map_parser import (
     B01Q10MapParser,
     B01Q10MapParserConfig,
+    Q10HeaderCalibration,
     Q10MapPacket,
     Q10MapPacketKind,
+    Q10Point,
     Q10Room,
+    Q10TracePacket,
     parse_map_packet,
 )
+from roborock.map.b01_q10_overlays import Q10Zone
+from roborock.map.b01_q10_render import Q10MapOverlays, render_q10_map
 from roborock.map.map_parser import MapParser, MapParserConfig, ParsedMapData
 
 if TYPE_CHECKING:
@@ -187,7 +195,7 @@ def test_benchmark_q10_map_parse_and_render(benchmark: BenchmarkFixture) -> None
 
 
 def test_benchmark_q10_map_full_scale_render_scale_1(benchmark: BenchmarkFixture) -> None:
-    """Benchmark Q10 composite rendering on a realistic 200x200 4-room floorplan at scale 1."""
+    """Benchmark Q10 base rendering on a realistic 200x200 4-room floorplan at scale 1."""
     packet = _build_synthetic_q10_grid(200, 200)
     parser = B01Q10MapParser(B01Q10MapParserConfig(map_scale=1))
     result = benchmark(parser.parse_packet, packet)
@@ -195,11 +203,37 @@ def test_benchmark_q10_map_full_scale_render_scale_1(benchmark: BenchmarkFixture
 
 
 def test_benchmark_q10_map_full_scale_render_scale_4(benchmark: BenchmarkFixture) -> None:
-    """Benchmark Q10 composite rendering on a realistic 200x200 4-room floorplan at scale 4."""
+    """Benchmark Q10 base rendering on a realistic 200x200 4-room floorplan at scale 4."""
     packet = _build_synthetic_q10_grid(200, 200)
     parser = B01Q10MapParser(B01Q10MapParserConfig(map_scale=4))
     result = benchmark(parser.parse_packet, packet)
     _validate_image(result, (800, 800))
+
+
+def _composite_inputs() -> tuple[Q10MapPacket, Q10TracePacket, Q10MapOverlays]:
+    """Build calibrated map, trace and restriction inputs outside timed sections."""
+    packet = replace(
+        _build_synthetic_q10_grid(),
+        header_calibration=Q10HeaderCalibration(0, 2000, 5, 400, 400, 90),
+    )
+    trace = Q10TracePacket(
+        points=[Q10Point(x * 20, (200 - y) * 20) for x, y in [(30, 30), (80, 30), (80, 80), (30, 80), (30, 40)]]
+    )
+    overlays = Q10MapOverlays(zones=[Q10Zone(type=0, vertices=[(400, 1400), (600, 1400), (600, 1200), (400, 1200)])])
+    return packet, trace, overlays
+
+
+@pytest.mark.parametrize("scale", [1, 4])
+def test_benchmark_q10_composite_render(benchmark: BenchmarkFixture, scale: int) -> None:
+    """Exercise trace, charger and restriction composition before PNG encoding."""
+    packet, trace, overlays = _composite_inputs()
+    config = B01Q10MapParserConfig(map_scale=scale)
+    content = benchmark(render_q10_map, packet, trace, overlays, config=config)
+    with Image.open(io.BytesIO(content)) as image:
+        assert image.format == "PNG"
+        assert image.size == (200 * scale, 200 * scale)
+        with Image.open(io.BytesIO(render_q10_map(packet, None, Q10MapOverlays(), config=config))) as base:
+            assert image.tobytes() != base.tobytes()
 
 
 # ---------------------------------------------------------------------------
@@ -208,6 +242,9 @@ def test_benchmark_q10_map_full_scale_render_scale_4(benchmark: BenchmarkFixture
 
 
 def _run_benchmarks(iterations: int, warmup: int, profile: bool) -> None:
+    if iterations < 1 or warmup < 0:
+        raise ValueError("iterations must be positive and warmup must be non-negative")
+    packet, trace, overlays = _composite_inputs()
     v1_s5_data = _V1_S5_MAP.read_bytes()
     v1_s6_data = _V1_S6_MAP.read_bytes()
     q10_data = _Q10_MAP.read_bytes()
@@ -220,6 +257,8 @@ def _run_benchmarks(iterations: int, warmup: int, profile: bool) -> None:
     p_v1_s6_no_draw = MapParser(MapParserConfig(map_scale=4, drawables=[]))
     p_v1_s6_all_draw = MapParser(MapParserConfig(map_scale=4, drawables=list(Drawable)))
 
+    config_scale1 = B01Q10MapParserConfig(map_scale=1)
+    config_scale4 = B01Q10MapParserConfig(map_scale=4)
     p_q10_small = B01Q10MapParser()
     p_q10_scale1 = B01Q10MapParser(B01Q10MapParserConfig(map_scale=1))
     p_q10_scale4 = B01Q10MapParser(B01Q10MapParserConfig(map_scale=4))
@@ -235,6 +274,14 @@ def _run_benchmarks(iterations: int, warmup: int, profile: bool) -> None:
         ("Q10 Small Map (Scale 1)", lambda: p_q10_small.parse(q10_data)),
         ("Q10 200x200 Map (Scale 1)", lambda: p_q10_scale1.parse_packet(q10_packet_200)),
         ("Q10 200x200 Map (Scale 4)", lambda: p_q10_scale4.parse_packet(q10_packet_200)),
+        (
+            "Q10 Composite (Scale 1)",
+            lambda: render_q10_map(packet, trace, overlays, config=config_scale1),
+        ),
+        (
+            "Q10 Composite (Scale 4)",
+            lambda: render_q10_map(packet, trace, overlays, config=config_scale4),
+        ),
     ]
 
     print(f"\nRunning {len(benchmarks)} benchmarks ({warmup} warmup, {iterations} timed iterations)...\n")
@@ -253,8 +300,8 @@ def _run_benchmarks(iterations: int, warmup: int, profile: bool) -> None:
         timings.sort()
         min_ms = timings[0]
         mean_ms = sum(timings) / len(timings)
-        med_ms = timings[len(timings) // 2]
-        p95_ms = timings[int(len(timings) * 0.95)]
+        med_ms = statistics.median(timings)
+        p95_ms = timings[math.ceil(len(timings) * 0.95) - 1]  # Nearest-rank percentile (one-based).
         ops_per_sec = 1000.0 / mean_ms if mean_ms > 0 else float("inf")
 
         results.append((name, min_ms, med_ms, mean_ms, p95_ms, ops_per_sec))
@@ -288,7 +335,36 @@ def main() -> None:
     parser.add_argument("--profile", action="store_true", help="Print cProfile hotspot breakdown for each benchmark")
     args = parser.parse_args()
 
+    if args.iterations < 1 or args.warmup < 0:
+        parser.error("--iterations must be positive and --warmup must be non-negative")
+
     _run_benchmarks(iterations=args.iterations, warmup=args.warmup, profile=args.profile)
+
+
+@pytest.mark.parametrize("iterations,warmup", [(0, 0), (-1, 0), (1, -1)])
+def test_cli_rejects_invalid_counts(iterations: int, warmup: int) -> None:
+    """Invalid counts fail before loading fixtures or running benchmarks."""
+    with pytest.raises(ValueError, match="iterations must be positive"):
+        _run_benchmarks(iterations, warmup, False)
+
+
+def test_cli_reports_nearest_rank_p95_and_median(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+) -> None:
+    """Twenty samples report the nineteenth rank as P95 and average the middle pair."""
+    monkeypatch.setattr(MapParser, "parse", lambda *args: None)
+    monkeypatch.setattr(B01Q10MapParser, "parse", lambda *args: None)
+    monkeypatch.setattr(B01Q10MapParser, "parse_packet", lambda *args: None)
+    monkeypatch.setattr("tests.map.test_benchmarks.parse_map_packet", lambda *args: None)
+    monkeypatch.setattr("tests.map.test_benchmarks.render_q10_map", lambda *args, **kwargs: b"")
+    clock = iter(value for _ in range(12) for rank in range(1, 21) for value in (0.0, rank / 1000))
+    monkeypatch.setattr(time, "perf_counter", lambda: next(clock))
+    _run_benchmarks(iterations=20, warmup=0, profile=False)
+    rows = [line.split("|") for line in capsys.readouterr().out.splitlines() if "|" in line][1:]
+    assert len(rows) == 12
+    for row in rows:
+        assert float(row[2]) == 10.5
+        assert float(row[4]) == 19.0
 
 
 if __name__ == "__main__":

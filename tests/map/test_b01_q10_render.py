@@ -8,7 +8,9 @@ trait's own tests cover the state management that drives this module.
 import io
 from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
+import pytest
 from PIL import Image
 from vacuum_map_parser_base.config.size import Size, Sizes
 from vacuum_map_parser_base.map_data import MapData, Point
@@ -289,3 +291,16 @@ def test_solve_q10_calibration_short_path_without_header_returns_none() -> None:
     packet = _packet()
     trace = Q10TracePacket(points=_floor_world_points(packet.layers, IDENTITY, 6))
     assert solve_q10_calibration(packet, trace) is None
+
+
+@pytest.mark.parametrize("drawables", [False, True])
+def test_render_encodes_png_once(drawables: bool) -> None:
+    """Both base and composite renders encode the final image exactly once."""
+    packet, trace = _calibrated_inputs() if drawables else (_packet(), None)
+    save = Image.Image.save
+    with patch.object(Image.Image, "save", autospec=True, side_effect=save) as encode:
+        content = _render(packet, trace=trace)
+    assert encode.call_count == 1
+    with Image.open(io.BytesIO(content)) as image:
+        assert image.format == "PNG"
+        image.load()
