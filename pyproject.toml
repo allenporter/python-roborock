@@ -68,6 +68,7 @@ dev = [
     "pdoc>=15.0.4,<17",
     "pytest-cov>=7.0.0",
     "zmqtt>=0.2.0,<0.3.0",
+    "pytest-benchmark>=5.1.0",
 ]
 
 [tool.hatch.build.targets.sdist]
