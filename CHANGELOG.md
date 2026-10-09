@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v7.12.1 (2026-10-07)
+
+### Bug Fixes
+
+- Map water slide positions to the app's flow ranges
+  ([#975](https://github.com/Python-roborock/python-roborock/pull/975),
+  [`5420f8d`](https://github.com/Python-roborock/python-roborock/commit/5420f8d369f0b7434989019eb4d2fcf04e188743))
+
+### Chores
+
+- **tests**: Address MQTT broker test review
+  ([#950](https://github.com/Python-roborock/python-roborock/pull/950),
+  [`840139a`](https://github.com/Python-roborock/python-roborock/commit/840139aedf91f314f971ead37af70398656d2d94))
+
+- **tests**: Cover mqtt e2e scenarios for MqttSession
+  ([#950](https://github.com/Python-roborock/python-roborock/pull/950),
+  [`840139a`](https://github.com/Python-roborock/python-roborock/commit/840139aedf91f314f971ead37af70398656d2d94))
+
+
 ## v7.12.0 (2026-09-27)
 
 ### Bug Fixes
