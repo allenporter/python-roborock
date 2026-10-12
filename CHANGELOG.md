@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v7.12.3 (2026-10-12)
+
+### Bug Fixes
+
+- Fix charging for off peak ([#922](https://github.com/Python-roborock/python-roborock/pull/922),
+  [`17a3857`](https://github.com/Python-roborock/python-roborock/commit/17a3857e7b1779ec4538130f3b011d0e3c419765))
+
+
 ## v7.12.2 (2026-10-10)
 
 ### Bug Fixes
