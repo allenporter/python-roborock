@@ -2,6 +2,67 @@
 
 <!-- version list -->
 
+## v7.14.0 (2026-10-31)
+
+### Bug Fixes
+
+- **cli**: Simplify cloud job JSON parsing
+  ([#994](https://github.com/Python-roborock/python-roborock/pull/994),
+  [`25128e7`](https://github.com/Python-roborock/python-roborock/commit/25128e7a8459a666de3d0941925756b12dd5799a))
+
+- **map**: Use typing.Self and cover absent find_block case
+  ([#1001](https://github.com/Python-roborock/python-roborock/pull/1001),
+  [`aa9ce28`](https://github.com/Python-roborock/python-roborock/commit/aa9ce28f672be6916a566f038ee35146919192fc))
+
+- **testing**: Generate valid V1 maps and honor custom handlers
+  ([#1000](https://github.com/Python-roborock/python-roborock/pull/1000),
+  [`4c0586d`](https://github.com/Python-roborock/python-roborock/commit/4c0586d57fbd62803b0155500e36c401e3d03332))
+
+### Documentation
+
+- Expose code-review skill under .github/skills for GitHub Copilot
+  ([#988](https://github.com/Python-roborock/python-roborock/pull/988),
+  [`85e2f3c`](https://github.com/Python-roborock/python-roborock/commit/85e2f3c6180d6245da5b11a22059c5ab288e587d))
+
+- Expose code-review skill under .github/skills for GitHub Copilot
+  ([#989](https://github.com/Python-roborock/python-roborock/pull/989),
+  [`5787a6f`](https://github.com/Python-roborock/python-roborock/commit/5787a6f6b86fb2114a9fa0bd1a8a4bcf8e992b34))
+
+- Refine code-review skill with conformance, cache, and async checks
+  ([#989](https://github.com/Python-roborock/python-roborock/pull/989),
+  [`5787a6f`](https://github.com/Python-roborock/python-roborock/commit/5787a6f6b86fb2114a9fa0bd1a8a4bcf8e992b34))
+
+- **map**: Clarify normalization of JSON nonces
+  ([#1001](https://github.com/Python-roborock/python-roborock/pull/1001),
+  [`aa9ce28`](https://github.com/Python-roborock/python-roborock/commit/aa9ce28f672be6916a566f038ee35146919192fc))
+
+### Features
+
+- Add cloud job updates to API and CLI
+  ([#994](https://github.com/Python-roborock/python-roborock/pull/994),
+  [`25128e7`](https://github.com/Python-roborock/python-roborock/commit/25128e7a8459a666de3d0941925756b12dd5799a))
+
+- Add v1 map block container helpers for dynamic map diffs
+  ([#1001](https://github.com/Python-roborock/python-roborock/pull/1001),
+  [`aa9ce28`](https://github.com/Python-roborock/python-roborock/commit/aa9ce28f672be6916a566f038ee35146919192fc))
+
+- **cli**: Add cloud job update command
+  ([#994](https://github.com/Python-roborock/python-roborock/pull/994),
+  [`25128e7`](https://github.com/Python-roborock/python-roborock/commit/25128e7a8459a666de3d0941925756b12dd5799a))
+
+- **map**: Add V1 map block container helpers
+  ([#1001](https://github.com/Python-roborock/python-roborock/pull/1001),
+  [`aa9ce28`](https://github.com/Python-roborock/python-roborock/commit/aa9ce28f672be6916a566f038ee35146919192fc))
+
+- **testing**: Serve V1 maps from the simulator
+  ([#1000](https://github.com/Python-roborock/python-roborock/pull/1000),
+  [`4c0586d`](https://github.com/Python-roborock/python-roborock/commit/4c0586d57fbd62803b0155500e36c401e3d03332))
+
+- **web_api**: Add cloud job updates
+  ([#994](https://github.com/Python-roborock/python-roborock/pull/994),
+  [`25128e7`](https://github.com/Python-roborock/python-roborock/commit/25128e7a8459a666de3d0941925756b12dd5799a))
+
+
 ## v7.13.0 (2026-10-17)
 
 ### Features
