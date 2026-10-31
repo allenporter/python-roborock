@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v7.13.0 (2026-10-17)
+
+### Features
+
+- Register P30 Pro and decode water and dock status
+  ([#983](https://github.com/Python-roborock/python-roborock/pull/983),
+  [`e46d5ad`](https://github.com/Python-roborock/python-roborock/commit/e46d5ad6885f96dc049deba074295bd1f2cd2ae7))
+
+
 ## v7.12.4 (2026-10-17)
 
 ### Bug Fixes
