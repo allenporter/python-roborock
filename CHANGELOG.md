@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v7.14.1 (2026-10-31)
+
+### Bug Fixes
+
+- **a01**: Skip DP 225 on Zeo H1 Neo
+  ([#1003](https://github.com/Python-roborock/python-roborock/pull/1003),
+  [`138a547`](https://github.com/Python-roborock/python-roborock/commit/138a5475a2f497bcf1556ed77cce9aa2b1b32e5e))
+
+
 ## v7.14.0 (2026-10-31)
 
 ### Bug Fixes
