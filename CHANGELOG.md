@@ -2,6 +2,47 @@
 
 <!-- version list -->
 
+## v7.15.0 (2026-11-01)
+
+### Bug Fixes
+
+- **camera**: Address review feedback on signaling models, parsing, and tests
+  ([#981](https://github.com/Python-roborock/python-roborock/pull/981),
+  [`271436a`](https://github.com/Python-roborock/python-roborock/commit/271436aef132bb8bfb0e0f635ce03a52b592bea0))
+
+- **camera**: Align signaling with repository conventions
+  ([#981](https://github.com/Python-roborock/python-roborock/pull/981),
+  [`271436a`](https://github.com/Python-roborock/python-roborock/commit/271436aef132bb8bfb0e0f635ce03a52b592bea0))
+
+- **mower**: Lowercase enum values, trim docstrings, and remove legacy state enum
+  ([#1002](https://github.com/Python-roborock/python-roborock/pull/1002),
+  [`fa1e62b`](https://github.com/Python-roborock/python-roborock/commit/fa1e62bae559438e808ffb4b5ba3996521db711d))
+
+- **mower**: Return cls.UNKNOWN directly in MowerEnum.from_code
+  ([#1002](https://github.com/Python-roborock/python-roborock/pull/1002),
+  [`fa1e62b`](https://github.com/Python-roborock/python-roborock/commit/fa1e62bae559438e808ffb4b5ba3996521db711d))
+
+### Chores
+
+- **camera**: Split TURN server validation tests
+  ([#981](https://github.com/Python-roborock/python-roborock/pull/981),
+  [`271436a`](https://github.com/Python-roborock/python-roborock/commit/271436aef132bb8bfb0e0f635ce03a52b592bea0))
+
+### Features
+
+- **camera**: Add camera signaling models, ICE parsing utilities, and payload serialization
+  ([#981](https://github.com/Python-roborock/python-roborock/pull/981),
+  [`271436a`](https://github.com/Python-roborock/python-roborock/commit/271436aef132bb8bfb0e0f635ce03a52b592bea0))
+
+- **map**: Add V1 dynamic map command models
+  ([#1005](https://github.com/Python-roborock/python-roborock/pull/1005),
+  [`afee561`](https://github.com/Python-roborock/python-roborock/commit/afee5617218e90fffd277b75d9ff8aedb2daf92d))
+
+- **mower**: Add typed status models and protocol enums
+  ([#1002](https://github.com/Python-roborock/python-roborock/pull/1002),
+  [`fa1e62b`](https://github.com/Python-roborock/python-roborock/commit/fa1e62bae559438e808ffb4b5ba3996521db711d))
+
+
 ## v7.14.1 (2026-10-31)
 
 ### Bug Fixes
