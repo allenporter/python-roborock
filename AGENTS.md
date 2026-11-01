@@ -99,3 +99,5 @@ Portable agent skills following the [Agent Skills specification](https://agentsk
 
 - **Code Review Skill** (`.agents/skills/code-review/SKILL.md`):
   A structured, interactive review workflow for evaluating pull requests and diffs against the repository's architectural hierarchy, typing rules, and testing standards. To invoke during interactive sessions, refer to [.agents/skills/code-review/SKILL.md](.agents/skills/code-review/SKILL.md).
+- **PR Triage Skill** (`.agents/skills/pr-triage/SKILL.md`):
+  A repeatable workflow for syncing the workspace and classifying open pull requests into actionable review queues (initial reviews, re-reviews after author updates, ready-to-merge PRs, and waiting/draft items). Refer to [.agents/skills/pr-triage/SKILL.md](.agents/skills/pr-triage/SKILL.md).
