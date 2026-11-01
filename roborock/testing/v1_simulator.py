@@ -427,18 +427,19 @@ class V1VacuumSimulator(RoborockDeviceSimulator):
             raise ValueError("map_parts must be at least 1")
         body = Utils.encrypt_cbc(gzip.compress(map_bytes), self.security_data.nonce)
         header = struct.pack("<8s8sH6s", self.security_data.endpoint.encode(), bytes(8), request_id & 0xFFFF, bytes(6))
-        payload = header + body
         if self.map_parts == 1:
             if self.map_part_order is not None and list(self.map_part_order) != [0]:
                 raise ValueError("map_part_order must be a permutation of range(map_parts)")
-            return [RoborockMessage(protocol=RoborockMessageProtocol.MAP_RESPONSE, payload=payload)]
-        if self.map_parts > len(payload):
-            raise ValueError("map_parts cannot exceed encrypted map payload length")
+            return [RoborockMessage(protocol=RoborockMessageProtocol.MAP_RESPONSE, payload=header + body)]
+        if self.map_parts > len(body):
+            raise ValueError("map_parts cannot exceed encrypted map body length")
 
-        # Split evenly into map_parts non-empty contiguous slices.
-        total = len(payload)
+        # Keep the 24-byte header intact on the first part and split the encrypted
+        # body evenly into map_parts non-empty contiguous slices.
+        total = len(body)
         boundaries = [(i * total) // self.map_parts for i in range(self.map_parts + 1)]
-        chunks = [payload[boundaries[i] : boundaries[i + 1]] for i in range(self.map_parts)]
+        chunks = [body[boundaries[i] : boundaries[i + 1]] for i in range(self.map_parts)]
+        chunks[0] = header + chunks[0]
         random_id = get_next_int(10000, 99999)
         timestamp = int(time.time())
         messages = [

@@ -13,7 +13,7 @@ from roborock.devices.device_manager import UserParams, create_device_manager
 from roborock.devices.traits.v1.consumeable import ConsumableAttribute
 from roborock.exceptions import RoborockException
 from roborock.map.map_parser import MapParser, MapParserConfig
-from roborock.roborock_message import RoborockMessageProtocol
+from roborock.roborock_message import RoborockMessage, RoborockMessageProtocol
 from roborock.testing import (
     DEFAULT_NETWORK_INFO,
     DEFAULT_STATUS,
@@ -317,18 +317,32 @@ async def test_simulator_multipart_map_framing() -> None:
     simulator.map_parts = 3
     simulator.map_part_order = [2, 0, 1]
 
-    emitted: list[tuple[RoborockMessageProtocol, int]] = []
-    unsub = await simulator.mqtt_channel.subscribe(lambda msg: emitted.append((msg.protocol, msg.seq)))
+    emitted: list[RoborockMessage] = []
+    unsub = await simulator.mqtt_channel.subscribe(emitted.append)
     try:
         raw = await simulator.v1_channel.map_rpc_channel.send_command("get_map_v1")
     finally:
         unsub()
 
-    assert emitted == [
+    assert [(msg.protocol, msg.seq) for msg in emitted] == [
         (RoborockMessageProtocol.MAP_RESPONSE, 3),
         (RoborockMessageProtocol.MAP_RESPONSE_PART, 1),
         (RoborockMessageProtocol.MAP_RESPONSE_PART, 2),
     ]
+    first_part = next(msg for msg in emitted if msg.seq == 1)
+    assert first_part.payload is not None
+    assert first_part.payload.startswith(simulator.security_data.endpoint.encode())
+    assert len(first_part.payload) > 24
+    assert raw == simulator.build_map_bytes()
+
+
+async def test_simulator_multipart_preserves_header_at_high_part_count() -> None:
+    """High part counts keep the complete 24-byte header on the first part."""
+    simulator = V1VacuumSimulator(duid="s7_many_parts")
+    simulator.connect()
+    simulator.map_parts = 20
+
+    raw = await simulator.v1_channel.map_rpc_channel.send_command("get_map_v1")
     assert raw == simulator.build_map_bytes()
 
 
