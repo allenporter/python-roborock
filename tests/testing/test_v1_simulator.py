@@ -13,6 +13,7 @@ from roborock.devices.device_manager import UserParams, create_device_manager
 from roborock.devices.traits.v1.consumeable import ConsumableAttribute
 from roborock.exceptions import RoborockException
 from roborock.map.map_parser import MapParser, MapParserConfig
+from roborock.roborock_message import RoborockMessageProtocol
 from roborock.testing import (
     DEFAULT_NETWORK_INFO,
     DEFAULT_STATUS,
@@ -306,6 +307,29 @@ async def test_full_map_refresh_from_simulator():
     assert len(_path_points(device)) == 40
     assert map_content.map_data is not None and map_content.map_data.vacuum_position is not None
     assert (map_content.map_data.vacuum_position.x, map_content.map_data.vacuum_position.y) == (31000, 32000)
+
+
+async def test_simulator_multipart_map_framing() -> None:
+    """Configuring map_parts and map_part_order frames ordered MAP_RESPONSE_PART + MAP_RESPONSE chunks."""
+    simulator = V1VacuumSimulator(duid="s7_framing")
+    simulator.connect()
+    simulator.advance_path(40)
+    simulator.map_parts = 3
+    simulator.map_part_order = [2, 0, 1]
+
+    emitted: list[tuple[RoborockMessageProtocol, int]] = []
+    unsub = await simulator.mqtt_channel.subscribe(lambda msg: emitted.append((msg.protocol, msg.seq)))
+    try:
+        raw = await simulator.v1_channel.map_rpc_channel.send_command("get_map_v1")
+    finally:
+        unsub()
+
+    assert emitted == [
+        (RoborockMessageProtocol.MAP_RESPONSE, 3),
+        (RoborockMessageProtocol.MAP_RESPONSE_PART, 1),
+        (RoborockMessageProtocol.MAP_RESPONSE_PART, 2),
+    ]
+    assert raw == simulator.build_map_bytes()
 
 
 @pytest.mark.parametrize("count", [0, 40, 400])
