@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v7.15.1 (2026-11-01)
+
+### Bug Fixes
+
+- Reassemble V1 map responses split into multiple messages
+  ([#1004](https://github.com/Python-roborock/python-roborock/pull/1004),
+  [`fd88b3e`](https://github.com/Python-roborock/python-roborock/commit/fd88b3eaf86262980b34f1264d696377dbcf8758))
+
+
 ## v7.15.0 (2026-11-01)
 
 ### Bug Fixes
